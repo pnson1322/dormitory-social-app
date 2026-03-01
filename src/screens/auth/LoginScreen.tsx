@@ -2,12 +2,14 @@ import { AppButton } from "@/components/AppButton";
 import { AppInput } from "@/components/AppInput";
 import { KeyboardDismiss } from "@/components/KeyboardDismiss";
 import { ScreenGradient } from "@/components/ScreenGradient";
+import { useToast } from "@/components/toast/ToastProvider";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { Link, useRouter } from "expo-router";
-import { Animated, Pressable, Text, View } from "react-native";
+import { Animated, Text, View } from "react-native";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { showToast } = useToast();
 
   const {
     email,
@@ -32,10 +34,10 @@ export default function LoginScreen() {
           className="rounded-3xl bg-white px-5 py-6 shadow-lg"
           style={{ transform: [{ translateX: shakeX }] }}
         >
-          <Text className="text-2xl font-extrabold text-slate-900">
+          <Text className="text-[28px] font-extrabold text-slate-900">
             Đăng nhập
           </Text>
-          <Text className="mt-1 text-slate-500 text-base">
+          <Text className="mt-1 text-slate-500 text-[15px]">
             Chào mừng bạn quay lại 👋
           </Text>
 
@@ -67,29 +69,47 @@ export default function LoginScreen() {
             />
           </View>
 
-          <Pressable onPress={() => {}} className="mt-4 self-end" hitSlop={12}>
-            <Text className="text-primaryLight font-extrabold text-base">
+          <View className="mt-3 items-end">
+            <Text className="text-primary font-bold text-[14px]">
               Quên mật khẩu?
             </Text>
-          </Pressable>
+          </View>
 
           <View className="mt-5">
             <AppButton
               title="Đăng nhập"
+              disabled={!isFormValid}
               loading={loading}
-              disabled={!isFormValid || loading}
               onPress={() =>
-                submit(() => {
-                  router.replace("/");
+                submit({
+                  onSuccess: () => {
+                    showToast({
+                      type: "success",
+                      title: "Thành công",
+                      message: "Đăng nhập thành công 🎉",
+                      durationMs: 2600,
+                    });
+                    setTimeout(() => router.replace("/"), 650);
+                  },
+                  onError: (msg) =>
+                    showToast({
+                      type: "error",
+                      title: "Thất bại",
+                      message: msg ?? "Đăng nhập thất bại.",
+                      durationMs: 2600,
+                    }),
+                  simulateFail: true,
                 })
               }
             />
           </View>
 
-          <View className="mt-4 flex-row justify-center gap-1">
-            <Text className="text-slate-600 text-base">Chưa có tài khoản?</Text>
+          <View className="mt-4 flex-row justify-center gap-2">
+            <Text className="text-slate-700 text-[15px]">
+              Chưa có tài khoản?
+            </Text>
             <Link
-              className="text-primary font-extrabold text-base"
+              className="text-primary font-extrabold text-[15px]"
               href="/(auth)/register"
             >
               Đăng ký

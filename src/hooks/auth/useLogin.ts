@@ -1,7 +1,7 @@
 import { shake } from "@/utils/shake";
 import { isValidEmail } from "@/utils/validators";
 import { useMemo, useRef, useState } from "react";
-import { Alert, Animated } from "react-native";
+import { Animated } from "react-native";
 
 type LoginTouched = {
   email: boolean;
@@ -45,10 +45,17 @@ export function useLogin() {
   }, [emailTrim, password]);
 
   function markAllTouched() {
-    setTouched({ email: true, password: true });
+    setTouched({
+      email: true,
+      password: true,
+    });
   }
 
-  async function submit(onSuccess?: () => void) {
+  async function submit(opts?: {
+    onSuccess?: () => void;
+    onError?: (message?: string) => void;
+    simulateFail?: boolean;
+  }) {
     markAllTouched();
 
     const invalid =
@@ -59,14 +66,22 @@ export function useLogin() {
 
     if (invalid) {
       shake(shakeX);
+      opts?.onError?.("Vui lòng kiểm tra lại thông tin.");
       return;
     }
 
     try {
       setLoading(true);
-      await new Promise((r) => setTimeout(r, 900));
-      Alert.alert("Thành công", "Đăng nhập thành công 🎉");
-      onSuccess?.();
+      await new Promise((r) => setTimeout(r, 850));
+
+      if (opts?.simulateFail) {
+        opts?.onError?.("Email hoặc mật khẩu không đúng.");
+        return;
+      }
+
+      opts?.onSuccess?.();
+    } catch {
+      opts?.onError?.("Có lỗi xảy ra, vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -75,12 +90,14 @@ export function useLogin() {
   return {
     email,
     password,
+
     showPassword,
     loading,
     touched,
 
     emailErr,
     passwordErr,
+
     isFormValid,
     shakeX,
 

@@ -2,12 +2,14 @@ import { AppButton } from "@/components/AppButton";
 import { AppInput } from "@/components/AppInput";
 import { KeyboardDismiss } from "@/components/KeyboardDismiss";
 import { ScreenGradient } from "@/components/ScreenGradient";
+import { useToast } from "@/components/toast/ToastProvider";
 import { useRegister } from "@/hooks/auth/useRegister";
 import { Link, useRouter } from "expo-router";
 import { Animated, Text, View } from "react-native";
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { showToast } = useToast();
 
   const {
     fullName,
@@ -40,17 +42,17 @@ export default function RegisterScreen() {
           className="rounded-3xl bg-white px-5 py-6 shadow-lg"
           style={{ transform: [{ translateX: shakeX }] }}
         >
-          <Text className="text-2xl font-extrabold text-slate-900">
+          <Text className="text-[28px] font-extrabold text-slate-900">
             Đăng ký
           </Text>
-          <Text className="mt-1 text-slate-500 text-base">
+          <Text className="mt-1 text-slate-500 text-[15px]">
             Tạo tài khoản để bắt đầu ✨
           </Text>
 
           <View className="mt-5 gap-4">
             <AppInput
               label="Họ và tên"
-              placeholder="Nguyễn Văn An"
+              placeholder="Nguyễn Văn A"
               value={fullName}
               onChangeText={setFullName}
               error={nameErr}
@@ -101,23 +103,39 @@ export default function RegisterScreen() {
             />
           </View>
 
-          <View className="mt-6">
+          <View className="mt-5">
             <AppButton
               title="Tạo tài khoản"
+              disabled={!isFormValid}
               loading={loading}
-              disabled={!isFormValid || loading}
               onPress={() =>
-                submit(() => {
-                  router.replace("/(auth)/login");
+                submit({
+                  onSuccess: () => {
+                    showToast({
+                      type: "success",
+                      title: "Thành công",
+                      message: "Tạo tài khoản thành công 🎉",
+                      durationMs: 2800,
+                    });
+                    setTimeout(() => router.replace("/(auth)/login"), 800);
+                  },
+                  onError: (msg) =>
+                    showToast({
+                      type: "error",
+                      title: "Thất bại",
+                      message: msg ?? "Đăng ký thất bại.",
+                      durationMs: 2800,
+                    }),
+                  // simulateFail: true,
                 })
               }
             />
           </View>
 
-          <View className="mt-4 flex-row justify-center gap-1">
-            <Text className="text-slate-600 text-base">Đã có tài khoản?</Text>
+          <View className="mt-4 flex-row justify-center gap-2">
+            <Text className="text-slate-700 text-[15px]">Đã có tài khoản?</Text>
             <Link
-              className="text-primary font-extrabold text-base"
+              className="text-primary font-extrabold text-[15px]"
               href="/(auth)/login"
             >
               Đăng nhập
