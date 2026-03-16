@@ -1,5 +1,5 @@
 import { ENV } from "@/config/env";
-import { clearAccessToken, getAccessToken } from "@/storage/authStorage";
+import { clearAuthTokens, getAccessToken } from "@/storage/authStorage";
 import axios from "axios";
 
 export const http = axios.create({
@@ -11,10 +11,8 @@ export const http = axios.create({
 http.interceptors.request.use(async (config) => {
   const token = await getAccessToken();
   if (token) {
-    config.headers = {
-      ...(config.headers as any),
-      Authorization: `Bearer ${token}`,
-    };
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -24,7 +22,7 @@ http.interceptors.response.use(
   async (error) => {
     const status = error?.response?.status;
     if (status === 401) {
-      await clearAccessToken();
+      await clearAuthTokens();
     }
     return Promise.reject(error);
   },

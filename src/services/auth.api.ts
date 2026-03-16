@@ -1,9 +1,6 @@
 import { http } from "@/services/http";
 
-export type LoginBody = {
-  email: string;
-  password: string;
-};
+export type LoginBody = { email: string; password: string };
 
 export type RegisterBody = {
   fullName: string;
@@ -11,22 +8,21 @@ export type RegisterBody = {
   password: string;
 };
 
-export type AuthResponse = {
-  accessToken: string;
-  // optional: user
-  user?: {
-    id: string;
-    fullName: string;
-    email: string;
-  };
+type ApiResponse<T> = { data: T; meta: any };
+
+export type LoginPayload = {
+  token: string;
+  refreshToken: string;
 };
 
 export async function loginApi(body: LoginBody) {
-  const { data } = await http.post<AuthResponse>("/auth/login", body);
-  return data;
+  const { data } = await http.post<ApiResponse<LoginPayload>>(
+    "/api/auth/login",
+    body,
+  );
+  return data.data;
 }
 
 export async function registerApi(body: RegisterBody) {
-  const { data } = await http.post<AuthResponse>("/auth/register", body);
-  return data;
+  await http.post("/api/auth/register", body);
 }

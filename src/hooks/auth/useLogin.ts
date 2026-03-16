@@ -1,6 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
 import { loginApi } from "@/services/auth.api";
-import { setAccessToken } from "@/storage/authStorage";
+import { setAccessToken, setRefreshToken } from "@/storage/authStorage";
 import { shake } from "@/utils/shake";
 import { isValidEmail } from "@/utils/validators";
 import { useMemo, useRef, useState } from "react";
@@ -51,7 +51,6 @@ export function useLogin() {
   async function submit(opts?: {
     onSuccess?: () => void;
     onError?: () => void;
-    simulateFail?: boolean;
   }) {
     markAllTouched();
 
@@ -65,14 +64,10 @@ export function useLogin() {
     try {
       setLoading(true);
 
-      if (opts?.simulateFail) {
-        await new Promise((r) => setTimeout(r, 500));
-        opts?.onError?.();
-        return;
-      }
-
       const res = await loginApi({ email: emailTrim, password });
-      await setAccessToken(res.accessToken);
+
+      await setAccessToken(res.token);
+      await setRefreshToken(res.refreshToken);
 
       opts?.onSuccess?.();
     } catch (err) {

@@ -117,16 +117,15 @@ export default function RegisterScreen() {
                       message: "Tạo tài khoản thành công 🎉",
                       durationMs: 2800,
                     });
-                    setTimeout(() => router.replace("/(auth)/login"), 800);
+                    setTimeout(() => router.replace("/"), 800);
                   },
-                  onError: (msg) =>
+                  onError: () =>
                     showToast({
                       type: "error",
                       title: "Thất bại",
-                      message: msg ?? "Đăng ký thất bại.",
+                      message: "Đăng ký thất bại.",
                       durationMs: 2800,
                     }),
-                  // simulateFail: true,
                 })
               }
             />

@@ -91,14 +91,13 @@ export default function LoginScreen() {
                     });
                     setTimeout(() => router.replace("/"), 650);
                   },
-                  onError: (msg) =>
+                  onError: () =>
                     showToast({
                       type: "error",
                       title: "Thất bại",
-                      message: msg ?? "Đăng nhập thất bại.",
+                      message: "Đăng nhập thất bại.",
                       durationMs: 2600,
                     }),
-                  simulateFail: true,
                 })
               }
             />

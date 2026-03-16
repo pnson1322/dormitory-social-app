@@ -1,6 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { registerApi } from "@/services/auth.api";
-import { setAccessToken } from "@/storage/authStorage";
+import { loginApi, registerApi } from "@/services/auth.api";
+import { setAccessToken, setRefreshToken } from "@/storage/authStorage";
 import { shake } from "@/utils/shake";
 import { isValidEmail } from "@/utils/validators";
 import { useMemo, useRef, useState } from "react";
@@ -35,7 +35,7 @@ export function useRegister() {
   const nameTrim = fullName.trim();
   const emailTrim = email.trim();
 
-  const nameErr = !touched.fullName
+  const nameErr: string | null = !touched.fullName
     ? null
     : !nameTrim
       ? "Vui lòng nhập họ và tên."
@@ -43,7 +43,7 @@ export function useRegister() {
         ? "Họ và tên tối thiểu 2 ký tự."
         : null;
 
-  const emailErr = !touched.email
+  const emailErr: string | null = !touched.email
     ? null
     : !emailTrim
       ? "Vui lòng nhập email."
@@ -51,7 +51,7 @@ export function useRegister() {
         ? "Email không đúng định dạng."
         : null;
 
-  const passwordErr = !touched.password
+  const passwordErr: string | null = !touched.password
     ? null
     : !password
       ? "Vui lòng nhập mật khẩu."
@@ -59,7 +59,7 @@ export function useRegister() {
         ? "Mật khẩu tối thiểu 8 ký tự."
         : null;
 
-  const confirmErr = !touched.confirmPassword
+  const confirmErr: string | null = !touched.confirmPassword
     ? null
     : !confirmPassword
       ? "Vui lòng nhập lại mật khẩu."
@@ -91,7 +91,6 @@ export function useRegister() {
   async function submit(opts?: {
     onSuccess?: () => void;
     onError?: () => void;
-    simulateFail?: boolean;
   }) {
     markAllTouched();
 
@@ -111,19 +110,12 @@ export function useRegister() {
     try {
       setLoading(true);
 
-      if (opts?.simulateFail) {
-        await new Promise((r) => setTimeout(r, 500));
-        opts?.onError?.();
-        return;
-      }
+      await registerApi({ fullName: nameTrim, email: emailTrim, password });
 
-      const res = await registerApi({
-        fullName: nameTrim,
-        email: emailTrim,
-        password,
-      });
+      const payload = await loginApi({ email: emailTrim, password });
 
-      await setAccessToken(res.accessToken);
+      await setAccessToken(payload.token);
+      await setRefreshToken(payload.refreshToken);
 
       opts?.onSuccess?.();
     } catch (err) {
