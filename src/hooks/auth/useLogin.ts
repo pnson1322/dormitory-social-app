@@ -70,8 +70,18 @@ export function useLogin() {
       await setRefreshToken(res.refreshToken);
 
       opts?.onSuccess?.();
-    } catch (err) {
-      void getApiErrorMessage(err);
+    } catch (error: any) {
+      if (error.response) {
+        console.log("Dữ liệu lỗi từ server:", error.response.data);
+      } else if (error.request) {
+        console.log(
+          "Không kết nối được server, kiểm tra IP/Port:",
+          error.request,
+        );
+      } else {
+        console.log("Lỗi code:", error.message);
+      }
+      void getApiErrorMessage(error);
       opts?.onError?.();
     } finally {
       setLoading(false);

@@ -89,7 +89,7 @@ export default function LoginScreen() {
                       message: "Đăng nhập thành công 🎉",
                       durationMs: 2600,
                     });
-                    setTimeout(() => router.replace("/"), 650);
+                    setTimeout(() => router.replace("/profile"), 650);
                   },
                   onError: () =>
                     showToast({

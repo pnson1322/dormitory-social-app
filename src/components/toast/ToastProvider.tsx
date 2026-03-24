@@ -37,7 +37,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastPayload[]>([]);
   const maxToasts = 2;
 
-  const timers = useRef<Record<string, NodeJS.Timeout | number>>({});
+  const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   function dismissToast(id: string) {
     const t = timers.current[id];
