@@ -40,15 +40,16 @@ export function AppTabButton({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        paddingHorizontal: 6,
+        paddingHorizontal: 4,
         paddingVertical: 4,
       }}
     >
       <View
         style={{
-          width: 108,
+          width: "100%",
           minHeight: 64,
-          paddingHorizontal: 14,
+          marginHorizontal: 8,
+          paddingHorizontal: 12,
           paddingVertical: 10,
           borderRadius: 22,
           overflow: "hidden",

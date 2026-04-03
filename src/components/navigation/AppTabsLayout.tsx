@@ -29,7 +29,6 @@ export function AppTabsLayout({
 
   const isTabFocused = (tabName: string) => {
     const normalized = pathname.replace(/\/$/, "");
-
     return normalized === `/${tabName}` || normalized.endsWith(`/${tabName}`);
   };
 
@@ -39,15 +38,16 @@ export function AppTabsLayout({
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          height: 78 + insets.bottom,
+          height: 80 + insets.bottom,
           paddingTop: 8,
           paddingBottom: Math.max(insets.bottom, 10),
+          paddingHorizontal: 10,
           backgroundColor: Colors.surface,
           borderTopWidth: 1,
           borderTopColor: Colors.border,
         },
         tabBarItemStyle: {
-          height: 58,
+          height: 60,
         },
       }}
     >

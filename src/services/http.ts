@@ -2,66 +2,109 @@ import { ENV } from "@/config/env";
 import {
   clearAuthTokens,
   getAccessToken,
-  getRefreshToken,
+  getAuthTokens,
   setAuthTokens,
 } from "@/storage/authStorage";
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  InternalAxiosRequestConfig,
+} from "axios";
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
 };
 
 type RefreshResponse = {
-  accessToken: string;
-  refreshToken?: string;
+  meta: unknown;
+  data: {
+    token: string;
+    refreshToken: string;
+  };
 };
 
 export const http = axios.create({
   baseURL: ENV.API_BASE_URL,
   timeout: 60000,
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+const refreshClient = axios.create({
+  baseURL: ENV.API_BASE_URL,
+  timeout: 60000,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 let isRefreshing = false;
+
 let failedQueue: {
   resolve: (token: string) => void;
   reject: (error: unknown) => void;
 }[] = [];
 
 function processQueue(error: unknown, token?: string) {
-  failedQueue.forEach((promise) => {
+  failedQueue.forEach((item) => {
     if (error) {
-      promise.reject(error);
-    } else if (token) {
-      promise.resolve(token);
+      item.reject(error);
+      return;
     }
+
+    if (token) {
+      item.resolve(token);
+      return;
+    }
+
+    item.reject(new Error("No token returned after refresh"));
   });
 
   failedQueue = [];
 }
 
-const refreshClient = axios.create({
-  baseURL: ENV.API_BASE_URL,
-  timeout: 60000,
-  headers: { "Content-Type": "application/json" },
-});
+function isAuthRoute(url?: string) {
+  if (!url) return false;
+
+  return (
+    url.includes("/api/auth/login") ||
+    url.includes("/api/auth/register") ||
+    url.includes("/api/auth/refresh-token")
+  );
+}
+
+function setAuthorizationHeader(
+  headers: InternalAxiosRequestConfig["headers"],
+  token: string,
+) {
+  const normalizedHeaders =
+    headers instanceof AxiosHeaders ? headers : new AxiosHeaders(headers);
+
+  normalizedHeaders.set("Authorization", `Bearer ${token}`);
+  return normalizedHeaders;
+}
 
 async function refreshAccessToken(): Promise<string> {
-  const refreshToken = await getRefreshToken();
+  const { accessToken, refreshToken } = await getAuthTokens();
 
-  if (!refreshToken) {
-    throw new Error("No refresh token");
+  if (!accessToken || !refreshToken) {
+    throw new Error("Missing access token or refresh token");
   }
 
-  const response = await refreshClient.post<RefreshResponse>("/auth/refresh", {
-    refreshToken,
-  });
+  const response = await refreshClient.post<RefreshResponse>(
+    "/api/auth/refresh-token",
+    {
+      accessToken,
+      refreshToken,
+    },
+  );
 
-  const newAccessToken = response.data?.accessToken;
-  const newRefreshToken = response.data?.refreshToken;
+  const newAccessToken = response.data?.data?.token;
+  const newRefreshToken = response.data?.data?.refreshToken;
 
-  if (!newAccessToken) {
-    throw new Error("Refresh API did not return accessToken");
+  if (!newAccessToken || !newRefreshToken) {
+    throw new Error("Refresh API did not return token or refreshToken");
   }
 
   await setAuthTokens(newAccessToken, newRefreshToken);
@@ -71,11 +114,14 @@ async function refreshAccessToken(): Promise<string> {
 
 http.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
+    if (isAuthRoute(config.url)) {
+      return config;
+    }
+
     const token = await getAccessToken();
 
     if (token) {
-      config.headers = config.headers ?? {};
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers = setAuthorizationHeader(config.headers, token);
     }
 
     return config;
@@ -84,7 +130,7 @@ http.interceptors.request.use(
 );
 
 http.interceptors.response.use(
-  (res) => res,
+  (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as RetryableRequestConfig | undefined;
     const status = error.response?.status;
@@ -93,13 +139,11 @@ http.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (originalRequest.url?.includes("/auth/refresh")) {
-      await clearAuthTokens();
+    if (isAuthRoute(originalRequest.url)) {
       return Promise.reject(error);
     }
 
     if (originalRequest._retry) {
-      await clearAuthTokens();
       return Promise.reject(error);
     }
 
@@ -108,9 +152,11 @@ http.interceptors.response.use(
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         failedQueue.push({
-          resolve: (token: string) => {
-            originalRequest.headers = originalRequest.headers ?? {};
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+          resolve: (newToken: string) => {
+            originalRequest.headers = setAuthorizationHeader(
+              originalRequest.headers,
+              newToken,
+            );
             resolve(http(originalRequest));
           },
           reject,
@@ -125,12 +171,14 @@ http.interceptors.response.use(
 
       processQueue(null, newAccessToken);
 
-      originalRequest.headers = originalRequest.headers ?? {};
-      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      originalRequest.headers = setAuthorizationHeader(
+        originalRequest.headers,
+        newAccessToken,
+      );
 
       return http(originalRequest);
     } catch (refreshError) {
-      processQueue(refreshError, undefined);
+      processQueue(refreshError);
       await clearAuthTokens();
       return Promise.reject(refreshError);
     } finally {

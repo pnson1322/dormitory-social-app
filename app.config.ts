@@ -7,6 +7,6 @@ export default {
     extra: {
       API_BASE_URL: process.env.API_BASE_URL,
     },
-    plugins: ["@react-native-community/datetimepicker"],
+    plugins: ["@react-native-community/datetimepicker", "expo-secure-store"],
   },
 };

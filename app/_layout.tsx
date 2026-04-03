@@ -1,9 +1,23 @@
 import { ToastProvider } from "@/components/toast/ToastProvider";
-import { clearAuthTokens, getAccessToken } from "@/storage/authStorage";
+import { ENV } from "@/config/env";
+import {
+  clearAuthTokens,
+  getAuthTokens,
+  setAuthTokens,
+} from "@/storage/authStorage";
 import { getUserRoleFromToken, isTokenExpired } from "@/utils/jwt";
+import axios from "axios";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import "../global.css";
+
+type RefreshResponse = {
+  meta: unknown;
+  data: {
+    token: string;
+    refreshToken: string;
+  };
+};
 
 function getHomeRouteByRole(role: string | null) {
   switch (role) {
@@ -18,6 +32,43 @@ function getHomeRouteByRole(role: string | null) {
   }
 }
 
+async function refreshSessionIfNeeded() {
+  const { accessToken, refreshToken } = await getAuthTokens();
+
+  if (!accessToken || !refreshToken) {
+    return null;
+  }
+
+  if (!isTokenExpired(accessToken)) {
+    return accessToken;
+  }
+
+  const response = await axios.post<RefreshResponse>(
+    `${ENV.API_BASE_URL}/api/auth/refresh-token`,
+    {
+      accessToken,
+      refreshToken,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      timeout: 60000,
+    },
+  );
+
+  const newAccessToken = response.data?.data?.token;
+  const newRefreshToken = response.data?.data?.refreshToken;
+
+  if (!newAccessToken || !newRefreshToken) {
+    throw new Error("Refresh API did not return token or refreshToken");
+  }
+
+  await setAuthTokens(newAccessToken, newRefreshToken);
+
+  return newAccessToken;
+}
+
 export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
@@ -27,54 +78,84 @@ export default function RootLayout() {
     let mounted = true;
 
     async function bootstrap() {
-      const token = await getAccessToken();
-      if (!mounted) return;
+      try {
+        const first = segments[0];
+        const inAuthGroup = first === "(auth)";
 
-      const first = segments[0];
-      const inAuthGroup = first === "(auth)";
+        const { accessToken, refreshToken } = await getAuthTokens();
 
-      if (!token) {
-        if (!inAuthGroup) {
+        if (!mounted) return;
+
+        if (!accessToken && !refreshToken) {
+          if (!inAuthGroup) {
+            router.replace("/(auth)/login");
+            return;
+          }
+
+          setReady(true);
+          return;
+        }
+
+        let tokenToUse = accessToken;
+
+        if (!tokenToUse && refreshToken) {
+          await clearAuthTokens();
+
+          if (!mounted) return;
           router.replace("/(auth)/login");
           return;
         }
 
-        setReady(true);
-        return;
-      }
+        if (tokenToUse && isTokenExpired(tokenToUse)) {
+          try {
+            tokenToUse = await refreshSessionIfNeeded();
+          } catch (error) {
+            await clearAuthTokens();
 
-      if (isTokenExpired(token)) {
+            if (!mounted) return;
+            router.replace("/(auth)/login");
+            return;
+          }
+        }
+
+        if (!tokenToUse) {
+          await clearAuthTokens();
+
+          if (!mounted) return;
+          router.replace("/(auth)/login");
+          return;
+        }
+
+        const role = getUserRoleFromToken(tokenToUse);
+        const homeRoute = getHomeRouteByRole(role);
+
+        if (inAuthGroup) {
+          router.replace(homeRoute);
+          return;
+        }
+
+        if (first === "admin" && role !== "Admin") {
+          router.replace(homeRoute);
+          return;
+        }
+
+        if (first === "(student)" && role !== "Student") {
+          router.replace(homeRoute);
+          return;
+        }
+
+        if (first === "(manager)" && role !== "Manager") {
+          router.replace(homeRoute);
+          return;
+        }
+
+        setReady(true);
+      } catch (error) {
         await clearAuthTokens();
 
         if (!mounted) return;
         router.replace("/(auth)/login");
-        return;
       }
-
-      const role = getUserRoleFromToken(token);
-      const homeRoute = getHomeRouteByRole(role);
-
-      if (inAuthGroup) {
-        router.replace(homeRoute);
-        return;
-      }
-
-      if (first === "admin" && role !== "Admin") {
-        router.replace(homeRoute);
-        return;
-      }
-
-      if (first === "(student)" && role !== "Student") {
-        router.replace(homeRoute);
-        return;
-      }
-
-      if (first === "(manager)" && role !== "Manager") {
-        router.replace(homeRoute);
-        return;
-      }
-
-      setReady(true);
     }
 
     bootstrap();

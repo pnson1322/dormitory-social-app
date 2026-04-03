@@ -18,10 +18,14 @@ export function AppButton({ title, onPress, loading, disabled }: Props) {
         "h-[52px] rounded-2xl items-center justify-center overflow-hidden",
         isDisabled ? "opacity-60" : "active:opacity-90",
       ].join(" ")}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: isDisabled }}
     >
+      {/* Background */}
       <View className="absolute inset-0 rounded-2xl bg-primary" />
       <View className="absolute inset-0 rounded-2xl bg-primaryLight opacity-10" />
 
+      {/* Content */}
       {loading ? (
         <ActivityIndicator color="white" />
       ) : (

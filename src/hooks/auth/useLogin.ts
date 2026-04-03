@@ -1,6 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
 import { loginApi } from "@/services/auth.api";
-import { setAccessToken, setRefreshToken } from "@/storage/authStorage";
+import { setAuthTokens } from "@/storage/authStorage";
 import { decodeAccessToken, getUserRoleFromToken } from "@/utils/jwt";
 import { shake } from "@/utils/shake";
 import { isValidEmail } from "@/utils/validators";
@@ -67,8 +67,7 @@ export function useLogin() {
 
       const res = await loginApi({ email: emailTrim, password });
 
-      await setAccessToken(res.token);
-      await setRefreshToken(res.refreshToken);
+      await setAuthTokens(res.token, res.refreshToken);
 
       const payload = decodeAccessToken(res.token);
       const role = getUserRoleFromToken(res.token);
@@ -88,6 +87,7 @@ export function useLogin() {
       } else {
         console.log("Lỗi code:", error.message);
       }
+
       void getApiErrorMessage(error);
       opts?.onError?.();
     } finally {
