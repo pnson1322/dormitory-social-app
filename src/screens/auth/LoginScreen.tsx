@@ -92,7 +92,7 @@ export default function LoginScreen() {
 
                     setTimeout(() => {
                       if (role === "Admin") {
-                        router.replace("/admin");
+                        router.replace("/(admin)/users");
                       } else if (role === "Student") {
                         router.replace("/(student)/profile");
                       } else if (role === "Manager") {

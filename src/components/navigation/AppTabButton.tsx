@@ -40,7 +40,7 @@ export function AppTabButton({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        paddingHorizontal: 4,
+        paddingHorizontal: 2,
         paddingVertical: 4,
       }}
     >
@@ -48,8 +48,8 @@ export function AppTabButton({
         style={{
           width: "100%",
           minHeight: 64,
-          marginHorizontal: 8,
-          paddingHorizontal: 12,
+          marginHorizontal: 4,
+          paddingHorizontal: 8,
           paddingVertical: 10,
           borderRadius: 22,
           overflow: "hidden",
@@ -65,11 +65,15 @@ export function AppTabButton({
         />
 
         <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
           style={{
             marginTop: 4,
             fontSize: 12,
             fontWeight: "600",
             color: focused ? activeColor : inactiveColor,
+            textAlign: "center",
+            flexShrink: 1,
           }}
         >
           {label}

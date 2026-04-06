@@ -22,10 +22,11 @@ type RefreshResponse = {
 function getHomeRouteByRole(role: string | null) {
   switch (role) {
     case "Admin":
-      return "/admin";
+      return "/(admin)/users";
     case "Student":
       return "/(student)/profile";
     case "Manager":
+    case "SeniorManager":
       return "/(manager)/rooms";
     default:
       return "/(auth)/login";
@@ -145,6 +146,11 @@ export default function RootLayout() {
         }
 
         if (first === "(manager)" && role !== "Manager") {
+          router.replace(homeRoute);
+          return;
+        }
+
+        if (first === "(manager)" && role !== "SeniorManager") {
           router.replace(homeRoute);
           return;
         }
