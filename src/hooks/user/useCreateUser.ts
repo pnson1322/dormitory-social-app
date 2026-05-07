@@ -1,5 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { createUser, UserRole } from "@/services/user.api";
+import { createUser } from "@/services/user/user.api";
+import { UserRole } from "@/services/user/user.types";
 import { useMemo, useState } from "react";
 
 type TouchedState = {

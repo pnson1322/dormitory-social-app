@@ -1,5 +1,5 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { loginApi } from "@/services/auth.api";
+import { loginApi } from "@/services/auth/auth.api";
 import { setAuthTokens } from "@/storage/authStorage";
 import { decodeAccessToken, getUserRoleFromToken } from "@/utils/jwt";
 import { shake } from "@/utils/shake";

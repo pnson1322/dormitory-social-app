@@ -1,5 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { getUserById, UserDetail } from "@/services/user.api";
+import { getUserById } from "@/services/user/user.api";
+import { UserDetail } from "@/services/user/user.types";
 import { useCallback, useEffect, useState } from "react";
 
 export function useUserDetails(userId?: string) {

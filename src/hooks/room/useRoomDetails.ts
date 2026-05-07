@@ -1,5 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { getRoomById, RoomDetail } from "@/services/room.api";
+import { getRoomById } from "@/services/room/room.api";
+import { RoomDetail } from "@/services/room/room.types";
 import { useCallback, useEffect, useState } from "react";
 
 export function useRoomDetails(roomId?: string) {

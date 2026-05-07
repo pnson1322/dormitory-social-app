@@ -1,5 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { getMyProfile, ProfileData } from "@/services/profile.api";
+import { getMyProfile } from "@/services/profile/profile.api";
+import { ProfileData } from "@/services/profile/profile.types";
 import { useCallback, useEffect, useState } from "react";
 
 export default function useProfile() {

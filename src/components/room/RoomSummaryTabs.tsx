@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/colors";
-import { RoomStatus } from "@/services/room.api";
+import { RoomStatus } from "@/services/room/room.types";
 import { memo } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 

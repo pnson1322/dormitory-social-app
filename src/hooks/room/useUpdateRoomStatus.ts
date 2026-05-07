@@ -1,5 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { RoomDetail, RoomStatus, updateRoom } from "@/services/room.api";
+import { updateRoom } from "@/services/room/room.api";
+import { RoomDetail, RoomStatus } from "@/services/room/room.types";
 import { useState } from "react";
 
 export function useUpdateRoomStatus() {

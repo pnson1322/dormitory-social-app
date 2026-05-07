@@ -1,12 +1,7 @@
 import { useToast } from "@/components/toast/ToastProvider";
 import { useUsers } from "@/hooks/user/useUsers";
-import {
-  updateUserRole,
-  updateUserStatus,
-  UserItem,
-  UserRole,
-  UserStatus,
-} from "@/services/user.api";
+import { updateUserRole, updateUserStatus } from "@/services/user/user.api";
+import { UserItem, UserRole, UserStatus } from "@/services/user/user.types";
 import { useCallback, useMemo, useState } from "react";
 
 function normalizeRole(role?: string | null) {

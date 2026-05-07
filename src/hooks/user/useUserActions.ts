@@ -1,10 +1,5 @@
-import {
-  updateUserRole,
-  updateUserStatus,
-  UserItem,
-  UserRole,
-  UserStatus,
-} from "@/services/user.api";
+import { updateUserRole, updateUserStatus } from "@/services/user/user.api";
+import { UserItem, UserRole, UserStatus } from "@/services/user/user.types";
 
 export function useUserActions() {
   async function changeRole(user: UserItem, role: UserRole) {

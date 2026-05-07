@@ -1,4 +1,4 @@
-import type { UserRole } from "@/services/user.api";
+import type { UserRole } from "@/services/user/user.types";
 import { Text, View } from "react-native";
 
 type Props = {

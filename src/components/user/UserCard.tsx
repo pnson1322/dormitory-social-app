@@ -1,7 +1,7 @@
 import { UserRoleBadge } from "@/components/user/UserRoleBadge";
 import { UserStatusBadge } from "@/components/user/UserStatusBadge";
 import { Colors } from "@/constants/colors";
-import { UserItem } from "@/services/user.api";
+import { UserItem } from "@/services/user/user.types";
 import { Ionicons } from "@expo/vector-icons";
 import { memo, useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";

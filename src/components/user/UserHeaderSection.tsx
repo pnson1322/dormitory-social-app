@@ -2,7 +2,7 @@ import { UserSearchBox } from "@/components/user/UserSearchBox";
 import { UserStatusTabs } from "@/components/user/UserStatusTabs";
 import { UserSummaryTabs } from "@/components/user/UserSummaryTabs";
 import { Colors } from "@/constants/colors";
-import { UserRole } from "@/services/user.api";
+import { UserRole } from "@/services/user/user.types";
 import { LinearGradient } from "expo-linear-gradient";
 import { memo } from "react";
 import { ActivityIndicator, Text, View } from "react-native";

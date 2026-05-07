@@ -1,6 +1,6 @@
 import { UserCard } from "@/components/user/UserCard";
 import { Colors } from "@/constants/colors";
-import { UserItem } from "@/services/user.api";
+import { UserItem } from "@/services/user/user.types";
 import { memo } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
 

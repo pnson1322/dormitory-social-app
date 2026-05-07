@@ -1,7 +1,7 @@
 import { AppInput } from "@/components/AppInput";
 import { AppSelect } from "@/components/AppSelect";
 import { FormSection } from "@/components/profile/FormSection";
-import { BuildingItem, RoomTypeItem } from "@/services/room.api";
+import { BuildingItem, RoomTypeItem } from "@/services/room/room.types";
 import { formatCurrency } from "@/utils/room";
 import { Text, View } from "react-native";
 

@@ -1,5 +1,5 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { registerApi } from "@/services/auth.api";
+import { registerApi } from "@/services/auth/auth.api";
 import { shake } from "@/utils/shake";
 import { isValidEmail } from "@/utils/validators";
 import { useRouter } from "expo-router";

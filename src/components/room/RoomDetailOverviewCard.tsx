@@ -1,7 +1,7 @@
 import { RoomOccupancyBar } from "@/components/room/RoomOccupancyBar";
 import { RoomStatusBadge } from "@/components/room/RoomStatusBadge";
 import { Colors } from "@/constants/colors";
-import { RoomDetail } from "@/services/room.api";
+import { RoomDetail } from "@/services/room/room.types";
 import { formatCurrency } from "@/utils/room";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";

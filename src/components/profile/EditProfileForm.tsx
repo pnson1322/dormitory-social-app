@@ -9,7 +9,7 @@ import { FormSection } from "@/components/profile/FormSection";
 import { SelectField } from "@/components/profile/SelectField";
 import { Colors } from "@/constants/colors";
 import { useUpdateProfile } from "@/hooks/profile/useUpdateProfile";
-import { ProfileData } from "@/services/profile.api";
+import { ProfileData } from "@/services/profile/profile.types";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
 import { useMemo, useState } from "react";

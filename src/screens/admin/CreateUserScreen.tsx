@@ -7,7 +7,7 @@ import { Colors } from "@/constants/colors";
 import { useCreateUser } from "@/hooks/user/useCreateUser";
 import { useCreateUserDraftGuard } from "@/hooks/user/useCreateUserDraftGuard";
 import { emitUserListRefresh } from "@/hooks/user/userRefreshBus";
-import { UserRole } from "@/services/user.api";
+import { UserRole } from "@/services/user/user.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";

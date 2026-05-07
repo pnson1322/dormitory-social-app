@@ -1,10 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import {
-  Gender,
-  ProfileData,
-  updateMyProfile,
-  uploadMyAvatar,
-} from "@/services/profile.api";
+import { updateMyProfile, uploadMyAvatar } from "@/services/profile/profile.api";
+import { Gender, ProfileData } from "@/services/profile/profile.types";
 import { useMemo, useState } from "react";
 
 function isValidPhoneNumber(phone: string) {

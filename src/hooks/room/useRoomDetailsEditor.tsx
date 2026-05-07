@@ -5,7 +5,7 @@ import {
   RoomDetail,
   RoomStatus,
   RoomTypeItem,
-} from "@/services/room.api";
+} from "@/services/room/room.types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Params = {

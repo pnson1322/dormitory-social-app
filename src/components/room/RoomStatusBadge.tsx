@@ -1,4 +1,4 @@
-import { RoomStatus } from "@/services/room.api";
+import { RoomStatus } from "@/services/room/room.types";
 import { getRoomStatusColors, roomStatusToVietnamese } from "@/utils/room";
 import { Text, View } from "react-native";
 

@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/colors";
-import { UserRole } from "@/services/user.api";
+import { UserRole } from "@/services/user/user.types";
 import { memo } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 

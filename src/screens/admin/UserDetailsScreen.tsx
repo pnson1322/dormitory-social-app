@@ -5,12 +5,8 @@ import { UserStatusBadge } from "@/components/user/UserStatusBadge";
 import { Colors } from "@/constants/colors";
 import { emitUserListRefresh } from "@/hooks/user/userRefreshBus";
 import { useUserDetails } from "@/hooks/user/useUserDetails";
-import {
-  updateUserRole,
-  updateUserStatus,
-  UserRole,
-  UserStatus,
-} from "@/services/user.api";
+import { updateUserRole, updateUserStatus } from "@/services/user/user.api";
+import { UserRole, UserStatus } from "@/services/user/user.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";

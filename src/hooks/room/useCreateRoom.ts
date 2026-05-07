@@ -1,5 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { createRoom, RoomDetail } from "@/services/room.api";
+import { createRoom } from "@/services/room/room.api";
+import { RoomDetail } from "@/services/room/room.types";
 import { useMemo, useState } from "react";
 
 function isPositiveInteger(value: string) {

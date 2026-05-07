@@ -1,5 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { RoomDetail, updateRoom } from "@/services/room.api";
+import { updateRoom } from "@/services/room/room.api";
+import { RoomDetail } from "@/services/room/room.types";
 import { useState } from "react";
 
 type SubmitPayload = {

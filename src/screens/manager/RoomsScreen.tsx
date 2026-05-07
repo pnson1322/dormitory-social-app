@@ -8,7 +8,7 @@ import { subscribeRoomListRefresh } from "@/hooks/room/roomRefreshBus";
 import { useRoomDetails } from "@/hooks/room/useRoomDetails";
 import { useRooms } from "@/hooks/room/useRooms";
 import { useUpdateRoomStatus } from "@/hooks/room/useUpdateRoomStatus";
-import { RoomItem, RoomStatus } from "@/services/room.api";
+import { RoomItem, RoomStatus } from "@/services/room/room.types";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";

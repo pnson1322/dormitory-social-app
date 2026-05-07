@@ -3,7 +3,7 @@ import { AppInput } from "@/components/AppInput";
 import { AppSelect } from "@/components/AppSelect";
 import { FormSection } from "@/components/profile/FormSection";
 import { Colors } from "@/constants/colors";
-import { BuildingItem, RoomTypeItem } from "@/services/room.api";
+import { BuildingItem, RoomTypeItem } from "@/services/room/room.types";
 import { formatCurrency } from "@/utils/room";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";

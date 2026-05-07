@@ -1,19 +1,6 @@
 import { http } from "@/services/http";
-
-export type LoginBody = { email: string; password: string };
-
-export type RegisterBody = {
-  fullName: string;
-  email: string;
-  password: string;
-};
-
-type ApiResponse<T> = { data: T; meta: any };
-
-export type LoginPayload = {
-  token: string;
-  refreshToken: string;
-};
+import { ApiResponse } from "@/services/base.types";
+import { LoginBody, LoginPayload, RegisterBody } from "./auth.types";
 
 export async function loginApi(body: LoginBody) {
   const { data } = await http.post<ApiResponse<LoginPayload>>(

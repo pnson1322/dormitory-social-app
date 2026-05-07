@@ -1,12 +1,11 @@
 import { getApiErrorMessage } from "@/services/apiError";
+import { getRooms, getRoomsCount } from "@/services/room/room.api";
 import {
-  getRooms,
-  getRoomsCount,
-  PagingMeta,
   RoomCountData,
   RoomItem,
   RoomStatus,
-} from "@/services/room.api";
+} from "@/services/room/room.types";
+import { PagingMeta } from "@/services/base.types";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const DEFAULT_COUNTS: RoomCountData = {

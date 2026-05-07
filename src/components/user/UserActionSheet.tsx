@@ -1,6 +1,6 @@
 import { AppButton } from "@/components/AppButton";
 import { Colors } from "@/constants/colors";
-import { UserRole, UserStatus } from "@/services/user.api";
+import { UserRole, UserStatus } from "@/services/user/user.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";

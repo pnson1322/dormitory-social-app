@@ -1,10 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import {
-  BuildingItem,
-  getBuildings,
-  getRoomTypes,
-  RoomTypeItem,
-} from "@/services/room.api";
+import { getBuildings, getRoomTypes } from "@/services/room/room.api";
+import { BuildingItem, RoomTypeItem } from "@/services/room/room.types";
 import { useEffect, useState } from "react";
 
 export function useRoomFormOptions() {

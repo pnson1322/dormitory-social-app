@@ -1,11 +1,6 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import {
-  getUsers,
-  getUserSummary,
-  UserItem,
-  UserRole,
-  UserStatus,
-} from "@/services/user.api";
+import { getUsers, getUserSummary } from "@/services/user/user.api";
+import { UserItem, UserRole, UserStatus } from "@/services/user/user.types";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const PAGE_SIZE = 50;

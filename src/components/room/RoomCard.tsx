@@ -2,7 +2,7 @@ import { AppButton } from "@/components/AppButton";
 import { RoomOccupancyBar } from "@/components/room/RoomOccupancyBar";
 import { RoomStatusBadge } from "@/components/room/RoomStatusBadge";
 import { Colors } from "@/constants/colors";
-import { RoomItem } from "@/services/room.api";
+import { RoomItem } from "@/services/room/room.types";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
