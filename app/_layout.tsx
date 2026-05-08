@@ -20,13 +20,14 @@ type RefreshResponse = {
 };
 
 function getHomeRouteByRole(role: string | null) {
-  switch (role) {
-    case "Admin":
+  const normalizedRole = role?.toLowerCase();
+  switch (normalizedRole) {
+    case "admin":
       return "/(admin)/users";
-    case "Student":
+    case "student":
       return "/(student)/profile";
-    case "Manager":
-    case "SeniorManager":
+    case "manager":
+    case "seniormanager":
       return "/(manager)/rooms";
     default:
       return "/(auth)/login";
@@ -135,20 +136,22 @@ export default function RootLayout() {
           return;
         }
 
-        if (first === "(admin)" && role !== "Admin") {
+        const normalizedRole = role?.toLowerCase();
+
+        if (first === "(admin)" && normalizedRole !== "admin") {
           router.replace(homeRoute);
           return;
         }
 
-        if (first === "(student)" && role !== "Student") {
+        if (first === "(student)" && normalizedRole !== "student") {
           router.replace(homeRoute);
           return;
         }
 
         if (
           first === "(manager)" &&
-          role !== "Manager" &&
-          role !== "SeniorManager"
+          normalizedRole !== "manager" &&
+          normalizedRole !== "seniormanager"
         ) {
           router.replace(homeRoute);
           return;

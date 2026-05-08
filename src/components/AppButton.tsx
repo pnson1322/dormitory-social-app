@@ -5,32 +5,62 @@ type Props = {
   onPress: () => void;
   loading?: boolean;
   disabled?: boolean;
+  style?: any;
+  size?: "large" | "compact";
 };
 
-export function AppButton({ title, onPress, loading, disabled }: Props) {
+export function AppButton({
+  title,
+  onPress,
+  loading,
+  disabled,
+  style,
+  size = "large",
+}: Props) {
   const isDisabled = !!disabled || !!loading;
+  const isCompact = size === "compact";
 
   return (
     <Pressable
       onPress={onPress}
       disabled={isDisabled}
       className={[
-        "h-[52px] rounded-2xl items-center justify-center overflow-hidden",
-        isDisabled ? "opacity-60" : "active:opacity-90",
+        isCompact ? "h-[46px] rounded-[18px]" : "h-[52px] rounded-2xl",
+        "items-center justify-center overflow-hidden px-6",
+        isDisabled ? "opacity-70" : "active:opacity-80",
       ].join(" ")}
+      style={[{ minWidth: 120 }, style]}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled }}
     >
-      {/* Background */}
-      <View className="absolute inset-0 rounded-2xl bg-primary" />
-      <View className="absolute inset-0 rounded-2xl bg-primaryLight opacity-10" />
+      <View
+        className={[
+          "absolute inset-0 bg-primary",
+          isCompact ? "rounded-[18px]" : "rounded-2xl",
+        ].join(" ")}
+      />
+      <View
+        className={[
+          "absolute inset-0 bg-primaryLight opacity-10",
+          isCompact ? "rounded-[18px]" : "rounded-2xl",
+        ].join(" ")}
+      />
 
-      {/* Content */}
       {loading ? (
-        <ActivityIndicator color="white" />
+        <ActivityIndicator color="white" size="small" />
       ) : (
-        <Text className="text-[16px] font-bold text-white">{title}</Text>
+        <Text
+          className={[
+            isCompact ? "text-[15px]" : "text-[16px]",
+            "font-bold text-white text-center",
+          ].join(" ")}
+        >
+          {title}
+        </Text>
       )}
     </Pressable>
   );
 }
+
+
+

@@ -5,6 +5,11 @@ export default function StudentLayout() {
     <AppTabsLayout
       tabs={[
         {
+          name: "rooms",
+          label: "Tìm phòng",
+          iconName: "search-outline",
+        },
+        {
           name: "profile",
           label: "Hồ sơ",
           iconName: "person-outline",
@@ -28,6 +33,12 @@ export default function StudentLayout() {
           name: "edit-profile",
           label: "Chỉnh sửa",
           iconName: "create-outline",
+          hidden: true,
+        },
+        {
+          name: "rooms/[id]",
+          label: "Chi tiết phòng",
+          iconName: "information-circle-outline",
           hidden: true,
         },
       ]}

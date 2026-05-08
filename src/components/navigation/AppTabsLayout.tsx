@@ -1,7 +1,7 @@
 import { AppTabButton } from "@/components/navigation/AppTabButton";
 import { Colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs, usePathname } from "expo-router";
+import { Tabs, useSegments } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type TabItem = {
@@ -25,19 +25,17 @@ export function AppTabsLayout({
   activeBackgroundColor = "rgba(20, 184, 166, 0.18)",
 }: Props) {
   const insets = useSafeAreaInsets();
-  const pathname = usePathname();
+  const segments = useSegments();
 
   const isTabFocused = (tabName: string) => {
-    const normalized = pathname.replace(/\/$/, "");
-    const parts = tabName.split("/");
-    const lastPart = parts[parts.length - 1];
-
-    return (
-      normalized.endsWith(`/${tabName}`) ||
-      normalized.endsWith(`/${lastPart}`) ||
-      normalized.includes(`/${tabName}/`) ||
-      normalized.includes(`/${lastPart}/`)
-    );
+    // tabName can be 'rooms' or 'rooms/[id]' or 'profile'
+    // segments can be ['(student)', 'rooms'] or ['(student)', 'rooms', '123']
+    
+    const normalizedTabName = tabName.split('/')[0]; // handle 'rooms/[id]' -> 'rooms'
+    
+    // Check if the tab name (first part) is present in segments
+    // We skip the group segments like '(student)'
+    return segments.some(segment => segment === normalizedTabName);
   };
 
   return (

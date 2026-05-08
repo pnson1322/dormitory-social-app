@@ -91,11 +91,15 @@ export default function LoginScreen() {
                     });
 
                     setTimeout(() => {
-                      if (role === "Admin") {
+                      const normalizedRole = role?.toLowerCase();
+                      if (normalizedRole === "admin") {
                         router.replace("/(admin)/users");
-                      } else if (role === "Student") {
+                      } else if (normalizedRole === "student") {
                         router.replace("/(student)/profile");
-                      } else if (role === "Manager") {
+                      } else if (
+                        normalizedRole === "manager" ||
+                        normalizedRole === "seniormanager"
+                      ) {
                         router.replace("/(manager)/rooms");
                       } else {
                         router.replace("/(auth)/login");

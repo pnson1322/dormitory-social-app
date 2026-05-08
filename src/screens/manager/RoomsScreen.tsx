@@ -1,3 +1,4 @@
+import { AppButton } from "@/components/AppButton";
 import { RoomCard } from "@/components/room/RoomCard";
 import { RoomSearchBox } from "@/components/room/RoomSearchBox";
 import { RoomStatusSheet } from "@/components/room/RoomStatusSheet";
@@ -185,19 +186,17 @@ export function RoomsScreen() {
         ) : error ? (
           <View className="flex-1 items-center justify-center px-6">
             <Text
-              className="text-center text-[16px] font-semibold"
+              className="text-center text-[16px] font-semibold mb-6"
               style={{ color: Colors.textPrimary }}
             >
               {error}
             </Text>
 
-            <Pressable
-              onPress={() => void refetch({ refreshing: true })}
-              className="mt-4 h-12 items-center justify-center rounded-2xl px-5"
-              style={{ backgroundColor: Colors.primary }}
-            >
-              <Text className="font-bold text-white">Thử lại</Text>
-            </Pressable>
+            <AppButton 
+              title="Thử lại" 
+              onPress={() => void refetch({ refreshing: true })} 
+              loading={loading || refreshing} 
+            />
           </View>
         ) : (
           <FlatList

@@ -1,3 +1,4 @@
+import { AppButton } from "@/components/AppButton";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileInfoListCard } from "@/components/profile/ProfileInfoListCard";
 import { ProfileSectionCard } from "@/components/profile/ProfileSectionCard";
@@ -9,11 +10,10 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";
 import {
   ActivityIndicator,
-  Pressable,
   RefreshControl,
   ScrollView,
   Text,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -48,19 +48,17 @@ export function ProfileScreen() {
       >
         <View className="flex-1 items-center justify-center px-6">
           <Text
-            className="text-center text-base font-semibold"
+            className="text-center text-[18px] font-semibold mb-8"
             style={{ color: Colors.textPrimary }}
           >
             Không tải được thông tin hồ sơ.
           </Text>
 
-          <Pressable
-            onPress={() => void refetch()}
-            className="mt-4 h-12 items-center justify-center rounded-2xl px-5"
-            style={{ backgroundColor: Colors.primary }}
-          >
-            <Text className="font-bold text-white">Thử lại</Text>
-          </Pressable>
+          <AppButton 
+            title="Thử lại" 
+            onPress={() => void refetch()} 
+            loading={loading || refreshing} 
+          />
         </View>
       </SafeAreaView>
     );

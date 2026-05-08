@@ -35,7 +35,10 @@ export type RoomDetail = {
   roomTypeId: string;
   roomTypeName: string;
   basePrice: number;
+  description: string;
+  amenities: string[];
 };
+
 
 export type BuildingItem = {
   id: string;
@@ -58,10 +61,12 @@ export type RoomTypeItem = {
 export type GetRoomsParams = {
   Search?: string;
   BuildingId?: string;
+  RoomTypeId?: string;
   RoomStatus?: RoomStatus | "";
   Page?: number;
   PageSize?: number;
 };
+
 
 export type CreateRoomBody = {
   buildingId: string;

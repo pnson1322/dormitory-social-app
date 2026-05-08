@@ -109,19 +109,18 @@ export function RoomDetailsScreen() {
         </View>
 
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-center text-[16px] font-semibold text-textPrimary">
+          <Text className="text-center text-[16px] font-semibold text-textPrimary mb-6">
             {error || optionsError || "Không tải được chi tiết phòng."}
           </Text>
 
-          <Pressable
+          <AppButton 
+            title="Thử lại" 
             onPress={() => {
               void refetch();
               void refetchOptions();
-            }}
-            className="mt-4 h-12 items-center justify-center rounded-2xl px-5 bg-primary"
-          >
-            <Text className="font-bold text-white">Thử lại</Text>
-          </Pressable>
+            }} 
+            loading={loading || optionsLoading} 
+          />
         </View>
       </SafeAreaView>
     );
