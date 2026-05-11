@@ -1,9 +1,13 @@
-import { RoomDetailOverviewCard } from "@/components/room/RoomDetailOverviewCard";
 import { AppButton } from "@/components/AppButton";
+import { RoomDetailOverviewCard } from "@/components/room/RoomDetailOverviewCard";
+import { RoomBookingModal } from "@/components/student/room/RoomBookingModal";
+
+import { useToast } from "@/components/toast/ToastProvider";
 import { Colors } from "@/constants/colors";
 import { useStudentRoomDetails } from "@/hooks/student/useStudentRoomDetails";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { memo, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -13,7 +17,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { memo } from "react";
 
 const AmenityItem = memo(function AmenityItem({ name }: { name: string }) {
   return (
@@ -30,8 +33,28 @@ export function StudentRoomDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { showToast } = useToast();
   
   const { room, loading, error, refetch } = useStudentRoomDetails(id as string);
+  
+  const [bookingVisible, setBookingVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleConfirmBooking = async () => {
+    setIsSubmitting(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    setIsSubmitting(false);
+    setBookingVisible(false);
+    
+    showToast({
+      type: "success",
+      title: "Đăng ký thành công",
+      message: "Yêu cầu đăng ký phòng của bạn đã được gửi đi.",
+    });
+    
+    router.replace("/(student)/my-room");
+  };
 
   if (loading) {
     return (
@@ -80,7 +103,6 @@ export function StudentRoomDetailScreen() {
             loading={loading} 
             size="compact"
           />
-
         </View>
       </SafeAreaView>
     );
@@ -146,14 +168,24 @@ export function StudentRoomDetailScreen() {
         </View>
         
         <View className="mt-8">
-
           <AppButton 
             title={room.roomStatus === "AVAILABLE" ? "Đăng ký phòng này" : "Phòng không có sẵn"} 
-            onPress={() => {}} 
+            onPress={() => setBookingVisible(true)} 
             disabled={room.roomStatus !== "AVAILABLE"}
           />
         </View>
       </ScrollView>
+
+      {room && (
+        <RoomBookingModal
+          visible={bookingVisible}
+          room={room}
+          loading={isSubmitting}
+          onClose={() => setBookingVisible(false)}
+          onConfirm={handleConfirmBooking}
+        />
+      )}
     </SafeAreaView>
   );
 }
+

@@ -1,9 +1,10 @@
 import { RoomSearchBox } from "@/components/room/RoomSearchBox";
-import { StudentRoomCard } from "@/components/student/StudentRoomCard";
-import { StudentRoomCardSkeleton } from "@/components/student/StudentRoomCardSkeleton";
-import { StudentRoomFiltersView } from "@/components/student/StudentRoomFilters";
-import { StudentRoomHeader } from "@/components/student/StudentRoomHeader";
-import { StudentRoomEmptyState } from "@/components/student/StudentRoomEmptyState";
+import { StudentRoomCard } from "@/components/student/room/StudentRoomCard";
+import { StudentRoomCardSkeleton } from "@/components/student/room/StudentRoomCardSkeleton";
+import { StudentRoomFiltersView } from "@/components/student/room/StudentRoomFilters";
+import { StudentRoomHeader } from "@/components/student/layout/StudentRoomHeader";
+import { StudentRoomEmptyState } from "@/components/student/room/StudentRoomEmptyState";
+
 import { AppButton } from "@/components/AppButton";
 import { Colors } from "@/constants/colors";
 import { useStudentRooms } from "@/hooks/student/useStudentRooms";
