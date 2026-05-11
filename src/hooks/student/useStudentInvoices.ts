@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 
 export type InvoiceStatus = "UNPAID" | "PAID";
 
@@ -18,75 +18,85 @@ export type Invoice = {
   breakdown?: InvoiceBreakdown[];
 };
 
-const MOCK_INVOICES: Invoice[] = [
-  {
-    id: "INV-001",
-    title: "Hóa đơn tháng 05/2026",
-    amount: 1500000,
-    dueDate: "2026-05-15",
-    status: "UNPAID",
+const PAGE_SIZE = 10;
+
+const GENERATE_MOCK_DATA = (page: number, status: InvoiceStatus): Invoice[] => {
+  const start = (page - 1) * PAGE_SIZE;
+  return Array.from({ length: PAGE_SIZE }).map((_, i) => ({
+    id: `INV-${status}-${start + i + 1}`,
+    title: `Hóa đơn tháng ${12 - ((start + i) % 12)}/2026`,
+    amount: 1200000 + Math.floor(Math.random() * 500000),
+    dueDate: `2026-${12 - ((start + i) % 12)}-15`,
+    status: status,
+    paidDate: status === "PAID" ? `2026-${12 - ((start + i) % 12)}-10` : undefined,
     type: "Phòng & Dịch vụ",
     breakdown: [
       { label: "Tiền phòng", amount: 1200000 },
-      { label: "Tiền điện (50kWh)", amount: 200000 },
-      { label: "Tiền nước (10m3)", amount: 100000 },
+      { label: "Dịch vụ khác", amount: Math.floor(Math.random() * 300000) },
     ],
-  },
-  {
-    id: "INV-002",
-    title: "Hóa đơn tháng 04/2026",
-    amount: 1450000,
-    dueDate: "2026-04-15",
-    status: "PAID",
-    paidDate: "2026-04-10",
-    type: "Phòng & Dịch vụ",
-    breakdown: [
-      { label: "Tiền phòng", amount: 1200000 },
-      { label: "Tiền điện (35kWh)", amount: 150000 },
-      { label: "Tiền nước (10m3)", amount: 100000 },
-    ],
-  },
-  {
-    id: "INV-003",
-    title: "Hóa đơn tháng 03/2026",
-    amount: 1520000,
-    dueDate: "2026-03-15",
-    status: "PAID",
-    paidDate: "2026-03-12",
-    type: "Phòng & Dịch vụ",
-    breakdown: [
-      { label: "Tiền phòng", amount: 1200000 },
-      { label: "Tiền điện (55kWh)", amount: 220000 },
-      { label: "Tiền nước (10m3)", amount: 100000 },
-    ],
-  },
-];
+  }));
+};
 
 export function useStudentInvoices() {
   const [activeTab, setActiveTab] = useState<InvoiceStatus>("UNPAID");
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredInvoices = useMemo(() => {
-    return MOCK_INVOICES.filter((inv) => inv.status === activeTab);
-  }, [activeTab]);
+  const loadInvoices = useCallback(async (p: number, isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else if (p === 1) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
 
-  const loadInvoices = (isRefresh = false) => {
-    if (isRefresh) setRefreshing(true);
-    else setLoading(true);
+    setError(null);
 
-    setTimeout(() => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      const newData = GENERATE_MOCK_DATA(p, activeTab);
+      
+      if (isRefresh || p === 1) {
+        setInvoices(newData);
+      } else {
+        setInvoices((prev) => [...prev, ...newData]);
+      }
+
+      setHasMore(p < 5); 
+    } catch (err) {
+      setError("Không thể tải danh sách hóa đơn. Vui lòng thử lại.");
+    } finally {
       setLoading(false);
       setRefreshing(false);
-    }, 1500);
-  };
-
-  useEffect(() => {
-    loadInvoices();
+      setLoadingMore(false);
+    }
   }, [activeTab]);
 
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    loadInvoices(1);
+  }, [activeTab, loadInvoices]);
+
   const onRefresh = () => {
-    loadInvoices(true);
+    setPage(1);
+    setHasMore(true);
+    loadInvoices(1, true);
+  };
+
+  const onLoadMore = () => {
+    if (!loadingMore && hasMore && !loading) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      loadInvoices(nextPage);
+    }
   };
 
   const isOverdue = (dateString: string) => {
@@ -96,10 +106,14 @@ export function useStudentInvoices() {
   return {
     activeTab,
     setActiveTab,
-    invoices: filteredInvoices,
+    invoices,
     loading,
     refreshing,
+    loadingMore,
+    hasMore,
+    error,
     onRefresh,
+    onLoadMore,
     isOverdue,
   };
 }

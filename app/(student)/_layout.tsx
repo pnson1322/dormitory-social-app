@@ -53,7 +53,12 @@ export default function StudentLayout() {
           iconName: "document-text-outline",
           hidden: true,
         },
-
+        {
+          name: "registration-history",
+          label: "Lịch sử đăng ký",
+          iconName: "time-outline",
+          hidden: true,
+        },
       ]}
     />
   );

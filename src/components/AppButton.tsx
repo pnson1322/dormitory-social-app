@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/colors";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 type Props = {
@@ -7,6 +8,7 @@ type Props = {
   disabled?: boolean;
   style?: any;
   size?: "large" | "compact";
+  variant?: "primary" | "secondary";
 };
 
 export function AppButton({
@@ -16,9 +18,11 @@ export function AppButton({
   disabled,
   style,
   size = "large",
+  variant = "primary",
 }: Props) {
   const isDisabled = !!disabled || !!loading;
   const isCompact = size === "compact";
+  const isSecondary = variant === "secondary";
 
   return (
     <Pressable
@@ -35,24 +39,29 @@ export function AppButton({
     >
       <View
         className={[
-          "absolute inset-0 bg-primary",
+          "absolute inset-0",
+          isSecondary ? "bg-slate-100" : "bg-primary",
           isCompact ? "rounded-[18px]" : "rounded-2xl",
         ].join(" ")}
       />
-      <View
-        className={[
-          "absolute inset-0 bg-primaryLight opacity-10",
-          isCompact ? "rounded-[18px]" : "rounded-2xl",
-        ].join(" ")}
-      />
+      
+      {!isSecondary && (
+        <View
+          className={[
+            "absolute inset-0 bg-primaryLight opacity-10",
+            isCompact ? "rounded-[18px]" : "rounded-2xl",
+          ].join(" ")}
+        />
+      )}
 
       {loading ? (
-        <ActivityIndicator color="white" size="small" />
+        <ActivityIndicator color={isSecondary ? Colors.primary : "white"} size="small" />
       ) : (
         <Text
           className={[
             isCompact ? "text-[15px]" : "text-[16px]",
-            "font-bold text-white text-center",
+            "font-bold text-center",
+            isSecondary ? "text-slate-600" : "text-white",
           ].join(" ")}
         >
           {title}
@@ -61,6 +70,3 @@ export function AppButton({
     </Pressable>
   );
 }
-
-
-
