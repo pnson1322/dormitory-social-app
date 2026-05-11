@@ -15,7 +15,6 @@ type Props = {
     all: number;
     admin: number;
     manager: number;
-    seniormanager: number;
     student: number;
   };
   role: UserRole | "";

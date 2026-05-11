@@ -16,7 +16,6 @@ export function useUsers() {
     all: 0,
     admin: 0,
     manager: 0,
-    seniormanager: 0,
     student: 0,
   });
 
@@ -59,7 +58,6 @@ export function useUsers() {
           all: usersRes.items.length,
           admin: 0,
           manager: 0,
-          seniormanager: 0,
           student: 0,
         };
 

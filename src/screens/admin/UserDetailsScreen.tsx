@@ -49,14 +49,6 @@ const ROLE_OPTIONS: {
     iconColor: "#3B82F6",
   },
   {
-    value: "seniormanager",
-    label: "QL cấp cao",
-    desc: "Quản lý vận hành cấp cao",
-    icon: "briefcase-outline",
-    iconBg: "#EDE9FE",
-    iconColor: "#6366F1",
-  },
-  {
     value: "student",
     label: "Sinh viên",
     desc: "Quyền truy cập cơ bản",
@@ -72,7 +64,6 @@ function normalizeRole(role?: string | null): UserRole {
     .toLowerCase();
   if (value === "admin") return "admin";
   if (value === "manager") return "manager";
-  if (value === "seniormanager") return "seniormanager";
   return "student";
 }
 

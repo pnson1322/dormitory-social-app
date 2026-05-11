@@ -8,7 +8,6 @@ type Props = {
     all: number;
     admin: number;
     manager: number;
-    seniormanager: number;
     student: number;
   };
   selected: UserRole | "";
@@ -26,8 +25,6 @@ function getRoleTone(key: UserRole | ""): TabTone {
       return { text: "#1E3A8A", badgeBg: "#DBEAFE" };
     case "manager":
       return { text: "#2563EB", badgeBg: "#DBEAFE" };
-    case "seniormanager":
-      return { text: "#6366F1", badgeBg: "#EDE9FE" };
     case "student":
       return { text: "#14B8A6", badgeBg: "#CCFBF1" };
     default:
@@ -40,7 +37,6 @@ function UserSummaryTabsBase({ summary, selected, onChange }: Props) {
     { key: "", label: "Tất cả", count: summary.all },
     { key: "admin", label: "Admin", count: summary.admin },
     { key: "manager", label: "Quản lý", count: summary.manager },
-    { key: "seniormanager", label: "QL cấp cao", count: summary.seniormanager },
     { key: "student", label: "Sinh viên", count: summary.student },
   ] as const;
 

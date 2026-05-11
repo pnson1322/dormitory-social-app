@@ -16,11 +16,6 @@ const ROLE_THEME = {
     color: "#2563EB",
     label: "Quản lý",
   },
-  seniormanager: {
-    bg: "#EDE9FE",
-    color: "#6366F1",
-    label: "QL cấp cao",
-  },
   student: {
     bg: "#ECFDF5",
     color: "#14B8A6",
@@ -35,7 +30,6 @@ function normalizeRole(role?: string | null): keyof typeof ROLE_THEME {
 
   if (value === "admin") return "admin";
   if (value === "manager") return "manager";
-  if (value === "seniormanager") return "seniormanager";
   return "student";
 }
 

@@ -54,9 +54,6 @@ export function useUserManagement() {
       all: items.length,
       admin: items.filter((x) => normalizeRole(x.role) === "admin").length,
       manager: items.filter((x) => normalizeRole(x.role) === "manager").length,
-      seniormanager: items.filter(
-        (x) => normalizeRole(x.role) === "seniormanager",
-      ).length,
       student: items.filter((x) => normalizeRole(x.role) === "student").length,
     };
   }, [items]);
@@ -77,8 +74,6 @@ export function useUserManagement() {
     if (status === "locked") return `${filteredItems.length} tài khoản đã khóa`;
     if (role === "admin") return `${filteredItems.length} quản trị viên`;
     if (role === "manager") return `${filteredItems.length} quản lý`;
-    if (role === "seniormanager")
-      return `${filteredItems.length} quản lý cấp cao`;
     if (role === "student") return `${filteredItems.length} sinh viên`;
     return `${filteredItems.length} người dùng`;
   }, [search, status, role, filteredItems.length]);

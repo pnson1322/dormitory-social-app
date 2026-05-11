@@ -30,11 +30,6 @@ const ROLE_OPTIONS: { label: string; value: UserRole; description: string }[] =
       description: "Quản lý phòng và cư dân",
     },
     {
-      label: "QL cấp cao",
-      value: "seniormanager",
-      description: "Quản lý vận hành cấp cao",
-    },
-    {
       label: "Sinh viên",
       value: "student",
       description: "Quyền truy cập cơ bản",
@@ -44,7 +39,6 @@ const ROLE_OPTIONS: { label: string; value: UserRole; description: string }[] =
 const ROLE_LABELS: Record<UserRole, string> = {
   admin: "Admin",
   manager: "Quản lý",
-  seniormanager: "QL cấp cao",
   student: "Sinh viên",
 };
 
@@ -54,8 +48,6 @@ function getRolePreviewTone(role: UserRole) {
       return { bg: "#EEF2FF", text: Colors.primary };
     case "manager":
       return { bg: "#EFF6FF", text: Colors.primaryLight };
-    case "seniormanager":
-      return { bg: "#EEF2FF", text: "#6366F1" };
     default:
       return { bg: "#ECFDF5", text: "#10B981" };
   }

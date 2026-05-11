@@ -27,7 +27,6 @@ function getHomeRouteByRole(role: string | null) {
     case "student":
       return "/(student)/profile";
     case "manager":
-    case "seniormanager":
       return "/(manager)/rooms";
     default:
       return "/(auth)/login";
@@ -150,8 +149,7 @@ export default function RootLayout() {
 
         if (
           first === "(manager)" &&
-          normalizedRole !== "manager" &&
-          normalizedRole !== "seniormanager"
+          normalizedRole !== "manager"
         ) {
           router.replace(homeRoute);
           return;

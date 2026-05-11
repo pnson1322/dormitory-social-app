@@ -96,10 +96,7 @@ export default function LoginScreen() {
                         router.replace("/(admin)/users");
                       } else if (normalizedRole === "student") {
                         router.replace("/(student)/profile");
-                      } else if (
-                        normalizedRole === "manager" ||
-                        normalizedRole === "seniormanager"
-                      ) {
+                      } else if (normalizedRole === "manager") {
                         router.replace("/(manager)/rooms");
                       } else {
                         router.replace("/(auth)/login");
