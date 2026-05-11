@@ -39,17 +39,13 @@ function getTheme(type: ToastType) {
 export function ToastItem({ toast, onDismiss }: Props) {
   const theme = useMemo(() => getTheme(toast.type), [toast.type]);
 
-  // enter animation
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-8)).current;
 
-  // swipe to dismiss
   const dragX = useRef(new Animated.Value(0)).current;
 
-  // progress (1 -> 0)
   const progress = useRef(new Animated.Value(1)).current;
 
-  // keep current progress value for pause/resume
   const progressValueRef = useRef(1);
   const progressAnimRef = useRef<Animated.CompositeAnimation | null>(null);
 
@@ -59,7 +55,6 @@ export function ToastItem({ toast, onDismiss }: Props) {
 
     const remainingMs = Math.max(0, Math.round(toast.durationMs * fromValue));
 
-    // nếu thời gian còn lại quá ít thì dismiss luôn cho khỏi giật
     if (remainingMs <= 30) {
       onDismiss(toast.id);
       return;
@@ -68,7 +63,7 @@ export function ToastItem({ toast, onDismiss }: Props) {
     const anim = Animated.timing(progress, {
       toValue: 0,
       duration: remainingMs,
-      useNativeDriver: false, // width
+      useNativeDriver: false,
       easing: Easing.linear,
     });
 
@@ -80,7 +75,6 @@ export function ToastItem({ toast, onDismiss }: Props) {
   };
 
   useEffect(() => {
-    // enter
     Animated.parallel([
       Animated.timing(opacity, {
         toValue: 1,
@@ -96,34 +90,28 @@ export function ToastItem({ toast, onDismiss }: Props) {
       }),
     ]).start();
 
-    // progress
     progressValueRef.current = 1;
     startProgress(1);
 
-    // cleanup
     return () => {
       progress.stopAnimation();
       dragX.stopAnimation();
       opacity.stopAnimation();
       translateY.stopAnimation();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toast.id]);
 
   const panResponder = useMemo(() => {
     return PanResponder.create({
       onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 6,
 
-      onPanResponderGrant: () => {
-        // pause progress when start dragging
+      onPanResponderGrant: () => {  
         progress.stopAnimation((v: number) => {
           progressValueRef.current = typeof v === "number" ? v : 0;
         });
-        // stop any spring while dragging
         dragX.stopAnimation();
       },
 
-      // ✅ function handler to avoid Animated.event bug
       onPanResponderMove: (_, g) => {
         dragX.setValue(g.dx);
       },
@@ -132,7 +120,6 @@ export function ToastItem({ toast, onDismiss }: Props) {
         const shouldDismiss = Math.abs(g.dx) > 120;
 
         if (shouldDismiss) {
-          // dismiss animation
           Animated.parallel([
             Animated.timing(opacity, {
               toValue: 0,
@@ -148,13 +135,11 @@ export function ToastItem({ toast, onDismiss }: Props) {
           return;
         }
 
-        // snap back
         Animated.spring(dragX, {
           toValue: 0,
           useNativeDriver: true,
         }).start();
 
-        // resume progress from last value
         const v = progressValueRef.current;
         startProgress(v);
       },
@@ -165,7 +150,6 @@ export function ToastItem({ toast, onDismiss }: Props) {
           useNativeDriver: true,
         }).start();
 
-        // resume progress
         startProgress(progressValueRef.current);
       },
     });
@@ -203,7 +187,6 @@ export function ToastItem({ toast, onDismiss }: Props) {
         </Pressable>
       </View>
 
-      {/* progress bar */}
       <View className="mt-2 h-[3px] w-full rounded-full bg-white/25 overflow-hidden">
         <Animated.View
           style={{ width: barWidth }}

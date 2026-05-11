@@ -79,7 +79,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({ showToast, dismissToast, dismissAll }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 

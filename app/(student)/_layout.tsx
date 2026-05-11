@@ -41,6 +41,19 @@ export default function StudentLayout() {
           iconName: "information-circle-outline",
           hidden: true,
         },
+        {
+          name: "invoices/index",
+          label: "Hóa đơn",
+          iconName: "receipt-outline",
+          hidden: true,
+        },
+        {
+          name: "contract/index",
+          label: "Hợp đồng",
+          iconName: "document-text-outline",
+          hidden: true,
+        },
+
       ]}
     />
   );

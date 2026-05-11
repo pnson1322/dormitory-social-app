@@ -2,7 +2,7 @@ import { AppButton } from "@/components/AppButton";
 import { Colors } from "@/constants/colors";
 import { RoomDetail } from "@/services/room/room.types";
 import { formatCurrency } from "@/utils/room";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Modal,
   Pressable,
@@ -10,7 +10,11 @@ import {
   Switch,
   Text,
   View,
+  Animated,
+  Dimensions,
 } from "react-native";
+
+const { height } = Dimensions.get("window");
 
 type Props = {
   visible: boolean;
@@ -28,18 +32,35 @@ export function RoomBookingModal({
   onConfirm,
 }: Props) {
   const [agreed, setAgreed] = useState(false);
+  const slideAnim = useRef(new Animated.Value(height)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 8,
+      }).start();
+    } else {
+      slideAnim.setValue(height);
+    }
+  }, [visible]);
 
   const deposit = room.basePrice; 
   const totalInitial = room.basePrice + deposit;
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
+    <Modal visible={visible} transparent animationType="fade">
       <View className="flex-1 justify-end bg-black/50">
-        <Pressable className="flex-1" onPress={onClose} />
+        <Pressable className="absolute inset-0" onPress={onClose} />
         
-        <View 
+        <Animated.View 
           className="bg-white rounded-t-[32px] px-6 pb-10 pt-6"
-          style={{ maxHeight: "90%" }}
+          style={{ 
+            maxHeight: "90%",
+            transform: [{ translateY: slideAnim }]
+          }}
         >
           <View className="items-center mb-6">
             <View className="h-1.5 w-12 rounded-full bg-slate-200" />
@@ -141,7 +162,7 @@ export function RoomBookingModal({
               />
             </View>
           </View>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );

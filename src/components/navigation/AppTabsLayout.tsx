@@ -28,13 +28,8 @@ export function AppTabsLayout({
   const segments = useSegments();
 
   const isTabFocused = (tabName: string) => {
-    // tabName can be 'rooms' or 'rooms/[id]' or 'profile'
-    // segments can be ['(student)', 'rooms'] or ['(student)', 'rooms', '123']
+    const normalizedTabName = tabName.split('/')[0];
     
-    const normalizedTabName = tabName.split('/')[0]; // handle 'rooms/[id]' -> 'rooms'
-    
-    // Check if the tab name (first part) is present in segments
-    // We skip the group segments like '(student)'
     return segments.some(segment => segment === normalizedTabName);
   };
 
