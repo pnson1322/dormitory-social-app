@@ -1,7 +1,7 @@
 import { getApiErrorMessage } from "@/services/apiError";
 import { createRoom } from "@/services/room/room.api";
 import { RoomDetail } from "@/services/room/room.types";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 function isPositiveInteger(value: string) {
   return /^[1-9]\d*$/.test(value);
@@ -65,27 +65,27 @@ export function useCreateRoom() {
     );
   }, [buildingId, nameTrim, floorTrim, roomTypeId]);
 
-  function markAllTouched() {
+  const markAllTouched = useCallback(() => {
     setTouched({
       buildingId: true,
       name: true,
       floor: true,
       roomTypeId: true,
     });
-  }
+  }, []);
 
-  function reset() {
+  const reset = useCallback(() => {
     setBuildingId("");
     setName("");
     setFloor("");
     setRoomTypeId("");
     setTouched(DEFAULT_TOUCHED);
-  }
+  }, []);
 
-  async function submit(opts?: {
+  const submit = useCallback(async (opts?: {
     onSuccess?: (room: RoomDetail) => void;
     onError?: (message: string) => void;
-  }) {
+  }) => {
     markAllTouched();
 
     if (!isFormValid) {
@@ -109,9 +109,9 @@ export function useCreateRoom() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [buildingId, nameTrim, floorTrim, roomTypeId, isFormValid, markAllTouched]);
 
-  return {
+  return useMemo(() => ({
     buildingId,
     name,
     floor,
@@ -132,5 +132,9 @@ export function useCreateRoom() {
     reset,
 
     submit,
-  };
+  }), [
+    buildingId, name, floor, roomTypeId, loading, 
+    buildingErr, nameErr, floorErr, roomTypeErr, isFormValid, 
+    reset, submit
+  ]);
 }

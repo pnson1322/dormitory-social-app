@@ -21,6 +21,23 @@ export default function ManagerLayout() {
           iconName: "bar-chart-outline",
         },
         {
+          name: "invoices/index",
+          label: "Hóa đơn",
+          iconName: "receipt-outline",
+        },
+        {
+          name: "invoices/select-room",
+          label: "Chọn phòng",
+          iconName: "business-outline",
+          hidden: true,
+        },
+        {
+          name: "invoices/create",
+          label: "Nhập chỉ số",
+          iconName: "create-outline",
+          hidden: true,
+        },
+        {
           name: "settings",
           label: "Cài đặt",
           iconName: "settings-outline",

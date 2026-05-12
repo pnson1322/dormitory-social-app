@@ -62,7 +62,6 @@ export function useCreateRoomDraftGuard({ form }: Params) {
 
       return () => {
         form.reset();
-        setFormKey((prev) => prev + 1);
       };
     }, [form]),
   );
