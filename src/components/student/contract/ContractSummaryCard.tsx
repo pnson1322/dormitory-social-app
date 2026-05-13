@@ -2,7 +2,7 @@ import React, { memo } from "react";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/colors";
-import { Contract } from "@/hooks/student/useStudentContract";
+import { Contract } from "@/services/contract/contract.types";
 
 type Props = {
   contract: Contract;

@@ -60,7 +60,7 @@ export function StudentRoomsScreen() {
           onChangeFilters={setFilters}
         />
 
-        <View className="px-5 mb-3">
+        <View className="px-5 mb-4">
           <Text className="text-[16px] font-bold" style={{ color: Colors.textPrimary }}>
             {resultText}
           </Text>

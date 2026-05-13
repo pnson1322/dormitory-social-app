@@ -1,60 +1,90 @@
+import { RegistrationDetailModal } from "@/components/student/history/RegistrationDetailModal";
+import { RegistrationCard } from "@/components/student/my-room/RegistrationCard";
 import { Colors } from "@/constants/colors";
-import { useRegistrationHistory } from "@/hooks/student/useRegistrationHistory";
+import { RegistrationItem, useRegistrationHistory } from "@/hooks/student/useRegistrationHistory";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, LayoutAnimation, Platform, Pressable, Text, UIManager, View } from "react-native";
+
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export function RecentRegistrations() {
-  const router = useRouter();
   const { items, loading } = useRegistrationHistory();
+  const [expanded, setExpanded] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<RegistrationItem | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const previewItems = items.slice(0, 2);
+  const displayItems = expanded ? items : items.slice(0, 3);
+  const hasMore = items.length > 3;
+
+  const handlePress = (item: RegistrationItem) => {
+    setSelectedItem(item);
+    setModalVisible(true);
+  };
+
+  const toggleExpand = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded(!expanded);
+  };
 
   return (
-    <View className="mt-6 pb-10">
-      <View className="flex-row justify-between items-center mb-4">
-        <Text className="text-[20px] font-bold text-slate-900">Lịch sử đăng ký</Text>
-        <Pressable onPress={() => router.push("/(student)/registration-history")}>
-          <Text className="text-primary font-bold">Xem tất cả</Text>
-        </Pressable>
+    <View className="mt-8 pb-20">
+      <View className="flex-row justify-between items-center mb-5 px-1">
+        <Text className="text-[22px] font-black text-slate-900">Lịch sử đăng ký</Text>
+        {hasMore && (
+          <Pressable
+            onPress={toggleExpand}
+            className="flex-row items-center bg-slate-100 px-3 py-1.5 rounded-full"
+          >
+            <Text className="text-slate-600 font-bold text-[13px] mr-1">
+              {expanded ? "Thu gọn" : "Xem tất cả"}
+            </Text>
+            <Ionicons
+              name={expanded ? "chevron-up" : "chevron-down"}
+              size={14}
+              color="#64748B"
+            />
+          </Pressable>
+        )}
       </View>
 
       {loading ? (
-        <View className="py-10 items-center">
+        <View className="py-12 items-center bg-white rounded-3xl border border-slate-100">
           <ActivityIndicator color={Colors.primary} />
+          <Text className="mt-3 text-slate-400 font-medium">Đang tải lịch sử...</Text>
         </View>
-      ) : previewItems.length > 0 ? (
-        <View className="gap-3">
-          {previewItems.map((item) => (
-            <Pressable 
-              key={item.id}
-              onPress={() => router.push("/(student)/registration-history")}
-              className="bg-white p-4 rounded-2xl border border-slate-100 flex-row items-center justify-between"
-            >
-              <View className="flex-row items-center">
-                <View className="h-10 w-10 rounded-full bg-slate-50 items-center justify-center mr-3">
-                  <Ionicons name="time-outline" size={18} color={Colors.primary} />
-                </View>
-                <View>
-                  <Text className="font-bold text-slate-900">Phòng {item.roomName}</Text>
-                  <Text className="text-[12px] text-slate-500">{item.requestDate}</Text>
-                </View>
-              </View>
-              <View className="flex-row items-center">
-                <Text className="text-[12px] font-bold text-primary mr-1">
-                  {item.status === "APPROVED" ? "Đã duyệt" : item.status === "PENDING" ? "Đang chờ" : "Từ chối"}
-                </Text>
-                <Ionicons name="chevron-forward" size={14} color={Colors.primary} />
-              </View>
-            </Pressable>
+      ) : items.length > 0 ? (
+        <View style={{ gap: 12 }}>
+          {displayItems.map((item) => (
+            <RegistrationCard
+              key={item.bookingId}
+              item={item}
+              onPress={handlePress}
+            />
           ))}
         </View>
       ) : (
-        <View className="p-5 rounded-3xl bg-slate-50 border border-slate-100 border-dashed items-center py-10">
-          <Ionicons name="time-outline" size={32} color="#CBD5E1" />
-          <Text className="text-slate-400 font-medium mt-3">Chưa có dữ liệu lịch sử</Text>
+        <View className="mt-4 py-16 px-10 rounded-[40px] bg-slate-50 border-2 border-slate-300 border-dashed items-center">
+          <View
+            className="h-20 w-20 rounded-full bg-white items-center justify-center mb-6 shadow-sm"
+            style={{ elevation: 3 }}
+          >
+            <Ionicons name="receipt-outline" size={36} color="#64748B" />
+          </View>
+          <Text className="text-slate-800 font-black text-[18px]">Chưa có dữ liệu lịch sử</Text>
+          <Text className="text-slate-500 text-[14px] mt-2 text-center leading-6 px-6">
+            Các yêu cầu đăng ký phòng của bạn sẽ được hiển thị danh sách tại đây sau khi bạn thực hiện đăng ký
+          </Text>
         </View>
       )}
+
+      <RegistrationDetailModal
+        visible={modalVisible}
+        item={selectedItem}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 }

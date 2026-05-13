@@ -5,6 +5,11 @@ export default function StudentLayout() {
     <AppTabsLayout
       tabs={[
         {
+          name: "my-room",
+          label: "Phòng tôi",
+          iconName: "home-outline",
+        },
+        {
           name: "rooms",
           label: "Tìm phòng",
           iconName: "search-outline",
@@ -13,11 +18,6 @@ export default function StudentLayout() {
           name: "profile",
           label: "Hồ sơ",
           iconName: "person-outline",
-        },
-        {
-          name: "my-room",
-          label: "Phòng tôi",
-          iconName: "home-outline",
         },
         {
           name: "community",
@@ -51,12 +51,6 @@ export default function StudentLayout() {
           name: "contract/index",
           label: "Hợp đồng",
           iconName: "document-text-outline",
-          hidden: true,
-        },
-        {
-          name: "registration-history",
-          label: "Lịch sử đăng ký",
-          iconName: "time-outline",
           hidden: true,
         },
       ]}

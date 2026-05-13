@@ -25,7 +25,7 @@ function getHomeRouteByRole(role: string | null) {
     case "admin":
       return "/(admin)/dashboard";
     case "student":
-      return "/(student)/profile";
+      return "/(student)/my-room";
     case "manager":
       return "/(manager)/rooms";
     default:

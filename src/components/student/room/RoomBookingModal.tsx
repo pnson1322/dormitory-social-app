@@ -32,28 +32,63 @@ export function RoomBookingModal({
   onConfirm,
 }: Props) {
   const [agreed, setAgreed] = useState(false);
+  const [shouldRender, setShouldRender] = useState(visible);
+  
   const slideAnim = useRef(new Animated.Value(height)).current;
+  const backdropAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (visible) {
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 50,
-        friction: 8,
-      }).start();
+      setShouldRender(true);
+      Animated.parallel([
+        Animated.timing(backdropAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.spring(slideAnim, {
+          toValue: 0,
+          useNativeDriver: true,
+          tension: 50,
+          friction: 9,
+        }),
+      ]).start();
     } else {
-      slideAnim.setValue(height);
+      Animated.parallel([
+        Animated.timing(backdropAnim, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: height,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setShouldRender(false);
+      });
     }
   }, [visible]);
+
+  if (!shouldRender && !visible) return null;
+
+  const handleClose = () => {
+    onClose();
+  };
 
   const deposit = room.basePrice; 
   const totalInitial = room.basePrice + deposit;
 
   return (
-    <Modal visible={visible} transparent animationType="fade">
-      <View className="flex-1 justify-end bg-black/50">
-        <Pressable className="absolute inset-0" onPress={onClose} />
+    <Modal visible={shouldRender} transparent animationType="none">
+      <View className="flex-1 justify-end">
+        <Animated.View 
+          className="absolute inset-0 bg-black/50" 
+          style={{ opacity: backdropAnim }}
+        >
+          <Pressable className="flex-1" onPress={handleClose} />
+        </Animated.View>
         
         <Animated.View 
           className="bg-white rounded-t-[32px] px-6 pb-10 pt-6"
@@ -147,7 +182,7 @@ export function RoomBookingModal({
 
           <View className="flex-row gap-3">
             <Pressable
-              onPress={onClose}
+              onPress={handleClose}
               className="flex-1 h-[52px] items-center justify-center rounded-2xl bg-slate-100"
             >
               <Text className="text-[16px] font-bold text-slate-600">Hủy</Text>
