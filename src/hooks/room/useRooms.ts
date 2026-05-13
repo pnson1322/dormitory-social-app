@@ -1,11 +1,11 @@
 import { getApiErrorMessage } from "@/services/apiError";
+import { PagingMeta } from "@/services/base.types";
 import { getRooms, getRoomsCount } from "@/services/room/room.api";
 import {
   RoomCountData,
   RoomItem,
   RoomStatus,
 } from "@/services/room/room.types";
-import { PagingMeta } from "@/services/base.types";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const DEFAULT_COUNTS: RoomCountData = {
@@ -38,6 +38,8 @@ export function useRooms() {
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<RoomStatus | "">("");
+  const [roomTypeId, setRoomTypeId] = useState<string | "">("");
+  const [buildingId, setBuildingId] = useState<string | "">("");
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -88,6 +90,8 @@ export function useRooms() {
         const res = await getRooms({
           Search: search.trim() || undefined,
           RoomStatus: status || undefined,
+          RoomTypeId: roomTypeId || undefined,
+          BuildingId: buildingId || undefined,
           Page: page,
           PageSize: PAGE_SIZE,
         });
@@ -118,7 +122,7 @@ export function useRooms() {
         }
       }
     },
-    [search, status],
+    [search, status, roomTypeId, buildingId],
   );
 
   const refetch = useCallback(
@@ -174,7 +178,7 @@ export function useRooms() {
           ? counts.FULL
           : counts.MAINTENANCE;
 
-  const hasAnyFilter = !!search.trim() || !!status;
+  const hasAnyFilter = !!search.trim() || !!status || !!roomTypeId || !!buildingId;
 
   return {
     items,
@@ -182,6 +186,8 @@ export function useRooms() {
     meta,
     search,
     status,
+    roomTypeId,
+    buildingId,
     loading,
     refreshing,
     loadingMore,
@@ -192,6 +198,8 @@ export function useRooms() {
     hasAnyFilter,
     setSearch,
     setStatus,
+    setRoomTypeId,
+    setBuildingId,
     refetch,
     loadMore,
   };

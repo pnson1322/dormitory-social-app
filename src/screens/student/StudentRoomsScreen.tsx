@@ -1,14 +1,14 @@
+import { AppButton } from "@/components/AppButton";
 import { RoomSearchBox } from "@/components/room/RoomSearchBox";
+import { StudentRoomHeader } from "@/components/student/layout/StudentRoomHeader";
 import { StudentRoomCard } from "@/components/student/room/StudentRoomCard";
 import { StudentRoomCardSkeleton } from "@/components/student/room/StudentRoomCardSkeleton";
-import { StudentRoomFiltersView } from "@/components/student/room/StudentRoomFilters";
-import { StudentRoomHeader } from "@/components/student/layout/StudentRoomHeader";
 import { StudentRoomEmptyState } from "@/components/student/room/StudentRoomEmptyState";
-
-import { AppButton } from "@/components/AppButton";
+import { StudentRoomFiltersView } from "@/components/student/room/StudentRoomFilters";
 import { Colors } from "@/constants/colors";
 import { useStudentRooms } from "@/hooks/student/useStudentRooms";
 import { useRouter } from "expo-router";
+import { useMemo } from "react";
 import { ActivityIndicator, FlatList, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -26,7 +26,20 @@ export function StudentRoomsScreen() {
     loadMore,
     buildings,
     roomTypes,
+    meta,
+    hasAnyFilter,
   } = useStudentRooms();
+
+  const resultText = useMemo(() => {
+    if (hasAnyFilter) {
+      if (filters.search.trim().length > 0) return `${meta.totalItems} phòng tìm thấy`;
+      if (filters.status === "AVAILABLE") return `${meta.totalItems} phòng còn trống`;
+      if (filters.status === "FULL") return `${meta.totalItems} phòng đã đầy`;
+      if (filters.status === "MAINTENANCE") return `${meta.totalItems} phòng đang bảo trì`;
+      return `${meta.totalItems} phòng thỏa mãn bộ lọc`;
+    }
+    return `${meta.totalItems} phòng trong hệ thống`;
+  }, [hasAnyFilter, filters.search, filters.status, meta.totalItems]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
@@ -46,6 +59,12 @@ export function StudentRoomsScreen() {
           roomTypes={roomTypes}
           onChangeFilters={setFilters}
         />
+
+        <View className="px-5 mb-3">
+          <Text className="text-[16px] font-bold" style={{ color: Colors.textPrimary }}>
+            {resultText}
+          </Text>
+        </View>
 
         {error && items.length === 0 ? (
           <View className="flex-1 items-center justify-center px-10">
@@ -74,7 +93,6 @@ export function StudentRoomsScreen() {
             className="flex-1"
             contentContainerStyle={{
               paddingHorizontal: 20,
-              paddingTop: 10,
               paddingBottom: 100,
               gap: 16,
             }}

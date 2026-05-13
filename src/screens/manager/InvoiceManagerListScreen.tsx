@@ -1,4 +1,5 @@
 import { InvoiceCardSkeleton } from "@/components/manager/billing/InvoiceCardSkeleton";
+import { DraggableFAB } from "@/components/common/DraggableFAB";
 import { ManagerInvoiceDetailModal } from "@/components/manager/billing/ManagerInvoiceDetailModal";
 import { Colors } from "@/constants/colors";
 import { useManagerInvoices } from "@/hooks/manager/useManagerInvoices";
@@ -8,7 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ActivityIndicator, FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export function InvoiceManagerListScreen() {
@@ -45,13 +46,6 @@ export function InvoiceManagerListScreen() {
               </Text>
               <Text className="text-white/70 font-bold mt-1">Theo dõi thu chi & chốt số</Text>
             </View>
-            <TouchableOpacity 
-              onPress={() => router.push("/(manager)/invoices/select-room")}
-              className="h-14 w-14 rounded-2xl bg-white/20 items-center justify-center border border-white/30"
-              activeOpacity={0.7}
-            >
-              <Ionicons name="add" size={32} color="white" />
-            </TouchableOpacity>
           </View>
 
           <View className="flex-row gap-4">
@@ -148,6 +142,10 @@ export function InvoiceManagerListScreen() {
         invoice={selectedInvoice}
         onClose={() => setModalVisible(false)}
         onRefresh={onRefresh}
+      />
+
+      <DraggableFAB 
+        onPress={() => router.push("/(manager)/invoices/select-room")} 
       />
     </View>
   );

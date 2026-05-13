@@ -16,6 +16,7 @@ type Props = {
   activeColor?: string;
   inactiveColor?: string;
   activeBackgroundColor?: string;
+  initialRouteName?: string;
 };
 
 export function AppTabsLayout({
@@ -23,6 +24,7 @@ export function AppTabsLayout({
   activeColor = Colors.accent,
   inactiveColor = Colors.textSecondary,
   activeBackgroundColor = "rgba(20, 184, 166, 0.18)",
+  initialRouteName,
 }: Props) {
   const insets = useSafeAreaInsets();
   const segments = useSegments();
@@ -35,6 +37,7 @@ export function AppTabsLayout({
 
   return (
     <Tabs
+      initialRouteName={initialRouteName}
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,

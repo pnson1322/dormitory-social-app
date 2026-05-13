@@ -4,7 +4,13 @@ export default function AdminLayout() {
   return (
     <AppTabsLayout
       activeBackgroundColor="rgba(59, 130, 246, 0.18)"
+      initialRouteName="dashboard"
       tabs={[
+        {
+          name: "dashboard",
+          label: "Thống kê",
+          iconName: "bar-chart-outline",
+        },
         {
           name: "users",
           label: "Người dùng",

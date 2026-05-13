@@ -23,7 +23,7 @@ function getHomeRouteByRole(role: string | null) {
   const normalizedRole = role?.toLowerCase();
   switch (normalizedRole) {
     case "admin":
-      return "/(admin)/users";
+      return "/(admin)/dashboard";
     case "student":
       return "/(student)/profile";
     case "manager":

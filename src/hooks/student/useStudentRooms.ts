@@ -124,6 +124,7 @@ export function useStudentRooms() {
     loadMore,
     buildings,
     roomTypes,
+    hasAnyFilter: !!filters.search.trim() || !!filters.buildingId || !!filters.roomTypeId || !!filters.status,
   };
 }
 

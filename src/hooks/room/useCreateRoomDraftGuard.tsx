@@ -63,7 +63,7 @@ export function useCreateRoomDraftGuard({ form }: Params) {
       return () => {
         form.reset();
       };
-    }, [form]),
+    }, []) 
   );
 
   useEffect(() => {

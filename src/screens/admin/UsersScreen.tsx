@@ -1,3 +1,4 @@
+import { DraggableFAB } from "@/components/common/DraggableFAB";
 import { AppButton } from "@/components/AppButton";
 import { UserActionSheet } from "@/components/user/UserActionSheet";
 import { UserHeaderSection } from "@/components/user/UserHeaderSection";
@@ -8,7 +9,7 @@ import { subscribeUserListRefresh } from "@/hooks/user/userRefreshBus";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -104,21 +105,11 @@ export function UsersScreen() {
           />
         )}
 
-        <Pressable
+        <DraggableFAB
           onPress={() => router.push("/(admin)/create-user")}
-          className="absolute right-5 h-16 w-16 items-center justify-center rounded-full"
-          style={{
-            bottom: 24 + insets.bottom,
-            backgroundColor: Colors.primaryLight,
-            shadowColor: "#000",
-            shadowOpacity: 0.15,
-            shadowRadius: 12,
-            shadowOffset: { width: 0, height: 6 },
-            elevation: 6,
-          }}
-        >
-          <Ionicons name="add" size={32} color="#FFFFFF" />
-        </Pressable>
+          icon="person-add"
+          iconSize={26}
+        />
 
         <UserActionSheet
           visible={!!selectedUser}

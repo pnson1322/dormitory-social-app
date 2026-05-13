@@ -72,9 +72,6 @@ export function useLogin() {
       const payload = decodeAccessToken(res.token);
       const role = getUserRoleFromToken(res.token);
 
-      console.log("payload =", payload);
-      console.log("role =", role);
-
       opts?.onSuccess?.(role);
     } catch (error: any) {
       if (error.response) {

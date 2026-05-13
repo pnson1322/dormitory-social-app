@@ -25,6 +25,17 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+const AmenityItem = ({ name }: { name: string }) => (
+  <View className="flex-row items-center py-2.5">
+    <View className="h-6 w-6 items-center justify-center rounded-full" style={{ backgroundColor: Colors.accent + '20' }}>
+      <Ionicons name="checkmark" size={14} color={Colors.accent} />
+    </View>
+    <Text className="ml-3 text-[15px] font-medium" style={{ color: Colors.textPrimary }}>
+      {name}
+    </Text>
+  </View>
+);
+
 export function RoomDetailsScreen() {
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
@@ -175,6 +186,29 @@ export function RoomDetailsScreen() {
             onChangeFloor={editor.setFloor}
             onChangeRoomTypeId={editor.setRoomTypeId}
           />
+
+          <View className="rounded-[24px] p-5"
+            style={{
+              backgroundColor: Colors.surface,
+              borderWidth: 1,
+              borderColor: Colors.border,
+            }}>
+            <Text className="text-[18px] font-bold mb-4" style={{ color: Colors.textPrimary }}>
+              Tiện ích của phòng
+            </Text>
+            
+            {room.amenities && room.amenities.length > 0 ? (
+              <View>
+                {room.amenities.map((amenity, index) => (
+                  <AmenityItem key={index} name={amenity} />
+                ))}
+              </View>
+            ) : (
+              <Text className="text-[14px]" style={{ color: Colors.textSecondary }}>
+                Chưa có thông tin tiện ích.
+              </Text>
+            )}
+          </View>
 
           <RoomResidentsPlaceholderCard />
 

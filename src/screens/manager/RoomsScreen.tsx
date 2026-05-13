@@ -1,13 +1,15 @@
 import { AppButton } from "@/components/AppButton";
+import { DraggableFAB } from "@/components/common/DraggableFAB";
+import { RoomCardSkeleton } from "@/components/manager/room/RoomCardSkeleton";
+import { RoomListFilters } from "@/components/manager/room/RoomListFilters";
+import { RoomListHeader } from "@/components/manager/room/RoomListHeader";
 import { RoomCard } from "@/components/room/RoomCard";
 import { RoomStatusSheet } from "@/components/room/RoomStatusSheet";
-import { RoomCardSkeleton } from "@/components/manager/room/RoomCardSkeleton";
-import { RoomListHeader } from "@/components/manager/room/RoomListHeader";
-import { RoomListFilters } from "@/components/manager/room/RoomListFilters";
 import { useToast } from "@/components/toast/ToastProvider";
 import { Colors } from "@/constants/colors";
 import { subscribeRoomListRefresh } from "@/hooks/room/roomRefreshBus";
 import { useRoomDetails } from "@/hooks/room/useRoomDetails";
+import { useRoomFormOptions } from "@/hooks/room/useRoomFormOptions";
 import { useRooms } from "@/hooks/room/useRooms";
 import { useUpdateRoomStatus } from "@/hooks/room/useUpdateRoomStatus";
 import { RoomItem, RoomStatus } from "@/services/room/room.types";
@@ -17,10 +19,9 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Pressable,
   RefreshControl,
   Text,
-  View,
+  View
 } from "react-native";
 import {
   SafeAreaView,
@@ -35,18 +36,26 @@ export function RoomsScreen() {
   const {
     items,
     counts,
+    meta,
     search,
     status,
+    roomTypeId,
+    buildingId,
     loading,
     refreshing,
     loadingMore,
     filtering,
     error,
+    hasAnyFilter,
     setSearch,
     setStatus,
+    setRoomTypeId,
+    setBuildingId,
     refetch,
     loadMore,
   } = useRooms();
+
+  const { roomTypes, buildings } = useRoomFormOptions();
 
   const { loading: updatingStatus, submit } = useUpdateRoomStatus();
 
@@ -100,13 +109,15 @@ export function RoomsScreen() {
   const statusChanged = !!selectedRoom && selectedStatus !== selectedRoom.roomStatus;
 
   const resultText = useMemo(() => {
-    const keyword = search.trim();
-    if (keyword.length > 0) return `${items.length} phòng tìm thấy`;
-    if (status === "AVAILABLE") return `${counts.AVAILABLE} phòng còn trống`;
-    if (status === "FULL") return `${counts.FULL} phòng đã đầy`;
-    if (status === "MAINTENANCE") return `${counts.MAINTENANCE} phòng đang bảo trì`;
+    if (hasAnyFilter) {
+      if (search.trim().length > 0) return `${meta.totalItems} phòng tìm thấy`;
+      if (status === "AVAILABLE") return `${meta.totalItems} phòng còn trống`;
+      if (status === "FULL") return `${meta.totalItems} phòng đã đầy`;
+      if (status === "MAINTENANCE") return `${meta.totalItems} phòng đang bảo trì`;
+      return `${meta.totalItems} phòng thỏa mãn bộ lọc`;
+    }
     return `${counts.Total} phòng trong hệ thống`;
-  }, [search, status, counts, items.length]);
+  }, [hasAnyFilter, search, status, counts.Total, meta.totalItems]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
@@ -117,6 +128,12 @@ export function RoomsScreen() {
           counts={counts} 
           status={status} 
           onStatusChange={setStatus} 
+          roomTypeId={roomTypeId}
+          onRoomTypeChange={setRoomTypeId}
+          roomTypes={roomTypes}
+          buildingId={buildingId}
+          onBuildingChange={setBuildingId}
+          buildings={buildings}
           resultText={resultText}
           filtering={filtering}
         />
@@ -157,13 +174,9 @@ export function RoomsScreen() {
           />
         )}
 
-        <Pressable
-          onPress={() => router.push("/(manager)/create-room")}
-          className="absolute right-5 h-16 w-16 items-center justify-center rounded-full shadow-lg shadow-blue-500/30"
-          style={{ bottom: 24 + insets.bottom, backgroundColor: Colors.primary }}
-        >
-          <Ionicons name="add" size={32} color="#FFFFFF" />
-        </Pressable>
+        <DraggableFAB 
+          onPress={() => router.push("/(manager)/create-room")} 
+        />
 
         <RoomStatusSheet
           visible={!!selectedRoom}
