@@ -1,5 +1,14 @@
-import { CreateInvoiceRequest, InvoiceSummary } from "./billing.types";
+import { ApiResponse } from "../base.types";
+import { http } from "../http";
+import {
+  CreateInvoiceRequest,
+  GetStudentInvoicesParams,
+  PaymentProcessResponse,
+  StudentInvoice,
+  StudentInvoiceStatus
+} from "./billing.types";
 
+// --- Manager Billing APIs ---
 export async function createInvoice(data: CreateInvoiceRequest): Promise<{ id: string }> {
   console.log("Creating invoice:", data);
   await new Promise(resolve => setTimeout(resolve, 2000)); 
@@ -43,3 +52,28 @@ export async function getInvoiceDetails(id: string): Promise<CreateInvoiceReques
     totalAmount: 1050000
   };
 }
+
+// --- Student Billing APIs ---
+export async function getStudentInvoices(params: GetStudentInvoicesParams) {
+  const response = await http.get<ApiResponse<StudentInvoice[]>>("/api/student/invoices", {
+    params
+  });
+  return response.data;
+}
+
+export async function getStudentInvoiceDetail(id: string) {
+  const response = await http.get<ApiResponse<StudentInvoice>>(`/api/student/invoices/${id}`);
+  return response.data;
+}
+
+export async function processInvoicePayment(id: string) {
+  const response = await http.post<ApiResponse<PaymentProcessResponse>>(`/api/student/invoices/${id}/pay`);
+  return response.data;
+}
+
+export async function checkPaymentStatus(orderId: string) {
+  const response = await http.get<ApiResponse<{ status: StudentInvoiceStatus }>>(`/api/student/invoices/payment-status/${orderId}`);
+  return response.data;
+}
+
+

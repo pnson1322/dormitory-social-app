@@ -42,6 +42,12 @@ export default function StudentLayout() {
           hidden: true,
         },
         {
+          name: "rooms/[id]/book",
+          label: "Đăng ký phòng",
+          iconName: "create-outline",
+          hidden: true,
+        },
+        {
           name: "invoices/index",
           label: "Hóa đơn",
           iconName: "receipt-outline",

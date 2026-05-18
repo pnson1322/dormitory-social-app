@@ -1,7 +1,5 @@
 import { ApiResponse } from "../base.types";
 
-export type ContractStatus = "ACTIVE" | "EXPIRED" | "TERMINATED" | "WAITING_SIGN";
-
 export interface Contract {
   id: string;
   studentName: string;
@@ -12,11 +10,25 @@ export interface Contract {
   endDate: string;  
   monthlyPrice: number;
   deposit: number;
-  status: ContractStatus;
+  contractTemplateId: string;
   signedDate: string | null; 
-  contractUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export type GetStudentContractResponse = ApiResponse<Contract | null>;
+
+export interface ContractTemplate {
+  id: string;
+  code: string;
+  name: string;
+  version: number;
+  content: string;
+  isActive: boolean;
+  effectiveFrom: string;
+  effectiveTo: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type GetContractTemplateResponse = ApiResponse<ContractTemplate | null>;

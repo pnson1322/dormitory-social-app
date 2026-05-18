@@ -1,6 +1,5 @@
 import { AppButton } from "@/components/AppButton";
 import { RoomDetailOverviewCard } from "@/components/room/RoomDetailOverviewCard";
-import { RoomBookingModal } from "@/components/student/room/RoomBookingModal";
 
 import { useToast } from "@/components/toast/ToastProvider";
 import { Colors } from "@/constants/colors";
@@ -36,26 +35,9 @@ export function StudentRoomDetailScreen() {
   const { showToast } = useToast();
   
   const { room, loading, error, refetch } = useStudentRoomDetails(id as string);
-  
-  const [bookingVisible, setBookingVisible] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleConfirmBooking = async () => {
-    setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setBookingVisible(false);
-    
-    showToast({
-      type: "success",
-      title: "Đăng ký thành công",
-      message: "Yêu cầu đăng ký phòng của bạn đã được gửi đi.",
-    });
-    
-    router.replace("/(student)/my-room");
+  const handleGoToBooking = () => {
+    router.push(`/(student)/rooms/${id}/book`);
   };
-
   if (loading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
@@ -78,7 +60,7 @@ export function StudentRoomDetailScreen() {
         >
           <View className="flex-row items-center">
             <Pressable
-              onPress={() => router.back()}
+              onPress={() => router.navigate("/(student)/rooms")}
               className="mr-4 h-11 w-11 items-center justify-center rounded-full bg-white/15"
             >
               <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
@@ -123,7 +105,7 @@ export function StudentRoomDetailScreen() {
       >
         <View className="flex-row items-center">
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(student)/rooms")}
             className="mr-4 h-11 w-11 items-center justify-center rounded-full bg-white/15"
           >
             <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
@@ -170,21 +152,11 @@ export function StudentRoomDetailScreen() {
         <View className="mt-8">
           <AppButton 
             title={room.roomStatus === "AVAILABLE" ? "Đăng ký phòng này" : "Phòng không có sẵn"} 
-            onPress={() => setBookingVisible(true)} 
+            onPress={handleGoToBooking} 
             disabled={room.roomStatus !== "AVAILABLE"}
           />
         </View>
       </ScrollView>
-
-      {room && (
-        <RoomBookingModal
-          visible={bookingVisible}
-          room={room}
-          loading={isSubmitting}
-          onClose={() => setBookingVisible(false)}
-          onConfirm={handleConfirmBooking}
-        />
-      )}
     </SafeAreaView>
   );
 }

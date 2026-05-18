@@ -16,9 +16,9 @@ type Props = {
 
 const STATUS_CONFIG: Record<RegistrationStatus, { label: string; color: string; bg: string; icon: keyof typeof Ionicons.glyphMap }> = {
   PENDING: { label: "Đang chờ duyệt", color: "#F59E0B", bg: "#FEF3C7", icon: "time" },
-  APPROVED: { label: "Đã phê duyệt", color: "#10B981", bg: "#D1FAE5", icon: "checkmark-circle" },
-  REJECTED: { label: "Đã từ chối", color: "#EF4444", bg: "#FEE2E2", icon: "close-circle" },
-  CANCELLED: { label: "Đã hủy bỏ", color: "#6B7280", bg: "#F3F4F6", icon: "remove-circle" },
+  ACTIVE: { label: "Đang hoạt động", color: "#10B981", bg: "#D1FAE5", icon: "home" },
+  COMPLETED: { label: "Đã hoàn thành", color: "#8B5CF6", bg: "#EDE9FE", icon: "flag" },
+  CANCELLED: { label: "Đã hủy", color: "#6B7280", bg: "#F3F4F6", icon: "remove-circle" },
 };
 
 

@@ -53,7 +53,7 @@ export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
           <View className="flex-row justify-between items-start mb-6">
             <View className="flex-1">
               <Text className="text-[24px] font-black text-slate-900">{invoice.title}</Text>
-              <Text className="text-slate-500 font-medium mt-1">{invoice.id}</Text>
+
             </View>
             <Pressable 
               onPress={onClose}
@@ -107,12 +107,14 @@ export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
               </View>
             </View>
 
-            <View className="flex-row items-center p-4 bg-blue-50 rounded-2xl border border-blue-100">
-              <Ionicons name="information-circle" size={20} color={Colors.primary} />
-              <Text className="ml-2 flex-1 text-[13px] text-blue-700 font-medium">
-                Vui lòng thanh toán trước hạn định để tránh bị gián đoạn các dịch vụ tại ký túc xá.
-              </Text>
-            </View>
+            {!isPaid && (
+              <View className="flex-row items-center p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                <Ionicons name="information-circle" size={20} color={Colors.primary} />
+                <Text className="ml-2 flex-1 text-[13px] text-blue-700 font-medium">
+                  Vui lòng thanh toán trước hạn định để tránh bị gián đoạn các dịch vụ tại ký túc xá.
+                </Text>
+              </View>
+            )}
           </ScrollView>
 
           {!isPaid && (

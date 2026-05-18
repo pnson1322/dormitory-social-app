@@ -9,10 +9,10 @@ type Props = {
 
 function getStatusConfig(status: string) {
   switch (status) {
-    case "APPROVED": return { label: "Đã duyệt",  color: "#10B981", bg: "#D1FAE5" };
-    case "PENDING":  return { label: "Chờ duyệt", color: "#F59E0B", bg: "#FEF3C7" };
-    case "REJECTED": return { label: "Từ chối",   color: "#EF4444", bg: "#FEE2E2" };
-    default:         return { label: "Đã hủy",    color: "#6B7280", bg: "#F3F4F6" };
+    case "PENDING":   return { label: "Chờ xử lý", color: "#F59E0B", bg: "#FEF3C7" };
+    case "ACTIVE":    return { label: "Đang hoạt", color: "#10B981", bg: "#D1FAE5" };
+    case "COMPLETED": return { label: "Hoàn thành", color: "#8B5CF6", bg: "#EDE9FE" };
+    default:          return { label: "Đã hủy", color: "#6B7280", bg: "#F3F4F6" };
   }
 }
 

@@ -139,15 +139,27 @@ export function InvoiceAnalytics({ data = MOCK_DATA }: Props) {
           {ePoints.map((p, i) => (
             <View 
               key={`e-${i}`} 
-              style={{ position: 'absolute', left: p.x - 3, top: p.y - 3 }} 
-              className={`h-1.5 w-1.5 rounded-full ${selectedIndex === i ? 'bg-white scale-150' : 'bg-white/40'}`}
+              style={{ 
+                position: 'absolute', 
+                left: p.x - 3, 
+                top: p.y - 3,
+                backgroundColor: selectedIndex === i ? 'white' : 'rgba(255, 255, 255, 0.4)',
+                transform: [{ scale: selectedIndex === i ? 1.5 : 1 }]
+              }} 
+              className="h-1.5 w-1.5 rounded-full"
             />
           ))}
           {wPoints.map((p, i) => (
             <View 
               key={`w-${i}`} 
-              style={{ position: 'absolute', left: p.x - 3, top: p.y - 3 }} 
-              className={`h-1.5 w-1.5 rounded-full ${selectedIndex === i ? 'bg-white scale-150' : 'bg-white/40'}`}
+              style={{ 
+                position: 'absolute', 
+                left: p.x - 3, 
+                top: p.y - 3,
+                backgroundColor: selectedIndex === i ? 'white' : 'rgba(255, 255, 255, 0.4)',
+                transform: [{ scale: selectedIndex === i ? 1.5 : 1 }]
+              }} 
+              className="h-1.5 w-1.5 rounded-full"
             />
           ))}
 

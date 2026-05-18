@@ -1,13 +1,14 @@
 import { ContractSkeleton } from "@/components/student/contract/ContractSkeleton";
 import { ContractSummaryCard } from "@/components/student/contract/ContractSummaryCard";
+import { ContractTemplateSection } from "@/components/student/contract/ContractTemplateSection";
 import { Colors } from "@/constants/colors";
 import { useStudentContract } from "@/hooks/student/useStudentContract";
 import { formatCurrency } from "@/utils/room";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Pressable, ScrollView, Text, View, RefreshControl, Dimensions } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
+import { Dimensions, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -135,17 +136,9 @@ export function ContractDetailScreen() {
           </View>
         </View>
 
-        <View 
-          className="bg-slate-900 rounded-[24px] p-6 flex-row items-center justify-between"
-        >
-          <View className="flex-1 mr-4">
-            <Text className="text-white font-bold text-[16px] mb-1">Tải bản PDF</Text>
-            <Text className="text-slate-400 text-[13px]">Xem bản chi tiết có đầy đủ chữ ký và dấu mộc</Text>
-          </View>
-          <Pressable className="h-12 w-12 bg-white/10 rounded-full items-center justify-center">
-            <Ionicons name="download-outline" size={24} color="white" />
-          </Pressable>
-        </View>
+        {contract.contractTemplateId && (
+          <ContractTemplateSection templateId={contract.contractTemplateId} />
+        )}
 
         <Text className="text-[13px] text-slate-400 text-center mt-8 italic px-4 leading-5">
           Bản hợp đồng số hóa có giá trị pháp lý tương đương bản giấy theo quy định của Ký túc xá và Pháp luật Việt Nam.

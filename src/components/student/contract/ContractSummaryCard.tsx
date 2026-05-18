@@ -26,12 +26,9 @@ export const ContractSummaryCard = memo(function ContractSummaryCard({ contract 
         <View className="h-16 w-16 rounded-full bg-primary/10 items-center justify-center mb-4">
           <Ionicons name="document-text" size={32} color={Colors.primary} />
         </View>
-        <Text className="text-[20px] font-black text-slate-900 text-center mb-2">
+        <Text className="text-[20px] font-black text-slate-900 text-center">
           Hợp đồng Thuê phòng
         </Text>
-        <View className="bg-emerald-50 px-3 py-1 rounded-full">
-          <Text className="text-emerald-600 font-bold text-[12px]">ĐANG CÓ HIỆU LỰC</Text>
-        </View>
       </View>
 
       <View className="gap-5">

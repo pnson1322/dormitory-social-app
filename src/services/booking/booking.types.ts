@@ -1,4 +1,4 @@
-export type RegistrationStatus = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
+export type RegistrationStatus = "PENDING" | "ACTIVE" | "COMPLETED" | "CANCELLED";
 
 export type BookingFee = {
   id: string;
@@ -27,3 +27,28 @@ export type RegistrationItem = {
 export type GetRegistrationHistoryParams = {
   userId?: string; 
 };
+
+export type FeeTemplate = {
+  id: string;
+  feeCode: string;
+  feeName: string;
+  amount: number;
+  description: string;
+  isMandatory: boolean;
+  isRefundable: boolean;
+};
+
+export type CreateBookingPayload = {
+  roomId: string;
+  userId: string;
+  termName: string;
+  selectedOptionalFeeCodes: string[] | null;
+};
+
+export type CreateBookingResponse = {
+  bookingId: string;
+  status: string;
+  totalPrice: number;
+  message: string;
+};
+
