@@ -9,6 +9,7 @@ type TabItem = {
   label: string;
   iconName: keyof typeof Ionicons.glyphMap;
   hidden?: boolean;
+  unmountOnBlur?: boolean;
 };
 
 type Props = {
@@ -58,12 +59,13 @@ export function AppTabsLayout({
       {tabs.map((tab) => {
         if (tab.hidden) {
           return (
-            <Tabs.Screen
+              <Tabs.Screen
               key={tab.name}
               name={tab.name}
               options={{
                 title: tab.label,
                 href: null,
+                ...({ unmountOnBlur: tab.unmountOnBlur } as any),
               }}
             />
           );
@@ -88,6 +90,7 @@ export function AppTabsLayout({
                   activeBackgroundColor={activeBackgroundColor}
                 />
               ),
+              ...({ unmountOnBlur: tab.unmountOnBlur } as any),
             }}
           />
         );

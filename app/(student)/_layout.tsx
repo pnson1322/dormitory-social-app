@@ -59,6 +59,19 @@ export default function StudentLayout() {
           iconName: "document-text-outline",
           hidden: true,
         },
+        {
+          name: "incidents",
+          label: "Sự cố phòng",
+          iconName: "warning-outline",
+          hidden: true,
+        },
+        {
+          name: "report-incident",
+          label: "Báo cáo sự cố",
+          iconName: "add-circle-outline",
+          hidden: true,
+          unmountOnBlur: true,
+        },
       ]}
     />
   );
