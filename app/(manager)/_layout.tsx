@@ -18,7 +18,7 @@ export default function ManagerLayout() {
         {
           name: "reports",
           label: "Báo cáo",
-          iconName: "bar-chart-outline",
+          iconName: "warning-outline",
         },
         {
           name: "invoices/index",

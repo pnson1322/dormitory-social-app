@@ -30,3 +30,10 @@ export function getFullImageUrl(url?: string | null) {
   const cleanBase = ENV.API_BASE_URL.endsWith("/") ? ENV.API_BASE_URL : `${ENV.API_BASE_URL}/`;
   return `${cleanBase}${cleanUrl}`;
 }
+
+export function getRoomLabel(roomId: string) {
+  if (roomId === "3fa85f64-5717-4562-b3fc-2c963f66afa6") {
+    return "Phòng 101 (Tòa A1)";
+  }
+  return `Phòng ${roomId.substring(0, 5).toUpperCase()}`;
+}

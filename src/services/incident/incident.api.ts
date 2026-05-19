@@ -11,8 +11,16 @@ export async function getIncidentCategories() {
   return data.data;
 }
 
-export async function getIncidents(params: { RoomId: string; Status?: string; Page?: number; PageSize?: number }) {
+export async function getIncidents(params?: { roomId?: string; status?: string; page?: number; pageSize?: number }) {
   const { data } = await http.get<ApiResponse<IncidentResponse[]>>("/api/incidents", { params });
+  return data.data;
+}
+
+export async function updateIncidentStatus(id: string, status: string) {
+  const { data } = await http.patch<ApiResponse<{ id: string; status: string; updatedAt: string }>>(
+    `/api/incidents/${id}/status`,
+    { status }
+  );
   return data.data;
 }
 

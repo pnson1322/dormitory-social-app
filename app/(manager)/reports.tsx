@@ -1,13 +1,6 @@
-import { Colors } from "@/constants/colors";
-import { Text, View } from "react-native";
+import React from "react";
+import { ReportsScreen } from "@/screens/manager/ReportsScreen";
 
 export default function ReportsPage() {
-  return (
-    <View
-      className="flex-1 items-center justify-center"
-      style={{ backgroundColor: Colors.background }}
-    >
-      <Text style={{ color: Colors.textPrimary }}>Màn Báo cáo</Text>
-    </View>
-  );
+  return <ReportsScreen />;
 }

@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/colors";
 import { IncidentCategoryResponse } from "@/services/incident/incident.types";
 import { getCategoryStyle } from "@/utils/incident";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 interface Props {
   categories: IncidentCategoryResponse[];
@@ -47,7 +47,7 @@ export function IncidentCategorySelector({ categories, isLoading, selectedCatego
                 shadowOpacity: isSelected ? 0.3 : 0.05,
                 shadowRadius: isSelected ? 8 : 4,
                 elevation: isSelected ? 5 : 1,
-                width: "30%", // Ensures 3 columns per row
+                width: "30%", 
               }}
               className="py-4 rounded-2xl items-center justify-center overflow-hidden mb-2"
             >
