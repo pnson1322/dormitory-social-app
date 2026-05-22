@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/colors";
-import { RegistrationItem as RegistrationType, RegistrationStatus } from "@/hooks/student/useRegistrationHistory";
+import { RegistrationStatus, RegistrationItem as RegistrationType } from "@/hooks/student/useRegistrationHistory";
 import { Ionicons } from "@expo/vector-icons";
 import React, { memo } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -9,21 +9,36 @@ type Props = {
   onPress?: () => void;
 };
 
-const STATUS_CONFIG: Record<RegistrationStatus, { label: string; color: string; bg: string; icon: keyof typeof Ionicons.glyphMap }> = {
+const STATUS_CONFIG: Record<
+  RegistrationStatus,
+  { label: string; color: string; bg: string; icon: keyof typeof Ionicons.glyphMap }
+> = {
   PENDING: { label: "Đang chờ", color: "#F59E0B", bg: "#FEF3C7", icon: "time" },
-  APPROVED: { label: "Đã duyệt", color: "#10B981", bg: "#D1FAE5", icon: "checkmark-circle" },
-  REJECTED: { label: "Từ chối", color: "#EF4444", bg: "#FEE2E2", icon: "close-circle" },
+  ACTIVE: { label: "Hoạt động", color: "#10B981", bg: "#D1FAE5", icon: "checkmark-circle" },
+  COMPLETED: { label: "Hoàn thành", color: "#3B82F6", bg: "#EFF6FF", icon: "checkmark-circle" },
   CANCELLED: { label: "Đã hủy", color: "#6B7280", bg: "#F3F4F6", icon: "remove-circle" },
 };
 
-const TYPE_LABELS = {
-  NEW: "Đăng ký mới",
-  RENEW: "Gia hạn",
-  TRANSFER: "Chuyển phòng",
-};
-
 export const RegistrationItem = memo(function RegistrationItem({ item, onPress }: Props) {
-  const status = STATUS_CONFIG[item.status];
+  const status = STATUS_CONFIG[item.status] || {
+    label: item.status,
+    color: "#6B7280",
+    bg: "#F3F4F6",
+    icon: "help-circle",
+  };
+
+  const formatDate = (isoString: string) => {
+    try {
+      const d = new Date(isoString);
+      if (isNaN(d.getTime())) return "Mới đây";
+      const day = String(d.getDate()).padStart(2, "0");
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch {
+      return "Mới đây";
+    }
+  };
 
   return (
     <Pressable
@@ -46,14 +61,14 @@ export const RegistrationItem = memo(function RegistrationItem({ item, onPress }
           </View>
           <View className="flex-1">
             <Text className="text-[16px] font-bold text-slate-900" numberOfLines={1}>
-              Phòng {item.roomName}
+              Phòng: {item.roomId}
             </Text>
-            <Text className="text-[13px] text-slate-500 mt-0.5">{TYPE_LABELS[item.type]}</Text>
+            <Text className="text-[13px] text-slate-500 mt-0.5">Kỳ học: {item.termName}</Text>
           </View>
         </View>
-        
+
         <View className="px-3 py-1 rounded-full flex-row items-center" style={{ backgroundColor: status.bg }}>
-          <Ionicons name={status.icon} size={14} color={status.color} className="mr-1" />
+          <Ionicons name={status.icon} size={14} color={status.color} style={{ marginRight: 4 }} />
           <Text className="text-[11px] font-bold uppercase" style={{ color: status.color }}>
             {status.label}
           </Text>
@@ -65,18 +80,10 @@ export const RegistrationItem = memo(function RegistrationItem({ item, onPress }
       <View className="flex-row justify-between items-center">
         <View className="flex-row items-center">
           <Ionicons name="calendar-outline" size={14} color="#94A3B8" />
-          <Text className="text-[13px] text-slate-500 ml-1.5">{item.requestDate}</Text>
+          <Text className="text-[13px] text-slate-500 ml-1.5">{formatDate(item.createdAt)}</Text>
         </View>
-        <Text className="text-[12px] font-bold text-slate-400">ID: {item.id}</Text>
+        <Text className="text-[12px] font-bold text-slate-400">Booking ID: {item.bookingId.substring(0, 8)}...</Text>
       </View>
-
-      {item.note && (
-        <View className="mt-4 p-3 bg-slate-50 rounded-xl">
-          <Text className="text-[12px] text-slate-500 italic" numberOfLines={2}>
-            "{item.note}"
-          </Text>
-        </View>
-      )}
     </Pressable>
   );
 });
