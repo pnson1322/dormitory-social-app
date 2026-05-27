@@ -83,7 +83,7 @@ export function CreateUserScreen() {
           message: "Người dùng mới đã được thêm vào hệ thống.",
         });
 
-        router.back();
+        router.navigate("/(admin)/users");
       },
       onError: (message) => {
         showToast({

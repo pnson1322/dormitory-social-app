@@ -17,14 +17,9 @@ export default function AdminLayout() {
           iconName: "people-outline",
         },
         {
-          name: "permissions",
-          label: "Phân quyền",
-          iconName: "shield-outline",
-        },
-        {
-          name: "audit-logs",
-          label: "Nhật ký",
-          iconName: "document-text-outline",
+          name: "content-management",
+          label: "Nội dung",
+          iconName: "newspaper-outline",
         },
         {
           name: "settings",

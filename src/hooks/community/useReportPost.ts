@@ -63,9 +63,21 @@ export function useReportPost({
 
     setIsSubmitting(true);
     try {
+      const reasonLabels: Record<ReportReason, string> = {
+        Spam: "Spam",
+        Inappropriate: "Nội dung không phù hợp",
+        Harassment: "Quấy rối / Công kích",
+        FakeNews: "Tin giả / Sai sự thật",
+        Other: "Lý do khác",
+      };
+
+      const reasonText = reasonLabels[selectedReason];
+      const userNote = note.trim();
+      const finalNote = userNote ? `[Lý do: ${reasonText}] ${userNote}` : `Báo cáo lý do: ${reasonText}`;
+
       await reportPost(postId, {
-        reason: selectedReason,
-        note: note.trim() || undefined,
+        reason: 0,
+        note: finalNote,
       });
 
       showToast({

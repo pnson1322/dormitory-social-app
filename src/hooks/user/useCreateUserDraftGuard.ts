@@ -38,7 +38,7 @@ export function useCreateUserDraftGuard({
 
   const resetFormAndBack = useCallback(() => {
     resetFormState();
-    router.back();
+    router.navigate("/(admin)/users");
   }, [resetFormState, router]);
 
   const handleBack = useCallback(() => {
@@ -69,7 +69,10 @@ export function useCreateUserDraftGuard({
 
   useEffect(() => {
     const onBackPress = () => {
-      if (!hasChanges || loading) return false;
+      if (!hasChanges || loading) {
+        resetFormAndBack();
+        return true;
+      }
 
       Alert.alert(
         "Chưa lưu thay đổi",

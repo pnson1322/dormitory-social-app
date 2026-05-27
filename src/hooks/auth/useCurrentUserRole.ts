@@ -31,6 +31,6 @@ export function useCurrentUserRole() {
     role,
     userId,
     loading,
-    isAdminOrManager: role === "admin" || role === "manager",
+    isAdminOrManager: role?.toLowerCase() === "admin" || role?.toLowerCase() === "manager",
   };
 }

@@ -1,9 +1,10 @@
 import { Colors } from "@/constants/colors";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import React from "react";
+import React, { useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { PostRenderingStrategy } from "./PostRenderingStrategy";
+import { isValidAvatarUrl } from "@/utils/communityUtils";
 
 interface PostCardHeaderProps {
   authorId: string;
@@ -14,7 +15,7 @@ interface PostCardHeaderProps {
   isHiding: boolean;
   handleHide: () => Promise<void>;
   formatDate: (dateString: string) => string;
-  getInitials: (authorId: string) => string;
+  getInitials: (nameOrId: string) => string;
   onPress?: () => void;
   avatarUrl?: string;
   authorName?: string;
@@ -22,6 +23,7 @@ interface PostCardHeaderProps {
   isPinned?: boolean;
   isPinning?: boolean;
   onPin?: () => Promise<void>;
+  isHidden?: boolean;
 }
 
 export function PostCardHeader({
@@ -41,13 +43,17 @@ export function PostCardHeader({
   isPinned = false,
   isPinning = false,
   onPin,
+  isHidden = false,
 }: PostCardHeaderProps) {
+  const [imageError, setImageError] = useState(false);
+
   return (
     <View className="flex-row items-center justify-between mb-3">
       <Pressable onPress={onPress} className="flex-row items-center flex-1">
-        {avatarUrl ? (
+        {isValidAvatarUrl(avatarUrl) && !imageError ? (
           <Image
             source={{ uri: avatarUrl }}
+            onError={() => setImageError(true)}
             className="w-10 h-10 rounded-full mr-3"
             contentFit="cover"
             transition={150}
@@ -58,7 +64,7 @@ export function PostCardHeader({
             style={{ backgroundColor: Colors.primary + "15" }}
           >
             <Text className="font-bold text-[15px]" style={{ color: Colors.primary }}>
-              {getInitials(authorId)}
+              {getInitials(authorName || authorId)}
             </Text>
           </View>
         )}
@@ -88,6 +94,22 @@ export function PostCardHeader({
           </Text>
         </View>
 
+        {isHidden && (
+          <View
+            className="flex-row items-center px-2.5 py-1 rounded-full bg-slate-100 mr-2"
+          >
+            <Ionicons
+              name="eye-off"
+              size={11}
+              color="#64748B"
+              style={{ marginRight: 3 }}
+            />
+            <Text className="text-[11px] font-bold text-slate-500">
+              Đã ẩn
+            </Text>
+          </View>
+        )}
+
         {canPin && onPin && (
           <Pressable
             onPress={onPin}
@@ -97,10 +119,11 @@ export function PostCardHeader({
             {isPinning ? (
               <ActivityIndicator size="small" color={Colors.textSecondary} />
             ) : (
-              <Ionicons
-                name={isPinned ? "pin" : "pin-outline"}
-                size={16}
+              <AntDesign
+                name="pushpin"
+                size={14}
                 color={isPinned ? "#EF4444" : Colors.textSecondary}
+                style={{ opacity: isPinned ? 1 : 0.5 }}
               />
             )}
           </Pressable>
@@ -115,7 +138,11 @@ export function PostCardHeader({
             {isHiding ? (
               <ActivityIndicator size="small" color={Colors.textSecondary} />
             ) : (
-              <Ionicons name="eye-off-outline" size={16} color={Colors.textSecondary} />
+              <Ionicons
+                name={isHidden ? "eye-outline" : "eye-off-outline"}
+                size={16}
+                color={isHidden ? "#10B981" : Colors.textSecondary}
+              />
             )}
           </Pressable>
         )}

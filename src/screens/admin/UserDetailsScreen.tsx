@@ -12,6 +12,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  BackHandler,
   Image,
   Pressable,
   RefreshControl,
@@ -133,6 +134,16 @@ export function UserDetailsScreen() {
   const { showToast } = useToast();
   const { id } = useLocalSearchParams();
 
+  useEffect(() => {
+    const onBackPress = () => {
+      router.navigate("/(admin)/users");
+      return true;
+    };
+
+    const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+    return () => sub.remove();
+  }, [router]);
+
   const { user, loading, error, refetch, setUser } = useUserDetails(
     id as string,
   );
@@ -224,7 +235,7 @@ export function UserDetailsScreen() {
         >
           <View className="flex-row items-center">
             <Pressable
-              onPress={() => router.back()}
+              onPress={() => router.navigate("/(admin)/users")}
               className="mr-4 h-11 w-11 items-center justify-center rounded-full bg-white/15"
             >
               <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
@@ -265,7 +276,7 @@ export function UserDetailsScreen() {
       >
         <View className="flex-row items-center">
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(admin)/users")}
             className="mr-4 h-11 w-11 items-center justify-center rounded-full bg-white/15"
           >
             <Ionicons name="arrow-back" size={22} color="#FFFFFF" />

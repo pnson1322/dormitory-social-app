@@ -16,6 +16,7 @@ import {
 } from "@/services/community/community.types";
 import { useCallback, useState } from "react";
 import { Alert, Keyboard } from "react-native";
+import { formatDate, getInitials } from "@/utils/communityUtils";
 
 export type LocalComment = CommentResponse;
 
@@ -41,12 +42,14 @@ export function usePostInteraction(
   const [commentsCursor, setCommentsCursor] = useState<string | null>(null);
   const [hasMoreComments, setHasMoreComments] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [postDetail, setPostDetail] = useState<PostResponse | null>(null);
 
   const fetchPostDetail = useCallback(async () => {
     setIsLoadingDetail(true);
     try {
       const detail = await getPostDetail(post.id);
       if (detail) {
+        setPostDetail(detail);
         if (detail.likeCount !== undefined) setLikesCount(detail.likeCount);
         if (detail.commentCount !== undefined)
           setCommentsCount(detail.commentCount);
@@ -281,25 +284,6 @@ export function usePostInteraction(
     }
   };
 
-  const formatDate = (isoString: string) => {
-    try {
-      const d = new Date(isoString);
-      if (isNaN(d.getTime())) return "Mới đây";
-      const hours = String(d.getHours()).padStart(2, "0");
-      const minutes = String(d.getMinutes()).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const year = d.getFullYear();
-      return `${hours}:${minutes} ${day}/${month}/${year}`;
-    } catch {
-      return "Mới đây";
-    }
-  };
-
-  const getInitials = (id: string) => {
-    return "SV";
-  };
-
   const handlePinToggle = async (onSuccess?: () => void) => {
     if (isPinning) return;
     setIsPinning(true);
@@ -357,5 +341,6 @@ export function usePostInteraction(
     getInitials,
     fetchComments,
     fetchPostDetail,
+    postDetail,
   };
 }

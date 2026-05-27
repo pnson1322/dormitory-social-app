@@ -3,23 +3,33 @@ import { useCurrentUserRole } from "@/hooks/auth/useCurrentUserRole";
 import { usePostInteraction } from "@/hooks/community/usePostInteraction";
 import { PostResponse } from "@/services/community/community.types";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { Image } from "expo-image";
-import React, { useState } from "react";
-import { Text, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Pressable, Text, View } from "react-native";
 import { PostCardActions } from "./PostCardActions";
 import { PostCardHeader } from "./PostCardHeader";
 import { PostDetailModal } from "./PostDetailModal";
 import { PostStrategyFactory } from "./PostRenderingStrategy";
 import { ReportPostModal } from "./ReportPostModal";
+import { FullscreenImageViewer } from "@/components/common/FullscreenImageViewer";
+import { PostMediaGrid } from "@/components/community/PostMediaGrid";
 
 interface PostCardProps {
   post: PostResponse;
   onHide?: (id: string) => void;
   canHide?: boolean;
   onPinSuccess?: () => void;
+  autoOpenDetail?: boolean;
+  onCloseDetail?: () => void;
 }
 
-export function PostCard({ post, onHide, canHide = false, onPinSuccess }: PostCardProps) {
+export function PostCard({
+  post,
+  onHide,
+  canHide = false,
+  onPinSuccess,
+  autoOpenDetail = false,
+  onCloseDetail,
+}: PostCardProps) {
   const strategy = PostStrategyFactory.getStrategy(post.postType);
 
   const {
@@ -41,6 +51,7 @@ export function PostCard({ post, onHide, canHide = false, onPinSuccess }: PostCa
     getInitials,
     fetchComments,
     fetchPostDetail,
+    postDetail,
     editingCommentId,
     handleDeleteComment,
     startEditComment,
@@ -50,99 +61,18 @@ export function PostCard({ post, onHide, canHide = false, onPinSuccess }: PostCa
     loadMoreComments,
   } = usePostInteraction(post, onHide);
 
-  const { isAdminOrManager } = useCurrentUserRole();
+  const { isAdminOrManager, userId } = useCurrentUserRole();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(0);
+
+  const handleImagePress = (index: number) => {
+    setViewerIndex(index);
+    setViewerVisible(true);
+  };
 
   const handlePin = async () => {
     await handlePinToggle(onPinSuccess);
-  };
-
-  const renderMedia = () => {
-    const urls = post.mediaUrls;
-    if (!urls || urls.length === 0) return null;
-
-    if (urls.length === 1) {
-      return (
-        <View className="mt-3 rounded-xl overflow-hidden">
-          <Image
-            source={{ uri: urls[0] }}
-            className="w-full h-56 rounded-xl"
-            contentFit="cover"
-            transition={200}
-          />
-        </View>
-      );
-    }
-
-    if (urls.length === 2) {
-      return (
-        <View className="mt-3 flex-row justify-between">
-          <Image
-            source={{ uri: urls[0] }}
-            style={{ width: "49%", aspectRatio: 1 }}
-            className="rounded-xl"
-            contentFit="cover"
-            transition={200}
-          />
-          <Image
-            source={{ uri: urls[1] }}
-            style={{ width: "49%", aspectRatio: 1 }}
-            className="rounded-xl"
-            contentFit="cover"
-            transition={200}
-          />
-        </View>
-      );
-    }
-
-    const remainingCount = urls.length - 3;
-    return (
-      <View className="mt-3 flex-row justify-between h-48">
-        <Image
-          source={{ uri: urls[0] }}
-          style={{ width: "63%", height: "100%" }}
-          className="rounded-l-xl"
-          contentFit="cover"
-          transition={200}
-        />
-        <View
-          className="justify-between"
-          style={{ width: "35%", height: "100%" }}
-        >
-          <Image
-            source={{ uri: urls[1] }}
-            style={{ width: "100%", height: "48%" }}
-            className="rounded-tr-xl"
-            contentFit="cover"
-            transition={200}
-          />
-          <View style={{ width: "100%", height: "48%" }} className="relative">
-            <Image
-              source={{ uri: urls[2] }}
-              style={{ width: "100%", height: "100%" }}
-              className="rounded-br-xl"
-              contentFit="cover"
-              transition={200}
-            />
-            {remainingCount > 0 && (
-              <View
-                className="absolute inset-0 bg-black/45 rounded-br-xl justify-center items-center"
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                }}
-              >
-                <Text className="text-white font-extrabold text-[17px]">
-                  +{remainingCount}
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
-      </View>
-    );
   };
 
   const [showReportModal, setShowReportModal] = useState(false);
@@ -153,6 +83,12 @@ export function PostCard({ post, onHide, canHide = false, onPinSuccess }: PostCa
     fetchComments();
     setShowDetailModal(true);
   };
+
+  useEffect(() => {
+    if (autoOpenDetail) {
+      handleOpenDetail();
+    }
+  }, [autoOpenDetail]);
 
   return (
     <View
@@ -173,7 +109,7 @@ export function PostCard({ post, onHide, canHide = false, onPinSuccess }: PostCa
           authorId={post.authorId}
           createdAt={post.createdAt}
           strategy={strategy}
-          canHide={canHide}
+          canHide={canHide && !!userId && (post.authorId?.toLowerCase() === userId?.toLowerCase() || isAdminOrManager)}
           onHide={onHide}
           isHiding={isHiding}
           handleHide={handleHide}
@@ -186,20 +122,30 @@ export function PostCard({ post, onHide, canHide = false, onPinSuccess }: PostCa
           isPinned={isPinned}
           isPinning={isPinning}
           onPin={handlePin}
+          isHidden={post.isHidden}
         />
 
-        <Text
-          numberOfLines={2}
-          onPress={handleOpenDetail}
-          className="text-[15px] leading-6"
-          style={{ color: Colors.textPrimary }}
-        >
-          {post.content}
-        </Text>
+        <View>
+          <Text
+            numberOfLines={isExpanded ? undefined : 2}
+            className="text-[15px] leading-6"
+            style={{ color: Colors.textPrimary }}
+          >
+            {post.content}
+          </Text>
+          {post.content.length > 90 && (
+            <Text
+              onPress={() => setIsExpanded(!isExpanded)}
+              className="text-blue-600 text-[13px] mt-1 font-semibold"
+            >
+              {isExpanded ? "Thu gọn" : "Xem thêm"}
+            </Text>
+          )}
+        </View>
 
         {strategy.renderCustomContent && strategy.renderCustomContent(post)}
 
-        {renderMedia()}
+        <PostMediaGrid mediaUrls={post.mediaUrls} onImagePress={handleImagePress} />
 
         <View className="flex-row items-center justify-between pb-2.5 mt-2">
           <View className="flex-row items-center">
@@ -213,7 +159,11 @@ export function PostCard({ post, onHide, canHide = false, onPinSuccess }: PostCa
               {likesCount}
             </Text>
           </View>
-          <Text className="text-[12px]" style={{ color: Colors.textSecondary }}>
+          <Text
+            onPress={handleOpenDetail}
+            className="text-[12px]"
+            style={{ color: Colors.textSecondary }}
+          >
             {commentsCount} bình luận
           </Text>
         </View>
@@ -251,8 +201,11 @@ export function PostCard({ post, onHide, canHide = false, onPinSuccess }: PostCa
 
       <PostDetailModal
         visible={showDetailModal}
-        onClose={() => setShowDetailModal(false)}
-        post={post}
+        onClose={() => {
+          setShowDetailModal(false);
+          onCloseDetail?.();
+        }}
+        post={postDetail || post}
         strategy={strategy}
         isLiked={isLiked}
         likesCount={likesCount}
@@ -276,6 +229,13 @@ export function PostCard({ post, onHide, canHide = false, onPinSuccess }: PostCa
         hasMoreComments={hasMoreComments}
         loadMoreComments={loadMoreComments}
         handleLikeComment={handleLikeComment}
+      />
+
+      <FullscreenImageViewer
+        visible={viewerVisible}
+        images={post.mediaUrls || []}
+        initialIndex={viewerIndex}
+        onClose={() => setViewerVisible(false)}
       />
     </View>
   );

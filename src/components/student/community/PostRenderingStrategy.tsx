@@ -63,7 +63,7 @@ export class AnnouncementPostStrategy implements PostRenderingStrategy {
     return "#FEF2F2";
   }
   getBadgeLabel() {
-    return "Thông báo KTX";
+    return "Thông báo";
   }
   getCardBorderColor() {
     return "#FCA5A5";

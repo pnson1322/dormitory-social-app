@@ -51,7 +51,7 @@ export type ReportReason = "Spam" | "Inappropriate" | "Harassment" | "FakeNews" 
 export type ReportStatus = "Pending" | "Reviewed" | "Dismissed";
 
 export type ReportRequest = {
-  reason: ReportReason;
+  reason: number;
   note?: string;
 };
 
@@ -139,3 +139,15 @@ export type PinPostResponse = {
   isPinned: boolean;
   updatedAt: string;
 };
+
+export type HiddenPostsResponse = {
+  items: PostResponse[];
+  nextCursor: string | null;
+  hasMore: boolean;
+};
+
+export type GetHiddenPostsParams = {
+  cursor?: string;
+  pageSize?: number;
+};
+

@@ -2,12 +2,12 @@ import { ApiResponse } from "@/services/base.types";
 import { http } from "@/services/http";
 import {
   CreateIncidentRequest,
-  IncidentResponse,
   IncidentCategoryResponse,
+  IncidentResponse,
 } from "./incident.types";
 
 export async function getIncidentCategories() {
-  const { data } = await http.get<ApiResponse<IncidentCategoryResponse[]>>("/api/incident-categories");
+  const { data } = await http.get<ApiResponse<IncidentCategoryResponse[]>>("/api/incidents/categories");
   return data.data;
 }
 

@@ -1,7 +1,7 @@
 import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -9,6 +9,7 @@ import {
   RefreshControl,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
@@ -16,22 +17,20 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { DraggableFAB } from "@/components/common/DraggableFAB";
 import { CreatePostModal } from "@/components/student/community/CreatePostModal";
+import { HiddenPostsModal } from "@/components/student/community/HiddenPostsModal";
 import { PostCard } from "@/components/student/community/PostCard";
 import { PostCardSkeleton } from "@/components/student/community/PostCardSkeleton";
 import { Colors } from "@/constants/colors";
+import { useCurrentUserRole } from "@/hooks/auth/useCurrentUserRole";
 import { useCommunityActions } from "@/hooks/community/useCommunityActions";
 import { useCommunityPosts } from "@/hooks/community/useCommunityPosts";
 import useProfile from "@/hooks/profile/useProfile";
-import { Image } from "expo-image";
+import { getInitials, isValidAvatarUrl } from "@/utils/communityUtils";
 
 type FilterTab = {
   key: string | undefined;
   label: string;
-  icon:
-    | "apps-outline"
-    | "chatbubble-ellipses-outline"
-    | "search-outline"
-    | "megaphone-outline";
+  icon: "apps-outline" | "chatbubble-ellipses-outline" | "search-outline" | "megaphone-outline";
 };
 
 const FILTER_TABS: FilterTab[] = [
@@ -43,30 +42,23 @@ const FILTER_TABS: FilterTab[] = [
 
 export function CommunityScreen() {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
   const { width } = useWindowDimensions();
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [hiddenPostsModalVisible, setHiddenPostsModalVisible] = useState(false);
   const { profile } = useProfile();
+  const { userId } = useCurrentUserRole();
+  const [avatarError, setAvatarError] = useState(false);
 
-  const {
-    pinnedPosts,
-    posts,
-    isLoading,
-    isRefreshing,
-    isError,
-    postType,
-    setPostType,
-    loadMore,
-    refresh,
-  } = useCommunityPosts({ pageSize: 10 });
+  useEffect(() => {
+    setAvatarError(false);
+  }, [profile?.avatarUrl]);
+
+  const { pinnedPosts, posts, isLoading, isRefreshing, isError, postType, setPostType, loadMore, refresh } =
+    useCommunityPosts({ pageSize: 10 });
 
   const { createPost, hidePost } = useCommunityActions();
 
-  const handleCreatePostSubmit = async (
-    content: string,
-    type: string,
-    files: string[],
-  ) => {
+  const handleCreatePostSubmit = async (content: string, type: string, files: string[]) => {
     const result = await createPost(content, type, files);
     if (result) {
       refresh();
@@ -77,103 +69,66 @@ export function CommunityScreen() {
 
   const handleHidePost = async (id: string) => {
     const result = await hidePost(id);
-    if (result) {
-      refresh();
-    }
+    if (result) refresh();
   };
 
   const renderHeader = () => {
-    const initials = profile?.fullName
-      ? profile.fullName.split(" ").pop()?.slice(0, 2).toUpperCase() || "SV"
-      : "SV";
-
+    const initials = getInitials(profile?.fullName);
     return (
       <View className="mb-2">
+        {/* Compose box */}
         <View className="bg-white rounded-2xl p-4 mb-4 border border-slate-100 flex-row items-center shadow-sm">
-          {profile?.avatarUrl ? (
+          {isValidAvatarUrl(profile?.avatarUrl || undefined) && !avatarError ? (
             <Image
-              source={{ uri: profile.avatarUrl }}
+              source={{ uri: profile?.avatarUrl || undefined }}
+              onError={() => setAvatarError(true)}
               className="w-10 h-10 rounded-full mr-3"
               contentFit="cover"
               transition={150}
             />
           ) : (
-            <View
-              className="w-10 h-10 rounded-full justify-center items-center mr-3"
-              style={{ backgroundColor: Colors.primary + "15" }}
-            >
-              <Text
-                className="font-bold text-[15px]"
-                style={{ color: Colors.primary }}
-              >
-                {initials}
-              </Text>
+            <View className="w-10 h-10 rounded-full justify-center items-center mr-3" style={{ backgroundColor: Colors.primary + "15" }}>
+              <Text className="font-bold text-[15px]" style={{ color: Colors.primary }}>{initials}</Text>
             </View>
           )}
           <Pressable
             onPress={() => setCreateModalVisible(true)}
             className="flex-1 bg-slate-50 rounded-full px-4 py-2.5 border border-slate-200 active:bg-slate-100"
           >
-            <Text numberOfLines={1} className="text-[14px] text-slate-400">
-              Bạn đang nghĩ gì thế? Chia sẻ ngay...
-            </Text>
+            <Text numberOfLines={1} className="text-[14px] text-slate-400">Bạn đang nghĩ gì thế? Chia sẻ ngay...</Text>
           </Pressable>
-          <Pressable
-            onPress={() => setCreateModalVisible(true)}
-            className="ml-3 p-2 rounded-full active:bg-slate-100"
-          >
+          <Pressable onPress={() => setCreateModalVisible(true)} className="ml-3 p-2 rounded-full active:bg-slate-100">
             <Ionicons name="images-outline" size={20} color={Colors.primary} />
           </Pressable>
         </View>
 
-        {pinnedPosts.length > 0 && (
+        {/* Pinned posts */}
+        {pinnedPosts.filter((p) => !p.isHidden).length > 0 && (
           <View className="mb-4">
             <View className="flex-row items-center mb-2 px-2">
-              <AntDesign
-                name="pushpin"
-                size={15}
-                color={Colors.textSecondary}
-                style={{ marginRight: 6 }}
-              />
-              <Text className="text-[15px] font-bold text-slate-800">
-                Thông báo được ghim
-              </Text>
+              <AntDesign name="pushpin" size={15} color={Colors.textSecondary} style={{ marginRight: 6 }} />
+              <Text className="text-[15px] font-bold text-slate-800">Thông báo được ghim</Text>
             </View>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingLeft: 8, paddingRight: 20 }}
-              className="flex-row"
             >
-              {pinnedPosts.map((post) => (
-                <View
-                  key={post.id}
-                  style={{ width: width - 40 }}
-                  className="mr-3"
-                >
-                  <PostCard
-                    post={post}
-                    onHide={handleHidePost}
-                    canHide={true}
-                    onPinSuccess={refresh}
-                  />
-                </View>
-              ))}
+              {pinnedPosts
+                .filter((p) => !p.isHidden)
+                .map((post) => (
+                  <View key={post.id} style={{ width: width - 40 }} className="mr-3">
+                    <PostCard post={post} onHide={handleHidePost} canHide={true} onPinSuccess={refresh} />
+                  </View>
+                ))}
             </ScrollView>
             <View className="h-[1px] bg-slate-200/50 mt-4 mx-2" />
           </View>
         )}
 
         <View className="flex-row items-center mb-1 px-2">
-          <Ionicons
-            name="newspaper-outline"
-            size={16}
-            color={Colors.textSecondary}
-            style={{ marginRight: 6 }}
-          />
-          <Text className="text-[15px] font-bold text-slate-800">
-            Bản tin chung
-          </Text>
+          <Ionicons name="newspaper-outline" size={16} color={Colors.textSecondary} style={{ marginRight: 6 }} />
+          <Text className="text-[15px] font-bold text-slate-800">Bản tin chung</Text>
         </View>
       </View>
     );
@@ -190,60 +145,35 @@ export function CommunityScreen() {
     return <View className="h-20" />;
   };
 
-  const renderError = () => {
-    return (
-      <View className="py-16 px-6 items-center justify-center bg-white rounded-2xl border border-slate-100">
-        <Ionicons
-          name="wifi-outline"
-          size={48}
-          color="#94A3B8"
-          style={{ marginBottom: 12 }}
-        />
-        <Text className="text-slate-800 font-bold text-[17px] mb-1">
-          Không thể tải bản tin
-        </Text>
-        <Text className="text-slate-400 text-[13px] text-center mb-5">
-          Đã có lỗi xảy ra khi kết nối đến máy chủ. Vui lòng kiểm tra lại mạng.
-        </Text>
-        <Pressable
-          onPress={refresh}
-          className="px-6 py-2.5 rounded-full bg-blue-600 active:opacity-90"
-          style={{ backgroundColor: Colors.primary }}
-        >
-          <Text className="text-white text-[13px] font-bold">Thử lại</Text>
-        </Pressable>
-      </View>
-    );
-  };
+  const renderError = () => (
+    <View className="py-16 px-6 items-center justify-center bg-white rounded-2xl border border-slate-100">
+      <Ionicons name="wifi-outline" size={48} color="#94A3B8" style={{ marginBottom: 12 }} />
+      <Text className="text-slate-800 font-bold text-[17px] mb-1">Không thể tải bản tin</Text>
+      <Text className="text-slate-400 text-[13px] text-center mb-5">
+        Đã có lỗi xảy ra khi kết nối đến máy chủ. Vui lòng kiểm tra lại mạng.
+      </Text>
+      <Pressable onPress={refresh} className="px-6 py-2.5 rounded-full active:opacity-90" style={{ backgroundColor: Colors.primary }}>
+        <Text className="text-white text-[13px] font-bold">Thử lại</Text>
+      </Pressable>
+    </View>
+  );
 
-  const renderEmpty = () => {
-    return (
-      <View className="py-16 px-6 items-center justify-center bg-white rounded-2xl border border-slate-100">
-        <Ionicons
-          name="newspaper-outline"
-          size={48}
-          color="#94A3B8"
-          style={{ marginBottom: 12 }}
-        />
-        <Text className="text-slate-800 font-bold text-[17px] mb-1">
-          Chưa có bài đăng nào
-        </Text>
-        <Text className="text-slate-400 text-[13px] text-center mb-5">
-          Hãy là người đầu tiên chia sẻ câu chuyện hoặc thông tin hữu ích trong
-          ký túc xá nhé!
-        </Text>
-        <Pressable
-          onPress={() => setCreateModalVisible(true)}
-          className="px-6 py-2.5 rounded-full bg-blue-600 active:opacity-90"
-          style={{ backgroundColor: Colors.primary }}
-        >
-          <Text className="text-white text-[13px] font-bold">
-            Đăng bài ngay
-          </Text>
-        </Pressable>
-      </View>
-    );
-  };
+  const renderEmpty = () => (
+    <View className="py-16 px-6 items-center justify-center bg-white rounded-2xl border border-slate-100">
+      <Ionicons name="newspaper-outline" size={48} color="#94A3B8" style={{ marginBottom: 12 }} />
+      <Text className="text-slate-800 font-bold text-[17px] mb-1">Chưa có bài đăng nào</Text>
+      <Text className="text-slate-400 text-[13px] text-center mb-5">
+        Hãy là người đầu tiên chia sẻ câu chuyện hoặc thông tin hữu ích trong ký túc xá nhé!
+      </Text>
+      <Pressable
+        onPress={() => setCreateModalVisible(true)}
+        className="px-6 py-2.5 rounded-full active:opacity-90"
+        style={{ backgroundColor: Colors.primary }}
+      >
+        <Text className="text-white text-[13px] font-bold">Đăng bài ngay</Text>
+      </Pressable>
+    </View>
+  );
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.background }}>
@@ -259,21 +189,20 @@ export function CommunityScreen() {
           borderBottomRightRadius: 30,
         }}
       >
-        <Text className="text-[28px] font-extrabold text-white">
-          Cộng đồng KTX
-        </Text>
-        <Text className="mt-2 text-[15px] text-white/90">
-          Kết nối, thảo luận và chia sẻ thông tin ký túc xá
-        </Text>
+        <View className="flex-row items-center justify-between">
+          <Text className="text-[28px] font-extrabold text-white">Cộng đồng KTX</Text>
+          <TouchableOpacity
+            onPress={() => setHiddenPostsModalVisible(true)}
+            className="w-10 h-10 items-center justify-center rounded-full bg-white/15 active:bg-white/25"
+          >
+            <Ionicons name="eye-off-outline" size={20} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
+        <Text className="mt-2 text-[15px] text-white/90">Kết nối, thảo luận và chia sẻ thông tin ký túc xá</Text>
       </LinearGradient>
 
       <View className="mt-3.5 mb-2.5 z-20">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 4 }}
-          className="flex-row"
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 4 }}>
           {FILTER_TABS.map((tab) => {
             const isSelected = postType === tab.key;
             return (
@@ -291,18 +220,8 @@ export function CommunityScreen() {
                   elevation: 2,
                 }}
               >
-                <Ionicons
-                  name={tab.icon}
-                  size={14}
-                  color={isSelected ? "#FFFFFF" : Colors.textSecondary}
-                  style={{ marginRight: 6 }}
-                />
-                <Text
-                  className="text-[13px] font-bold"
-                  style={{
-                    color: isSelected ? "#FFFFFF" : Colors.textSecondary,
-                  }}
-                >
+                <Ionicons name={tab.icon} size={14} color={isSelected ? "#FFFFFF" : Colors.textSecondary} style={{ marginRight: 6 }} />
+                <Text className="text-[13px] font-bold" style={{ color: isSelected ? "#FFFFFF" : Colors.textSecondary }}>
                   {tab.label}
                 </Text>
               </Pressable>
@@ -315,39 +234,22 @@ export function CommunityScreen() {
         {isError ? (
           <View className="p-5">{renderError()}</View>
         ) : isLoading && posts.length === 0 ? (
-          <ScrollView
-            contentContainerStyle={{ padding: 20 }}
-            showsVerticalScrollIndicator={false}
-          >
+          <ScrollView contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
             <PostCardSkeleton />
             <PostCardSkeleton />
             <PostCardSkeleton />
           </ScrollView>
         ) : (
           <FlatList
-            data={posts}
+            data={posts.filter((p) => !p.isHidden)}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <PostCard
-                post={item}
-                onHide={handleHidePost}
-                canHide={true}
-                onPinSuccess={refresh}
-              />
+              <PostCard post={item} onHide={handleHidePost} canHide={true} onPinSuccess={refresh} />
             )}
-            contentContainerStyle={{
-              paddingHorizontal: 12,
-              paddingTop: 6,
-              paddingBottom: 100,
-            }}
+            contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 6, paddingBottom: 100 }}
             showsVerticalScrollIndicator={false}
             refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={refresh}
-                colors={[Colors.primary]}
-                tintColor={Colors.primary}
-              />
+              <RefreshControl refreshing={isRefreshing} onRefresh={refresh} colors={[Colors.primary]} tintColor={Colors.primary} />
             }
             onEndReached={loadMore}
             onEndReachedThreshold={0.2}
@@ -364,6 +266,13 @@ export function CommunityScreen() {
         visible={createModalVisible}
         onClose={() => setCreateModalVisible(false)}
         onSubmit={handleCreatePostSubmit}
+      />
+
+      <HiddenPostsModal
+        visible={hiddenPostsModalVisible}
+        onClose={() => setHiddenPostsModalVisible(false)}
+        onHide={handleHidePost}
+        onPinSuccess={refresh}
       />
     </View>
   );
