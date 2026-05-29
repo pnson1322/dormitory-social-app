@@ -1,25 +1,62 @@
 import React from "react";
 import { View } from "react-native";
 
+import { Skeleton } from "@/components/common/Skeleton";
+
 export function PostCardSkeleton() {
   return (
-    <View className="bg-white p-4 rounded-2xl mb-4 border border-slate-100 shadow-sm animate-pulse">
+    <View
+      className="bg-white p-4 rounded-2xl mb-4 border border-slate-100"
+      style={{
+        shadowColor: "#000",
+        shadowOpacity: 0.04,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 2,
+      }}
+    >
       <View className="flex-row justify-between items-start mb-3">
         <View className="flex-row items-center">
-          <View className="w-10 h-10 rounded-full bg-slate-100 mr-3" />
-          <View>
-            <View className="w-24 h-4 bg-slate-100 rounded mb-1.5" />
-            <View className="w-16 h-3 bg-slate-100 rounded" />
+          <Skeleton width={40} height={40} borderRadius={20} />
+          <View style={{ marginLeft: 12 }}>
+            <Skeleton width={100} height={14} borderRadius={6} />
+            <Skeleton
+              width={64}
+              height={11}
+              borderRadius={5}
+              style={{ marginTop: 6 }}
+            />
           </View>
         </View>
-        <View className="w-24 h-6 bg-slate-100 rounded-full" />
+        <Skeleton width={80} height={24} borderRadius={12} />
       </View>
 
-      <View className="w-full h-4 bg-slate-100 rounded mb-2" />
-      <View className="w-5/6 h-4 bg-slate-100 rounded mb-2" />
-      <View className="w-2/3 h-4 bg-slate-100 rounded mb-4" />
+      <Skeleton
+        width="100%"
+        height={14}
+        borderRadius={6}
+        style={{ marginBottom: 8 }}
+      />
+      <Skeleton
+        width="85%"
+        height={14}
+        borderRadius={6}
+        style={{ marginBottom: 8 }}
+      />
+      <Skeleton
+        width="65%"
+        height={14}
+        borderRadius={6}
+        style={{ marginBottom: 14 }}
+      />
 
-      <View className="w-full h-40 bg-slate-100 rounded-xl" />
+      <Skeleton width="100%" height={160} borderRadius={16} />
+
+      <View className="flex-row mt-3" style={{ gap: 24 }}>
+        <Skeleton width={56} height={12} borderRadius={6} />
+        <Skeleton width={56} height={12} borderRadius={6} />
+        <Skeleton width={56} height={12} borderRadius={6} />
+      </View>
     </View>
   );
 }

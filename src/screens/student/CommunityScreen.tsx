@@ -3,7 +3,6 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Pressable,
   RefreshControl,
@@ -76,7 +75,6 @@ export function CommunityScreen() {
     const initials = getInitials(profile?.fullName);
     return (
       <View className="mb-2">
-        {/* Compose box */}
         <View className="bg-white rounded-2xl p-4 mb-4 border border-slate-100 flex-row items-center shadow-sm">
           {isValidAvatarUrl(profile?.avatarUrl || undefined) && !avatarError ? (
             <Image
@@ -102,7 +100,6 @@ export function CommunityScreen() {
           </Pressable>
         </View>
 
-        {/* Pinned posts */}
         {pinnedPosts.filter((p) => !p.isHidden).length > 0 && (
           <View className="mb-4">
             <View className="flex-row items-center mb-2 px-2">
@@ -137,8 +134,8 @@ export function CommunityScreen() {
   const renderFooter = () => {
     if (isLoading && posts.length > 0) {
       return (
-        <View className="py-6 justify-center items-center">
-          <ActivityIndicator size="small" color={Colors.primary} />
+        <View className="px-1">
+          <PostCardSkeleton />
         </View>
       );
     }
@@ -233,7 +230,7 @@ export function CommunityScreen() {
       <View style={{ flex: 1 }}>
         {isError ? (
           <View className="p-5">{renderError()}</View>
-        ) : isLoading && posts.length === 0 ? (
+        ) : (isLoading || isRefreshing) && posts.length === 0 ? (
           <ScrollView contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
             <PostCardSkeleton />
             <PostCardSkeleton />
