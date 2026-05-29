@@ -137,7 +137,15 @@ export function ContractDetailScreen() {
         </View>
 
         {contract.contractTemplateId && (
-          <ContractTemplateSection templateId={contract.contractTemplateId} />
+          <ContractTemplateSection 
+            templateId={contract.contractTemplateId} 
+            template={(contract as any).content ? {
+              code: (contract as any).code,
+              name: (contract as any).name,
+              version: (contract as any).version,
+              content: (contract as any).content
+            } : undefined}
+          />
         )}
 
         <Text className="text-[13px] text-slate-400 text-center mt-8 italic px-4 leading-5">

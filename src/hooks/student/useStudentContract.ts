@@ -1,5 +1,5 @@
 import { contractApi } from "@/services/contract/contract.api";
-import { Contract } from "@/services/contract/contract.types";
+import { Contract, StudentContract } from "@/services/contract/contract.types";
 import { useEffect, useState } from "react";
 
 export function useStudentContract() {
@@ -14,9 +14,28 @@ export function useStudentContract() {
 
       const response = await contractApi.getMyContract();
       if (response.data) {
-        setContract(response.data);
+        setContract({
+          id: response.data.code || response.data.contractTemplateId,
+          studentName: "Sinh viên",
+          studentId: response.data.studentId,
+          roomName: response.data.roomId || "Đang cập nhật",
+          buildingName: "Ký túc xá",
+          startDate: response.data.effectiveFrom,
+          endDate: response.data.effectiveTo || "Hạn dài",
+          monthlyPrice: 1200000,
+          deposit: 1200000,
+          contractTemplateId: response.data.contractTemplateId,
+          signedDate: response.data.effectiveFrom,
+          createdAt: response.data.effectiveFrom,
+          updatedAt: response.data.effectiveFrom,
+          code: response.data.code,
+          name: response.data.name,
+          version: response.data.version,
+          content: response.data.content,
+        } as any);
       }
     } catch (error) {
+      console.error("Lỗi khi tải hợp đồng của tôi:", error);
       setContract({
         id: "HD-2026-0012",
         studentName: "Nguyễn Văn A",

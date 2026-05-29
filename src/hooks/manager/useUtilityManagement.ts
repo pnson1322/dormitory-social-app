@@ -30,17 +30,20 @@ export function useUtilityManagement() {
   const fetchInvoiceDetailsForEdit = useCallback(async (invoiceId: string) => {
     try {
       setFetchingReadings(true);
-      const data = await getInvoiceDetails(invoiceId);
-      setRoomId(data.roomId);
-      setLastReadings({
-        electricity: data.electricity.lastReading,
-        water: data.water.lastReading
-      });
-      setCurrentReadings({
-        electricity: data.electricity.currentReading,
-        water: data.water.currentReading
-      });
-      setOtherFees(data.otherFees);
+      const response = await getInvoiceDetails(invoiceId);
+      const data = response.data;
+      if (data) {
+        setRoomId(data.roomId);
+        setLastReadings({
+          electricity: data.electricityOldIndex,
+          water: data.waterOldIndex
+        });
+        setCurrentReadings({
+          electricity: data.electricityNewIndex,
+          water: data.waterNewIndex
+        });
+        setOtherFees(data.surcharges.map(s => ({ id: s.id, name: s.name, amount: s.amount })));
+      }
     } catch (err) {
       setError("Không thể tải thông tin hóa đơn.");
     } finally {
@@ -123,10 +126,9 @@ export function useUtilityManagement() {
         roomId,
         month: new Date().getMonth() + 1,
         year: new Date().getFullYear(),
-        electricity,
-        water,
-        otherFees,
-        totalAmount,
+        electricityIndex: electricity.currentReading,
+        waterIndex: water.currentReading,
+        surcharges: otherFees.map(f => ({ name: f.name, amount: f.amount })),
       });
       return true;
     } catch (err) {

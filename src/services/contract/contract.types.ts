@@ -16,7 +16,21 @@ export interface Contract {
   updatedAt: string;
 }
 
-export type GetStudentContractResponse = ApiResponse<Contract | null>;
+export interface StudentContract {
+  studentId: string;
+  latestInvoiceId: string | null;
+  roomId: string | null;
+  contractTemplateId: string;
+  code: string;
+  name: string;
+  version: number;
+  content: string;
+  effectiveFrom: string;
+  effectiveTo: string | null;
+  source: string;
+}
+
+export type GetStudentContractResponse = ApiResponse<StudentContract | null>;
 
 export interface ContractTemplate {
   id: string;

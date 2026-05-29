@@ -1,41 +1,9 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
-
-export type InvoiceStatus = "UNPAID" | "PAID";
-
-export type InvoiceBreakdown = {
-  label: string;
-  amount: number;
-};
-
-export type Invoice = {
-  id: string;
-  title: string;
-  amount: number;
-  dueDate: string;
-  status: InvoiceStatus;
-  paidDate?: string;
-  type: string;
-  breakdown?: InvoiceBreakdown[];
-};
+import { useEffect, useState, useCallback } from "react";
+import { getStudentInvoices, getUtilityHistory } from "@/services/billing/billing.api";
+import { Invoice, InvoiceStatus, UtilityHistoryData } from "@/services/billing/billing.types";
+export type { Invoice, InvoiceStatus, UtilityHistoryData };
 
 const PAGE_SIZE = 10;
-
-const GENERATE_MOCK_DATA = (page: number, status: InvoiceStatus): Invoice[] => {
-  const start = (page - 1) * PAGE_SIZE;
-  return Array.from({ length: PAGE_SIZE }).map((_, i) => ({
-    id: `INV-${status}-${start + i + 1}`,
-    title: `Hóa đơn tháng ${12 - ((start + i) % 12)}/2026`,
-    amount: 1200000 + Math.floor(Math.random() * 500000),
-    dueDate: `2026-${12 - ((start + i) % 12)}-15`,
-    status: status,
-    paidDate: status === "PAID" ? `2026-${12 - ((start + i) % 12)}-10` : undefined,
-    type: "Phòng & Dịch vụ",
-    breakdown: [
-      { label: "Tiền phòng", amount: 1200000 },
-      { label: "Dịch vụ khác", amount: Math.floor(Math.random() * 300000) },
-    ],
-  }));
-};
 
 export function useStudentInvoices() {
   const [activeTab, setActiveTab] = useState<InvoiceStatus>("UNPAID");
@@ -46,6 +14,34 @@ export function useStudentInvoices() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const [utilityHistory, setUtilityHistory] = useState<UtilityHistoryData[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
+  const loadUtilityHistory = useCallback(async () => {
+    try {
+      setLoadingHistory(true);
+      const response = await getUtilityHistory({ limit: 6 });
+      if (response.data) {
+        const mapped = response.data.map(item => ({
+          month: `Th ${item.month}`,
+          electricity: item.electricityAmount,
+          water: item.waterAmount
+        }));
+        const sorted = [...mapped].sort((a, b) => {
+          const m1 = parseInt(a.month.replace("Th ", ""), 10);
+          const m2 = parseInt(b.month.replace("Th ", ""), 10);
+          return m1 - m2;
+        });
+        setUtilityHistory(sorted);
+      }
+    } catch (e) {
+      console.log("Error loading utility history:", e);
+      setUtilityHistory([]);
+    } finally {
+      setLoadingHistory(false);
+    }
+  }, []);
 
   const loadInvoices = useCallback(async (p: number, isRefresh = false) => {
     if (isRefresh) {
@@ -58,26 +54,47 @@ export function useStudentInvoices() {
 
     setError(null);
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+    if (p === 1) {
+      loadUtilityHistory();
+    }
 
-      const newData = GENERATE_MOCK_DATA(p, activeTab);
-      
+    try {
+      const response = await getStudentInvoices({
+        status: activeTab === "PAID" ? "Paid" : "Unpaid",
+        page: p,
+        pageSize: PAGE_SIZE,
+      });
+
+      const mappedData: Invoice[] = (response.data || []).map((item) => ({
+        id: item.invoiceId,
+        title: `Hóa đơn tháng ${item.month}/${item.year}`,
+        amount: item.totalAmount,
+        dueDate: `${item.year}-${String(item.month).padStart(2, "0")}-15`,
+        status: item.status.toUpperCase() === "PAID" ? "PAID" : "UNPAID",
+        paidDate: item.paidAt || undefined,
+        type: "Phòng & Dịch vụ",
+      }));
+
       if (isRefresh || p === 1) {
-        setInvoices(newData);
+        setInvoices(mappedData);
       } else {
-        setInvoices((prev) => [...prev, ...newData]);
+        setInvoices((prev) => [...prev, ...mappedData]);
       }
 
-      setHasMore(p < 5); 
+      setHasMore(mappedData.length === PAGE_SIZE);
     } catch (err) {
+      console.log("Error loading real invoices:", err);
       setError("Không thể tải danh sách hóa đơn. Vui lòng thử lại.");
+      if (p === 1 || isRefresh) {
+        setInvoices([]);
+      }
+      setHasMore(false);
     } finally {
       setLoading(false);
       setRefreshing(false);
       setLoadingMore(false);
     }
-  }, [activeTab]);
+  }, [activeTab, loadUtilityHistory]);
 
   useEffect(() => {
     setPage(1);
@@ -115,5 +132,7 @@ export function useStudentInvoices() {
     onRefresh,
     onLoadMore,
     isOverdue,
+    utilityHistory,
+    loadingHistory
   };
 }

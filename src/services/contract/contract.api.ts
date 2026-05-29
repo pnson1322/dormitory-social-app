@@ -1,9 +1,10 @@
 import { http } from "../http";
-import { GetStudentContractResponse, GetContractTemplateResponse } from "./contract.types";
+import { GetContractTemplateResponse, GetStudentContractResponse } from "./contract.types";
 
 export const contractApi = {
   getMyContract: async (): Promise<GetStudentContractResponse> => {
-    const response = await http.get<GetStudentContractResponse>("/api/student/contract/my-contract");
+    const response = await http.get<GetStudentContractResponse>("/api/billing/contracts/me");
+    console.log(response.data);
     return response.data;
   },
 

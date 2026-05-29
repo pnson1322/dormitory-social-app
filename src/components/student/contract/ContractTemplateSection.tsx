@@ -10,11 +10,18 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 type Props = {
-  templateId: string;
+  templateId?: string;
+  template?: {
+    code: string;
+    name: string;
+    version: number;
+    content: string;
+  } | null;
 };
 
-export function ContractTemplateSection({ templateId }: Props) {
-  const { template, loading } = useContractTemplate(templateId);
+export function ContractTemplateSection({ templateId, template: propTemplate }: Props) {
+  const { template: fetchedTemplate, loading } = useContractTemplate(propTemplate ? undefined : templateId);
+  const template = propTemplate || fetchedTemplate;
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {

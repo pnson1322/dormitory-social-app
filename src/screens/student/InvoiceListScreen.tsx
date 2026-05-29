@@ -29,7 +29,9 @@ export function InvoiceListScreen() {
     loadingMore,
     error,
     onRefresh,
-    onLoadMore
+    onLoadMore,
+    utilityHistory,
+    loadingHistory
   } = useStudentInvoices();
   
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
@@ -101,7 +103,7 @@ export function InvoiceListScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors.primary]} />
           }
           ListHeaderComponent={
-            !loading && activeTab === "PAID" ? <InvoiceAnalytics data={MOCK_ANALYTICS} /> : null
+            !loading && activeTab === "PAID" && utilityHistory.length > 0 ? <InvoiceAnalytics data={utilityHistory} /> : null
           }
           ListFooterComponent={renderFooter}
           onEndReached={onLoadMore}

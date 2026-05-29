@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import { Modal, View, Text, Pressable, ScrollView, Animated, Dimensions } from "react-native";
+import { Modal, View, Text, Pressable, ScrollView, Animated, Dimensions, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/colors";
 import { formatCurrency } from "@/utils/room";
 import { Invoice } from "@/hooks/student/useStudentInvoices";
 import { AppButton } from "@/components/AppButton";
+import { useStudentInvoiceDetail } from "@/hooks/student/useStudentInvoiceDetail";
 
 const { height } = Dimensions.get("window");
 
@@ -16,6 +17,7 @@ type Props = {
 
 export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
   const slideAnim = useRef(new Animated.Value(height)).current;
+  const { detail, loading, setDetail } = useStudentInvoiceDetail(invoice?.id, visible);
 
   useEffect(() => {
     if (visible) {
@@ -27,8 +29,9 @@ export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
       }).start();
     } else {
       slideAnim.setValue(height);
+      setDetail(null);
     }
-  }, [visible]);
+  }, [visible, setDetail]);
 
   if (!invoice) return null;
 
@@ -87,24 +90,42 @@ export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
             <Text className="text-[13px] font-bold text-slate-400 uppercase tracking-widest mb-4">Chi tiết khoản phí</Text>
             
             <View className="bg-slate-50 rounded-3xl p-5 mb-6">
-              {invoice.breakdown?.map((item, index) => (
-                <View 
-                  key={index} 
-                  className={`flex-row justify-between py-3 ${
-                    index !== (invoice.breakdown?.length || 0) - 1 ? "border-b border-slate-100" : ""
-                  }`}
-                >
-                  <Text className="text-slate-600 font-medium">{item.label}</Text>
-                  <Text className="text-slate-900 font-bold">{formatCurrency(item.amount)}</Text>
+              {loading ? (
+                <View className="py-8 items-center justify-center">
+                  <ActivityIndicator color={Colors.primary} size="small" />
+                  <Text className="mt-2 text-slate-400 text-[13px]">Đang tải chi tiết khoản phí...</Text>
                 </View>
-              ))}
-              
-              <View className="mt-4 pt-4 border-t border-slate-200 flex-row justify-between items-center">
-                <Text className="text-slate-900 font-black text-[18px]">Tổng cộng</Text>
-                <Text className="text-primary font-black text-[22px]">
-                  {formatCurrency(invoice.amount)}
-                </Text>
-              </View>
+              ) : (
+                <>
+                  {(detail 
+                    ? [
+                        { label: `Tiền điện (${detail.electricityUsage} kWh)`, amount: detail.electricityAmount },
+                        { label: `Tiền nước (${detail.waterUsage} m³)`, amount: detail.waterAmount },
+                        ...detail.surcharges.map(s => ({ label: s.name, amount: s.amount }))
+                      ]
+                    : (invoice.breakdown || [
+                        { label: "Tiền phòng", amount: invoice.amount },
+                      ])
+                  ).map((item, index, arr) => (
+                    <View 
+                      key={index} 
+                      className={`flex-row justify-between py-3 ${
+                        index !== arr.length - 1 ? "border-b border-slate-100" : ""
+                      }`}
+                    >
+                      <Text className="text-slate-600 font-medium">{item.label}</Text>
+                      <Text className="text-slate-900 font-bold">{formatCurrency(item.amount)}</Text>
+                    </View>
+                  ))}
+                  
+                  <View className="mt-4 pt-4 border-t border-slate-200 flex-row justify-between items-center">
+                    <Text className="text-slate-900 font-black text-[18px]">Tổng cộng</Text>
+                    <Text className="text-primary font-black text-[22px]">
+                      {formatCurrency(detail ? detail.totalAmount : invoice.amount)}
+                    </Text>
+                  </View>
+                </>
+              )}
             </View>
 
             {!isPaid && (
