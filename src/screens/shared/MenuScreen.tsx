@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
-  useWindowDimensions,
-} from "react-native";
-import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ConfirmModal } from "@/components/common/ConfirmModal";
 import { Colors } from "@/constants/colors";
 import { useCurrentUserRole } from "@/hooks/auth/useCurrentUserRole";
-import useProfile from "@/hooks/profile/useProfile";
 import { useLogout } from "@/hooks/auth/useLogout";
-import { ConfirmModal } from "@/components/common/ConfirmModal";
+import useProfile from "@/hooks/profile/useProfile";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type MenuItem = {
   name: string;
@@ -102,7 +102,6 @@ export function MenuScreen() {
         },
       ];
     }
-    // Student
     return [
       {
         name: "rooms",
@@ -171,7 +170,6 @@ export function MenuScreen() {
 
   return (
     <View className="flex-1 bg-slate-50">
-      {/* Premium Header with Linear Gradient and ample safe space */}
       <LinearGradient
         colors={[Colors.primary, "#1D4ED8"]}
         start={{ x: 0, y: 0 }}
@@ -185,7 +183,6 @@ export function MenuScreen() {
       >
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center flex-1">
-            {/* Avatar */}
             {profile?.avatarUrl ? (
               <Image
                 source={{ uri: profile.avatarUrl }}
@@ -199,7 +196,6 @@ export function MenuScreen() {
               </View>
             )}
 
-            {/* Profile Text */}
             <View className="flex-1">
               <Text className="text-white text-[22px] font-extrabold mb-1" numberOfLines={1}>
                 {displayName}
@@ -228,7 +224,6 @@ export function MenuScreen() {
         </View>
       </LinearGradient>
 
-      {/* Grid Menu Content */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 40 }}
@@ -239,7 +234,7 @@ export function MenuScreen() {
 
         <View className="flex-row flex-wrap justify-between">
           {menuItems.map((item) => {
-            const cardWidth = (width - 50) / 2; // 20 padding left/right + 10 gap = 50 total margins
+            const cardWidth = (width - 50) / 2;
             return (
               <TouchableOpacity
                 key={item.name}
@@ -248,7 +243,6 @@ export function MenuScreen() {
                 style={{ width: cardWidth }}
                 className="bg-white rounded-2xl p-4 mb-4 border border-slate-100/60 shadow-sm shadow-slate-100 justify-between min-h-[140px]"
               >
-                {/* Icon Circle */}
                 <View
                   className="w-10 h-10 rounded-xl justify-center items-center mb-3"
                   style={{ backgroundColor: `${item.color}15` }}
@@ -256,7 +250,6 @@ export function MenuScreen() {
                   <Ionicons name={item.iconName} size={20} color={item.color} />
                 </View>
 
-                {/* Text Content */}
                 <View>
                   <Text className="text-slate-800 text-[14px] font-bold mb-1.5">
                     {item.label}
@@ -270,10 +263,8 @@ export function MenuScreen() {
           })}
         </View>
 
-        {/* Divider */}
         <View className="h-[1px] bg-slate-200/60 my-6" />
 
-        {/* Logout Button */}
         <TouchableOpacity
           onPress={() => setShowLogoutConfirm(true)}
           activeOpacity={0.7}
@@ -296,7 +287,6 @@ export function MenuScreen() {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Confirm Modal */}
       <ConfirmModal
         visible={showLogoutConfirm}
         title="ĐĂNG XUẤT TÀI KHOẢN"

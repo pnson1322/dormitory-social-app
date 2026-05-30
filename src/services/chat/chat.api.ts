@@ -10,10 +10,18 @@ import {
   MessageResponse,
   MessagesListResponse,
   SendMessageRequest,
+  AddGroupMembersResponse,
+  GetConversationMembersResponse,
+  RemoveGroupMemberResponse,
+  RenameGroupConversationResponse,
+  TransferGroupAdminResponse,
 } from "./chat.types";
 
-export async function getConversations() {
-  const { data } = await http.get<ApiResponse<ConversationItem[]>>("/api/conversations");
+export async function getConversations(q?: string) {
+  const query = q?.trim();
+  const { data } = await http.get<ApiResponse<ConversationItem[]>>("/api/conversations", {
+    params: query ? { q: query } : undefined,
+  });
   return data.data;
 }
 
@@ -89,11 +97,45 @@ export async function deleteMessage(conversationId: string, messageId: string) {
   return data.data;
 }
 
-// Placeholder for adding members, will update if needed
-export async function addMemberToGroup(conversationId: string, userId: string) {
-  const { data } = await http.post<ApiResponse<any>>(
+export async function addGroupMembers(conversationId: string, memberIds: string[]) {
+  const { data } = await http.post<ApiResponse<AddGroupMembersResponse>>(
     `/api/conversations/${conversationId}/members`,
-    { userId }
+    { memberIds }
+  );
+  return data.data;
+}
+
+export async function addMemberToGroup(conversationId: string, userId: string) {
+  return addGroupMembers(conversationId, [userId]);
+}
+
+export async function getConversationMembers(conversationId: string) {
+  const { data } = await http.get<ApiResponse<GetConversationMembersResponse>>(
+    `/api/conversations/${conversationId}/members`
+  );
+  return data.data;
+}
+
+export async function removeGroupMember(conversationId: string, memberId: string) {
+  const { data } = await http.delete<ApiResponse<RemoveGroupMemberResponse>>(
+    `/api/conversations/${conversationId}/members`,
+    { data: { memberId } }
+  );
+  return data.data;
+}
+
+export async function renameGroupConversation(conversationId: string, name: string) {
+  const { data } = await http.patch<ApiResponse<RenameGroupConversationResponse>>(
+    `/api/conversations/${conversationId}/name`,
+    { name }
+  );
+  return data.data;
+}
+
+export async function transferGroupAdmin(conversationId: string, newAdminId: string) {
+  const { data } = await http.patch<ApiResponse<TransferGroupAdminResponse>>(
+    `/api/conversations/${conversationId}/admin`,
+    { newAdminId }
   );
   return data.data;
 }

@@ -15,9 +15,20 @@ export function useChatRoom(conversationId: string) {
   const router = useRouter();
   const { showToast } = useToast();
   const { userId: currentUserId, isAdminOrManager } = useCurrentUserRole();
-  const { conversations } = useConversations();
+  const { conversations, refetch: refetchConversations } = useConversations();
 
   const conversation = conversations.find((c) => c.id === conversationId);
+  const [isGroupSettingsOpen, setIsGroupSettingsOpen] = useState(false);
+
+  const handleGroupUpdated = (newName?: string) => {
+    if (newName) {
+      chatMetadataCache.set(conversationId, {
+        name: newName,
+        avatarUrl: conversation?.avatarUrl || null,
+      });
+    }
+    refetchConversations(false, true);
+  };
 
   const {
     messages,
@@ -291,5 +302,8 @@ export function useChatRoom(conversationId: string) {
     showScrollToBottom,
     handleScroll,
     scrollToBottom,
+    isGroupSettingsOpen,
+    setIsGroupSettingsOpen,
+    handleGroupUpdated,
   };
 }

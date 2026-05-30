@@ -109,12 +109,10 @@ export function useMessages(conversationId: string | null) {
         status: "sending",
       };
 
-      // Optimistic update: append temp message immediately
       setMessages((prev) => [tempMessage, ...prev]);
 
       try {
         const result = await apiSendMessage(conversationId, { content, files });
-        // Replace temp message with actual result
         setMessages((prev) =>
           prev.map((m) => (m.id === tempId ? { ...result, status: "sent" } : m))
         );
@@ -122,7 +120,6 @@ export function useMessages(conversationId: string | null) {
         return result;
       } catch (error) {
         console.error("[useMessages] Send message failed:", error);
-        // Mark temp message as failed
         setMessages((prev) =>
           prev.map((m) => (m.id === tempId ? { ...m, status: "failed" } : m))
         );
@@ -136,14 +133,12 @@ export function useMessages(conversationId: string | null) {
     async (tempId: string, content: string, files?: string[]) => {
       if (!conversationId) return;
 
-      // Update state to sending
       setMessages((prev) =>
         prev.map((m) => (m.id === tempId ? { ...m, status: "sending" } : m))
       );
 
       try {
         const result = await apiSendMessage(conversationId, { content, files });
-        // Replace temp message with actual result
         setMessages((prev) =>
           prev.map((m) => (m.id === tempId ? { ...result, status: "sent" } : m))
         );
@@ -151,7 +146,6 @@ export function useMessages(conversationId: string | null) {
         return result;
       } catch (error) {
         console.error("[useMessages] Retry send message failed:", error);
-        // Mark temp message as failed
         setMessages((prev) =>
           prev.map((m) => (m.id === tempId ? { ...m, status: "failed" } : m))
         );

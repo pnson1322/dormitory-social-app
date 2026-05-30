@@ -62,3 +62,57 @@ export type SendMessageRequest = {
   content: string;
   files?: string[];
 };
+
+export type AddGroupMembersRequest = {
+  memberIds: string[];
+};
+
+export type AddGroupMembersResponse = {
+  conversationId: string;
+  addedMemberIds: string[];
+  totalMemberCount: number;
+};
+
+export type ConversationMemberItem = {
+  userId: string;
+  fullName: string;
+  avatarUrl: string | null;
+  role: string;
+  joinedAt: string;
+};
+
+export type GetConversationMembersResponse = {
+  conversationId: string;
+  totalMemberCount: number;
+  members: ConversationMemberItem[];
+};
+
+export type RemoveGroupMemberRequest = {
+  memberId: string;
+};
+
+export type RemoveGroupMemberResponse = {
+  conversationId: string;
+  removedMemberId: string;
+  totalMemberCount: number;
+};
+
+export type RenameGroupConversationRequest = {
+  name: string;
+};
+
+export type RenameGroupConversationResponse = {
+  conversationId: string;
+  name: string;
+  updatedAt: string;
+};
+
+export type TransferGroupAdminRequest = {
+  newAdminId: string;
+};
+
+export type TransferGroupAdminResponse = {
+  conversationId: string;
+  newAdminId: string;
+  previousAdminId: string;
+};

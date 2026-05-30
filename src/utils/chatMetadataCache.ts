@@ -1,4 +1,3 @@
-// Client-side cache for conversation names and avatars to handle backend limitations
 type Metadata = {
   name: string;
   avatarUrl?: string | null;

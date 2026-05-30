@@ -1,5 +1,6 @@
 import { AppModal } from "@/components/AppModal";
 import { AddMemberModal } from "@/components/chat/AddMemberModal";
+import { GroupSettingsModal } from "@/components/chat/GroupSettingsModal";
 import { MessageListSkeleton } from "@/components/chat/ChatSkeleton";
 import { MessageInput } from "@/components/chat/MessageInput";
 import { MessageItem } from "@/components/chat/MessageItem";
@@ -76,6 +77,9 @@ export function ChatRoomScreen({ conversationId }: Props) {
     showScrollToBottom,
     handleScroll,
     scrollToBottom,
+    isGroupSettingsOpen,
+    setIsGroupSettingsOpen,
+    handleGroupUpdated,
   } = useChatRoom(conversationId);
 
   return (
@@ -151,12 +155,12 @@ export function ChatRoomScreen({ conversationId }: Props) {
             </View>
           </View>
 
-          {isGroup && isAdminOrManager && (
+          {isGroup && (
             <TouchableOpacity
-              onPress={openAddMemberModal}
+              onPress={() => setIsGroupSettingsOpen(true)}
               className="w-10 h-10 rounded-full bg-white/10 border border-white/15 items-center justify-center active:bg-white/20"
             >
-              <Ionicons name="person-add" size={16} color="#FFFFFF" />
+              <Ionicons name="ellipsis-horizontal" size={20} color="#FFFFFF" />
             </TouchableOpacity>
           )}
         </View>
@@ -207,16 +211,17 @@ export function ChatRoomScreen({ conversationId }: Props) {
           {showScrollToBottom && (
             <TouchableOpacity
               onPress={scrollToBottom}
-              className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white justify-center items-center shadow-lg border border-slate-100 z-50 active:bg-slate-50"
+              className="absolute bottom-5 right-5 w-12 h-12 rounded-full justify-center items-center z-50 active:opacity-90"
               style={{
-                elevation: 4,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 4,
+                backgroundColor: Colors.primary,
+                elevation: 6,
+                shadowColor: Colors.primary,
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.3,
+                shadowRadius: 5,
               }}
             >
-              <Ionicons name="chevron-down" size={20} color={Colors.primary} />
+              <Ionicons name="arrow-down" size={24} color="white" />
             </TouchableOpacity>
           )}
         </View>
@@ -265,6 +270,19 @@ export function ChatRoomScreen({ conversationId }: Props) {
         isLoadingUsers={isLoadingUsers}
         onAddMember={handleAddUserToGroup}
         isAddingMember={isAddingMember}
+      />
+
+      <GroupSettingsModal
+        visible={isGroupSettingsOpen}
+        onClose={() => setIsGroupSettingsOpen(false)}
+        conversationId={conversationId}
+        currentUserId={currentUserId || ""}
+        conversationName={chatName}
+        onGroupUpdated={handleGroupUpdated}
+        openAddMember={() => {
+          setIsGroupSettingsOpen(false);
+          openAddMemberModal();
+        }}
       />
 
       <FullscreenImageViewer

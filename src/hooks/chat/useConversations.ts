@@ -8,7 +8,7 @@ import { ConversationItem, MessageResponse } from "@/services/chat/chat.types";
 import { chatSignalRService } from "@/services/chat/chatSignalR.service";
 import { useCallback, useEffect, useState } from "react";
 
-export function useConversations() {
+export function useConversations(q?: string) {
   const { userId } = useCurrentUserRole();
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +19,6 @@ export function useConversations() {
   const fetchList = useCallback(async (showRefreshing = false, silent = false) => {
     try {
       if (silent) {
-        // Do not update loading/refreshing states to prevent UI flickering
       } else if (showRefreshing) {
         setIsRefreshing(true);
       } else {
@@ -27,7 +26,7 @@ export function useConversations() {
       }
       setIsError(false);
 
-      const items = await getConversations();
+      const items = await getConversations(q);
       setConversations(items || []);
     } catch (error) {
       console.error("[useConversations] Fetch conversations failed:", error);
@@ -36,7 +35,7 @@ export function useConversations() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [q]);
 
   const createDirect = useCallback(
     async (targetUserId: string) => {
@@ -133,6 +132,10 @@ export function useConversations() {
       unsubDelete();
     };
   }, [fetchList]);
+
+  useEffect(() => {
+    fetchList(false, true);
+  }, [q, fetchList]);
 
   return {
     conversations,

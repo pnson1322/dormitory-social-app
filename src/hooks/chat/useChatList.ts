@@ -12,6 +12,16 @@ export function useChatList() {
   const router = useRouter();
   const { isAdminOrManager } = useCurrentUserRole();
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
   const {
     conversations,
     isLoading,
@@ -20,7 +30,7 @@ export function useChatList() {
     refetch,
     createDirect,
     createGroup,
-  } = useConversations();
+  } = useConversations(debouncedQuery);
 
   useFocusEffect(
     useCallback(() => {
@@ -28,7 +38,6 @@ export function useChatList() {
     }, [refetch])
   );
 
-  const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
@@ -86,14 +95,10 @@ export function useChatList() {
   };
 
   const filteredConversations = conversations.filter((c) => {
-    const matchesSearch =
-      c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.lastMessage?.toLowerCase().includes(searchQuery.toLowerCase());
-
-    if (activeFilter === "all") return matchesSearch;
-    if (activeFilter === "direct") return matchesSearch && c.type === "Direct";
-    if (activeFilter === "group") return matchesSearch && c.type === "Group";
-    return matchesSearch;
+    if (activeFilter === "all") return true;
+    if (activeFilter === "direct") return c.type === "Direct";
+    if (activeFilter === "group") return c.type === "Group";
+    return true;
   });
 
   return {
