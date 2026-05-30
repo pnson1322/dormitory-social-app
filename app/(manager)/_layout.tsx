@@ -11,11 +11,6 @@ export default function ManagerLayout() {
           iconName: "home-outline",
         },
         {
-          name: "residents",
-          label: "Cư dân",
-          iconName: "people-outline",
-        },
-        {
           name: "reports",
           label: "Báo cáo",
           iconName: "warning-outline",
@@ -24,6 +19,11 @@ export default function ManagerLayout() {
           name: "invoices/index",
           label: "Hóa đơn",
           iconName: "receipt-outline",
+        },
+        {
+          name: "chat",
+          label: "Trò chuyện",
+          iconName: "chatbubble-ellipses-outline",
         },
         {
           name: "invoices/select-room",

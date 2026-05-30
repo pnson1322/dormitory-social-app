@@ -25,6 +25,11 @@ export default function StudentLayout() {
           iconName: "people-outline",
         },
         {
+          name: "chat",
+          label: "Trò chuyện",
+          iconName: "chatbubble-ellipses-outline",
+        },
+        {
           name: "settings",
           label: "Cài đặt",
           iconName: "settings-outline",

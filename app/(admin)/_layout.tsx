@@ -22,6 +22,11 @@ export default function AdminLayout() {
           iconName: "newspaper-outline",
         },
         {
+          name: "chat",
+          label: "Trò chuyện",
+          iconName: "chatbubble-ellipses-outline",
+        },
+        {
           name: "settings",
           label: "Cài đặt",
           iconName: "settings-outline",

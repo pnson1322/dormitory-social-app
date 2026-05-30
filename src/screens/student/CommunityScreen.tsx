@@ -230,7 +230,7 @@ export function CommunityScreen() {
       <View style={{ flex: 1 }}>
         {isError ? (
           <View className="p-5">{renderError()}</View>
-        ) : (isLoading || isRefreshing) && posts.length === 0 ? (
+        ) : isLoading || isRefreshing ? (
           <ScrollView contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
             <PostCardSkeleton />
             <PostCardSkeleton />

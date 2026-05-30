@@ -9,7 +9,7 @@ export function useInvoiceActions() {
     try {
       setLoading(true);
       setError(null);
-      await updateInvoiceStatus(invoiceId, "PAID");
+      await updateInvoiceStatus(invoiceId);
       return true;
     } catch (err) {
       setError("Không thể cập nhật trạng thái thanh toán.");

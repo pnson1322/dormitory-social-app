@@ -23,7 +23,14 @@ export function getCategoryStyle(name?: string) {
 export function getFullImageUrl(url?: string | null) {
   if (!url) return "";
   const trimmed = url.trim();
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+  if (
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("file://") ||
+    trimmed.startsWith("content://") ||
+    trimmed.startsWith("ph://") ||
+    trimmed.startsWith("assets-library://")
+  ) {
     return trimmed;
   }
   const cleanUrl = trimmed.startsWith("/") ? trimmed.substring(1) : trimmed;
