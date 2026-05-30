@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 export function useCurrentUserRole() {
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,6 +18,8 @@ export function useCurrentUserRole() {
           if (userInfo) {
             setRole(userInfo.role);
             setUserId(userInfo.userId);
+            setFullName(userInfo.fullName);
+            setEmail(userInfo.email);
           }
         }
       } catch (error) {
@@ -30,6 +34,8 @@ export function useCurrentUserRole() {
   return {
     role,
     userId,
+    fullName,
+    email,
     loading,
     isAdminOrManager: role?.toLowerCase() === "admin" || role?.toLowerCase() === "manager",
   };

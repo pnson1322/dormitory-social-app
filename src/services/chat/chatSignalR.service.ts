@@ -28,7 +28,7 @@ class ChatSignalRService {
   private getHubUrl(): string {
     const baseUrl = ENV.API_BASE_URL;
     const cleanUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
-    return `${cleanUrl}/hubs/chat`;
+    return `${cleanUrl}/api/conversations/hubs/chat`;
   }
 
   async connect(): Promise<void> {

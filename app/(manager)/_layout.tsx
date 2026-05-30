@@ -16,14 +16,32 @@ export default function ManagerLayout() {
           iconName: "warning-outline",
         },
         {
-          name: "invoices/index",
-          label: "Hóa đơn",
-          iconName: "receipt-outline",
-        },
-        {
           name: "chat",
           label: "Trò chuyện",
           iconName: "chatbubble-ellipses-outline",
+        },
+        {
+          name: "menu",
+          label: "Thêm",
+          iconName: "menu-outline",
+        },
+        {
+          name: "invoices/index",
+          label: "Hóa đơn",
+          iconName: "receipt-outline",
+          hidden: true,
+        },
+        {
+          name: "content-management",
+          label: "Nội dung",
+          iconName: "newspaper-outline",
+          hidden: true,
+        },
+        {
+          name: "settings",
+          label: "Cài đặt",
+          iconName: "settings-outline",
+          hidden: true,
         },
         {
           name: "invoices/select-room",
@@ -36,11 +54,6 @@ export default function ManagerLayout() {
           label: "Nhập chỉ số",
           iconName: "create-outline",
           hidden: true,
-        },
-        {
-          name: "settings",
-          label: "Cài đặt",
-          iconName: "settings-outline",
         },
         {
           name: "create-room",

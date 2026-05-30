@@ -10,16 +10,6 @@ export default function StudentLayout() {
           iconName: "home-outline",
         },
         {
-          name: "rooms",
-          label: "Tìm phòng",
-          iconName: "search-outline",
-        },
-        {
-          name: "profile",
-          label: "Hồ sơ",
-          iconName: "person-outline",
-        },
-        {
           name: "community",
           label: "Cộng đồng",
           iconName: "people-outline",
@@ -30,9 +20,27 @@ export default function StudentLayout() {
           iconName: "chatbubble-ellipses-outline",
         },
         {
+          name: "menu",
+          label: "Thêm",
+          iconName: "menu-outline",
+        },
+        {
+          name: "rooms",
+          label: "Tìm phòng",
+          iconName: "search-outline",
+          hidden: true,
+        },
+        {
+          name: "profile",
+          label: "Hồ sơ",
+          iconName: "person-outline",
+          hidden: true,
+        },
+        {
           name: "settings",
           label: "Cài đặt",
           iconName: "settings-outline",
+          hidden: true,
         },
         {
           name: "edit-profile",

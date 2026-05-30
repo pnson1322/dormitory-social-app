@@ -76,16 +76,6 @@ export function ContentManagementScreen() {
       );
     }
 
-    if (isLoading && posts.length === 0) {
-      return (
-        <ScrollView contentContainerStyle={{ padding: 20 }}>
-          <PostCardSkeleton />
-          <PostCardSkeleton />
-          <PostCardSkeleton />
-        </ScrollView>
-      );
-    }
-
     const displayedPosts = posts;
 
     return (
@@ -132,105 +122,113 @@ export function ContentManagementScreen() {
           </TouchableOpacity>
         </View>
 
-        <FlatList
-          data={displayedPosts}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <PostCard
-              post={item}
-              canHide={true}
-              onHide={() => initiateHidePost(item)}
-              onPinSuccess={refresh}
-            />
-          )}
-          contentContainerStyle={{
-            paddingHorizontal: 20,
-            paddingTop: 12,
-            paddingBottom: 40,
-          }}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={refresh}
-              colors={[Colors.primary]}
-              tintColor={Colors.primary}
-            />
-          }
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.2}
-          ListHeaderComponent={() => {
-            if (postFilter === "all" && pinnedPosts && pinnedPosts.length > 0) {
-              return (
-                <View className="mb-4">
-                  <View className="flex-row items-center mb-2 px-1">
-                    <AntDesign
-                      name="pushpin"
-                      size={15}
-                      color="#64748B"
-                      style={{ marginRight: 6 }}
-                    />
-                    <Text className="text-[15px] font-bold text-slate-800">
-                      Bài viết được ghim
-                    </Text>
-                  </View>
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: 10 }}
-                    className="flex-row"
-                  >
-                    {pinnedPosts.map((post) => (
-                      <View
-                        key={post.id}
-                        style={{ width: width - 40 }}
-                        className="mr-3"
-                      >
-                        <PostCard
-                          post={post}
-                          canHide={true}
-                          onHide={() => initiateHidePost(post)}
-                          onPinSuccess={refresh}
-                        />
-                      </View>
-                    ))}
-                  </ScrollView>
-                  <View className="h-[1px] bg-slate-200/50 mt-2 mb-4" />
-                </View>
-              );
-            }
-            return null;
-          }}
-          ListFooterComponent={() => {
-            if (isLoading && displayedPosts.length > 0) {
-              return (
-                <View className="py-4 justify-center items-center">
-                  <ActivityIndicator size="small" color={Colors.primary} />
-                </View>
-              );
-            }
-            return <View className="h-10" />;
-          }}
-          ListEmptyComponent={() => (
-            <View className="py-20 px-6 items-center justify-center bg-white rounded-3xl border border-slate-100/50 shadow-sm mt-4">
-              <Ionicons
-                name={postFilter === "all" ? "chatbubbles-outline" : "eye-off-outline"}
-                size={48}
-                color="#94A3B8"
-                style={{ marginBottom: 12 }}
+        {isLoading || isRefreshing ? (
+          <ScrollView contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
+            <PostCardSkeleton />
+            <PostCardSkeleton />
+            <PostCardSkeleton />
+          </ScrollView>
+        ) : (
+          <FlatList
+            data={displayedPosts}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <PostCard
+                post={item}
+                canHide={true}
+                onHide={() => initiateHidePost(item)}
+                onPinSuccess={refresh}
               />
-              <Text className="text-slate-800 font-bold text-[17px] mb-1">
-                {postFilter === "all" ? "Bản tin trống" : "Không có bài viết ẩn"}
-              </Text>
-              <Text className="text-slate-400 text-[13px] text-center mb-5">
-                {postFilter === "all"
-                  ? "Hiện tại không có bài đăng nào của sinh viên trên dòng thời gian."
-                  : "Không tìm thấy bài viết nào bị ẩn."}
-              </Text>
-              <AppButton title="Làm mới" onPress={refresh} size="compact" />
-            </View>
-          )}
-        />
+            )}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingTop: 12,
+              paddingBottom: 40,
+            }}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={refresh}
+                colors={[Colors.primary]}
+                tintColor={Colors.primary}
+              />
+            }
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.2}
+            ListHeaderComponent={() => {
+              if (postFilter === "all" && pinnedPosts && pinnedPosts.length > 0) {
+                return (
+                  <View className="mb-4">
+                    <View className="flex-row items-center mb-2 px-1">
+                      <AntDesign
+                        name="pushpin"
+                        size={15}
+                        color="#64748B"
+                        style={{ marginRight: 6 }}
+                      />
+                      <Text className="text-[15px] font-bold text-slate-800">
+                        Bài viết được ghim
+                      </Text>
+                    </View>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{ paddingBottom: 10 }}
+                      className="flex-row"
+                    >
+                      {pinnedPosts.map((post) => (
+                        <View
+                          key={post.id}
+                          style={{ width: width - 40 }}
+                          className="mr-3"
+                        >
+                          <PostCard
+                            post={post}
+                            canHide={true}
+                            onHide={() => initiateHidePost(post)}
+                            onPinSuccess={refresh}
+                          />
+                        </View>
+                      ))}
+                    </ScrollView>
+                    <View className="h-[1px] bg-slate-200/50 mt-2 mb-4" />
+                  </View>
+                );
+              }
+              return null;
+            }}
+            ListFooterComponent={() => {
+              if (isLoading && displayedPosts.length > 0) {
+                return (
+                  <View className="py-4 justify-center items-center">
+                    <ActivityIndicator size="small" color={Colors.primary} />
+                  </View>
+                );
+              }
+              return <View className="h-10" />;
+            }}
+            ListEmptyComponent={() => (
+              <View className="py-20 px-6 items-center justify-center bg-white rounded-3xl border border-slate-100/50 shadow-sm mt-4">
+                <Ionicons
+                  name={postFilter === "all" ? "chatbubbles-outline" : "eye-off-outline"}
+                  size={48}
+                  color="#94A3B8"
+                  style={{ marginBottom: 12 }}
+                />
+                <Text className="text-slate-800 font-bold text-[17px] mb-1">
+                  {postFilter === "all" ? "Bản tin trống" : "Không có bài viết ẩn"}
+                </Text>
+                <Text className="text-slate-400 text-[13px] text-center mb-5">
+                  {postFilter === "all"
+                    ? "Hiện tại không có bài đăng nào của sinh viên trên dòng thời gian."
+                    : "Không tìm thấy bài viết nào bị ẩn."}
+                </Text>
+                <AppButton title="Làm mới" onPress={refresh} size="compact" />
+              </View>
+            )}
+          />
+        )}
       </View>
     );
   };

@@ -93,7 +93,7 @@ export default function LoginScreen() {
                     setTimeout(() => {
                       const normalizedRole = role?.toLowerCase();
                       if (normalizedRole === "admin") {
-                        router.replace("/(admin)/users");
+                        router.replace("/(admin)/dashboard");
                       } else if (normalizedRole === "student") {
                         router.replace("/(student)/my-room");
                       } else if (normalizedRole === "manager") {

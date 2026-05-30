@@ -17,19 +17,26 @@ export default function AdminLayout() {
           iconName: "people-outline",
         },
         {
-          name: "content-management",
-          label: "Nội dung",
-          iconName: "newspaper-outline",
-        },
-        {
           name: "chat",
           label: "Trò chuyện",
           iconName: "chatbubble-ellipses-outline",
         },
         {
+          name: "menu",
+          label: "Thêm",
+          iconName: "menu-outline",
+        },
+        {
+          name: "content-management",
+          label: "Nội dung",
+          iconName: "newspaper-outline",
+          hidden: true,
+        },
+        {
           name: "settings",
           label: "Cài đặt",
           iconName: "settings-outline",
+          hidden: true,
         },
         {
           name: "user-details/[id]",
