@@ -24,15 +24,16 @@ export function QrPaymentModal({
   onClose,
   amount,
   memo,
-  bankCode = "MB",
-  accountNumber = "9999999999",
-  accountName = "DORMITORY MANAGER MOCK",
+  bankCode = "",
+  accountNumber = "",
+  accountName = "",
   onConfirm,
   isConfirming = false,
 }: Props) {
   const { showToast } = useToast();
 
   const handleCopy = (text: string, fieldName: string) => {
+    if (!text) return;
     Clipboard.setString(text);
     showToast({
       type: "success",
@@ -41,13 +42,15 @@ export function QrPaymentModal({
     });
   };
   
-  const cleanBankCode = bankCode.trim().toUpperCase();
-  const cleanAccountNumber = accountNumber.trim();
-  const cleanAccountName = accountName.trim();
+  const cleanBankCode = (bankCode || "").trim().toUpperCase();
+  const cleanAccountNumber = (accountNumber || "").trim();
+  const cleanAccountName = (accountName || "").trim();
   
-  const qrUrl = `https://img.vietqr.io/image/${cleanBankCode}-${cleanAccountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(
-    memo
-  )}&accountName=${encodeURIComponent(cleanAccountName)}`;
+  const qrUrl = cleanBankCode && cleanAccountNumber 
+    ? `https://img.vietqr.io/image/${cleanBankCode}-${cleanAccountNumber}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(
+        memo
+      )}&accountName=${encodeURIComponent(cleanAccountName)}`
+    : "";
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -74,15 +77,26 @@ export function QrPaymentModal({
 
           <View className="items-center mb-6">
             <Text className="text-slate-500 text-[13px] text-center mb-4">
-              Quét mã QR dưới đây bằng ứng dụng ngân hàng của bạn để thanh toán tự động
+              {qrUrl 
+                ? "Quét mã QR dưới đây bằng ứng dụng ngân hàng của bạn để thanh toán tự động"
+                : "Tòa nhà chưa cấu hình thông tin tài khoản thanh toán. Vui lòng liên hệ ban quản lý."}
             </Text>
             
             <View className="p-3 border-2 border-dashed border-blue-200 rounded-3xl bg-slate-50">
-              <Image 
-                source={{ uri: qrUrl }} 
-                className="w-56 h-56 rounded-2xl" 
-                resizeMode="contain" 
-              />
+              {qrUrl ? (
+                <Image 
+                  source={{ uri: qrUrl }} 
+                  className="w-56 h-56 rounded-2xl" 
+                  resizeMode="contain" 
+                />
+              ) : (
+                <View className="w-56 h-56 items-center justify-center bg-slate-100 rounded-2xl">
+                  <Ionicons name="card-outline" size={48} color="#94A3B8" />
+                  <Text className="text-[11px] text-slate-400 text-center mt-2 px-4">
+                    Chưa có thông tin chuyển khoản
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
 
@@ -93,23 +107,27 @@ export function QrPaymentModal({
           <View className="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100">
             <View className="flex-row justify-between py-2 border-b border-slate-100/50">
               <Text className="text-slate-500 text-[13px]">Ngân hàng</Text>
-              <Text className="text-slate-850 font-bold text-[13px]">{cleanBankCode}</Text>
+              <Text className="text-slate-850 font-bold text-[13px]">{cleanBankCode || "Chưa thiết lập"}</Text>
             </View>
 
             <View className="flex-row justify-between items-center py-2 border-b border-slate-100/50">
               <Text className="text-slate-500 text-[13px]">Số tài khoản</Text>
-              <Pressable 
-                onPress={() => handleCopy(cleanAccountNumber, "số tài khoản")}
-                className="flex-row items-center"
-              >
-                <Text className="text-slate-900 font-bold text-[13px] mr-1">{cleanAccountNumber}</Text>
-                <Ionicons name="copy-outline" size={14} color={Colors.primary} />
-              </Pressable>
+              {cleanAccountNumber ? (
+                <Pressable 
+                  onPress={() => handleCopy(cleanAccountNumber, "số tài khoản")}
+                  className="flex-row items-center"
+                >
+                  <Text className="text-slate-900 font-bold text-[13px] mr-1">{cleanAccountNumber}</Text>
+                  <Ionicons name="copy-outline" size={14} color={Colors.primary} />
+                </Pressable>
+              ) : (
+                <Text className="text-slate-400 text-[13px]">Chưa thiết lập</Text>
+              )}
             </View>
 
             <View className="flex-row justify-between py-2 border-b border-slate-100/50">
               <Text className="text-slate-500 text-[13px]">Chủ tài khoản</Text>
-              <Text className="text-slate-900 font-bold text-[13px]">{cleanAccountName}</Text>
+              <Text className="text-slate-900 font-bold text-[13px]">{cleanAccountName || "Chưa thiết lập"}</Text>
             </View>
 
             <View className="flex-row justify-between py-2 border-b border-slate-100/50">

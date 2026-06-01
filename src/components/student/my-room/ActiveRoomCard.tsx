@@ -2,13 +2,7 @@ import { Colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import { RoommateItem } from "./RoommateItem";
-
-type Roommate = {
-  id: string;
-  name: string;
-  studentId: string;
-  avatar: string;
-};
+import { StudentRoommate } from "@/services/booking/booking.types";
 
 type Props = {
   name: string;
@@ -18,7 +12,9 @@ type Props = {
   capacity: number;
   occupiedCount: number;
   roomStatus: string;
-  roommates: Roommate[];
+  roommates: StudentRoommate[];
+  currentUserId: string | null;
+  onChatPress: (roommate: StudentRoommate) => void;
 };
 
 export function ActiveRoomCard({
@@ -30,11 +26,13 @@ export function ActiveRoomCard({
   occupiedCount,
   roomStatus,
   roommates,
+  currentUserId,
+  onChatPress,
 }: Props) {
-  const occupancyPercent = (occupiedCount / capacity) * 100;
+  const occupancyPercent = capacity > 0 ? (occupiedCount / capacity) * 100 : 0;
 
   const getStatusInfo = (status: string) => {
-    switch (status) {
+    switch (status?.toUpperCase()) {
       case "AVAILABLE":
         return { label: "Hoạt động", color: "#10B981", bg: "#ECFDF5", icon: "checkmark-circle" };
       case "MAINTENANCE":
@@ -42,7 +40,7 @@ export function ActiveRoomCard({
       case "FULL":
         return { label: "Đã đầy", color: "#6366F1", bg: "#EEF2FF", icon: "people" };
       default:
-        return { label: "N/A", color: "#94A3B8", bg: "#F8FAFC", icon: "help-circle" };
+        return { label: "Hoạt động", color: "#10B981", bg: "#ECFDF5", icon: "checkmark-circle" };
     }
   };
 
@@ -111,7 +109,6 @@ export function ActiveRoomCard({
               style={{ width: `${occupancyPercent}%` }} 
             />
           </View>
-
         </View>
 
         <View className="h-[1px] bg-slate-100 mb-6" />
@@ -120,10 +117,12 @@ export function ActiveRoomCard({
         <View className="gap-4">
           {roommates.map((member) => (
             <RoommateItem 
-              key={member.id} 
-              name={member.name} 
-              studentId={member.studentId} 
-              avatar={member.avatar} 
+              key={member.studentId} 
+              name={member.fullName || member.email || "Thành viên"} 
+              studentId={member.studentCode || "Chưa cập nhật mã SV"} 
+              avatarUrl={member.avatarUrl} 
+              isCurrentUser={member.studentId === currentUserId}
+              onChatPress={() => onChatPress(member)}
             />
           ))}
         </View>

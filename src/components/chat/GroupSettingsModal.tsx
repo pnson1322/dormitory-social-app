@@ -91,6 +91,7 @@ export function GroupSettingsModal({
             />
 
             <GroupActionButtons
+              isCurrentUserAdmin={isCurrentUserAdmin}
               openAddMember={openAddMember}
               onLeaveGroup={() => setConfirmLeaveGroup(true)}
             />

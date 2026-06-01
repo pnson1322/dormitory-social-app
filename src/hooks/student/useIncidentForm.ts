@@ -4,6 +4,7 @@ import { useIncidentReport } from "./useIncidentReport";
 import { useToast } from "@/components/toast/ToastProvider";
 import { getIncidentCategories } from "@/services/incident/incident.api";
 import { IncidentCategoryResponse } from "@/services/incident/incident.types";
+import { getApiErrorMessage } from "@/services/apiError";
 
 export function useIncidentForm(roomId: string) {
   const { submitIncident, isLoading } = useIncidentReport();
@@ -26,7 +27,11 @@ export function useIncidentForm(roomId: string) {
           setSelectedCategory(cats[0].id);
         }
       } catch (error) {
-
+        showToast({
+          type: "error",
+          title: "Lỗi",
+          message: getApiErrorMessage(error, "Không thể tải danh mục sự cố.")
+        });
       } finally {
         setIsCategoriesLoading(false);
       }
@@ -68,20 +73,21 @@ export function useIncidentForm(roomId: string) {
     const trimmed = description.trim();
     if (!trimmed) {
       showToast({ type: "error", title: "Lỗi", message: "Vui lòng nhập mô tả sự cố." });
-      return;
+      return false;
     }
     if (trimmed.length < 10) {
       showToast({ type: "error", title: "Lỗi", message: "Mô tả sự cố phải từ 10 đến 1000 ký tự." });
-      return;
+      return false;
     }
     if (trimmed.length > 1000) {
       showToast({ type: "error", title: "Lỗi", message: "Mô tả sự cố không được vượt quá 1000 ký tự." });
-      return;
+      return false;
     }
     const success = await submitIncident(roomId, selectedCategory, description, images);
     if (success) {
       resetForm();
     }
+    return success;
   }, [description, roomId, selectedCategory, images, submitIncident, showToast, resetForm]);
 
   return {

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { View, Text, Dimensions, Pressable } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, Dimensions, Pressable, Animated, ActivityIndicator } from "react-native";
 import { Colors } from "@/constants/colors";
 import { formatCurrency } from "@/utils/room";
+import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 const PADDING_LEFT = 40;
@@ -15,19 +16,75 @@ type DataPoint = {
 };
 
 type Props = {
-  data?: DataPoint[];
+  data: DataPoint[];
+  loading?: boolean;
+  error?: string | null;
 };
 
-const MOCK_DATA: DataPoint[] = [
-  { month: "Th 1", electricity: 320000, water: 120000 },
-  { month: "Th 2", electricity: 380000, water: 150000 },
-  { month: "Th 3", electricity: 310000, water: 110000 },
-  { month: "Th 4", electricity: 420000, water: 180000 },
-  { month: "Th 5", electricity: 390000, water: 140000 },
-];
-
-export function InvoiceAnalytics({ data = MOCK_DATA }: Props) {
+export function InvoiceAnalytics({ data, loading = false, error = null }: Props) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const pulseAnim = useRef(new Animated.Value(0.3)).current;
+
+  useEffect(() => {
+    if (loading) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 0.7,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 0.3,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    } else {
+      pulseAnim.setValue(1);
+    }
+  }, [loading]);
+
+  if (loading) {
+    return (
+      <View className="mb-6 bg-slate-900 rounded-[32px] p-6 shadow-2xl overflow-hidden">
+        <View className="mb-8 flex-row justify-between items-start">
+          <View className="gap-2">
+            <View className="h-3 w-24 bg-slate-800 rounded-md overflow-hidden">
+              <Animated.View style={{ opacity: pulseAnim, flex: 1, backgroundColor: "rgba(255,255,255,0.1)" }} />
+            </View>
+            <View className="h-6 w-36 bg-slate-800 rounded-md overflow-hidden">
+              <Animated.View style={{ opacity: pulseAnim, flex: 1, backgroundColor: "rgba(255,255,255,0.1)" }} />
+            </View>
+          </View>
+        </View>
+        <View className="flex-row items-center justify-center" style={{ height: CHART_HEIGHT }}>
+          <ActivityIndicator color={Colors.primary} size="small" />
+        </View>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="mb-6 bg-slate-900 rounded-[32px] p-6 shadow-2xl items-center justify-center py-8">
+        <Ionicons name="alert-circle-outline" size={32} color="#EF4444" className="mb-2" />
+        <Text className="text-red-400 text-[13px] font-bold text-center">{error}</Text>
+      </View>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <View className="mb-6 bg-slate-900 rounded-[32px] p-6 shadow-2xl items-center justify-center py-8">
+        <Ionicons name="analytics-outline" size={32} color="#94A3B8" className="mb-2" />
+        <Text className="text-slate-400 text-[13px] font-bold text-center px-4">
+          Chưa có lịch sử dịch vụ. Biểu đồ sẽ hiển thị khi bạn có hóa đơn đã thanh toán.
+        </Text>
+      </View>
+    );
+  }
 
   const allValues = data.flatMap(d => [d.electricity || 0, d.water || 0]);
   const maxAmount = Math.max(...allValues, 1000) * 1.2;
@@ -36,13 +93,17 @@ export function InvoiceAnalytics({ data = MOCK_DATA }: Props) {
 
   const getPoints = (key: "electricity" | "water") => {
     return data.map((d, i) => {
-      const x = (i / (data.length - 1)) * CHART_WIDTH;
+      const divisor = data.length > 1 ? data.length - 1 : 1;
+      const x = data.length > 1 
+        ? (i / divisor) * CHART_WIDTH 
+        : CHART_WIDTH / 2;
       const y = CHART_HEIGHT - ((d[key] - minAmount) / range) * CHART_HEIGHT;
       return { x, y };
     });
   };
 
   const renderLine = (points: { x: number; y: number }[], color: string) => {
+    if (points.length < 2) return null;
     const lines = [];
     for (let i = 0; i < points.length - 1; i++) {
       const p1 = points[i];
@@ -73,8 +134,10 @@ export function InvoiceAnalytics({ data = MOCK_DATA }: Props) {
   };
 
   const handleTouch = (evt: any) => {
+    if (data.length === 0) return;
     const x = evt.nativeEvent.locationX;
-    const index = Math.round((x / CHART_WIDTH) * (data.length - 1));
+    const divisor = data.length > 1 ? data.length - 1 : 1;
+    const index = Math.round((x / CHART_WIDTH) * divisor);
     const clampedIndex = Math.max(0, Math.min(data.length - 1, index));
     setSelectedIndex(clampedIndex);
   };
@@ -130,9 +193,9 @@ export function InvoiceAnalytics({ data = MOCK_DATA }: Props) {
           {renderLine(ePoints, "#60A5FA")}
           {renderLine(wPoints, "#34D399")}
 
-          {selectedIndex !== null && (
+          {selectedIndex !== null && ePoints[selectedIndex] && (
             <View 
-              style={{ position: 'absolute', left: ePoints[selectedIndex].x, top: 0, bottom: 0, width: 1, backgroundColor: 'white', opacity: 0.3 }}
+              style={{ position: "absolute", left: ePoints[selectedIndex].x, top: 0, bottom: 0, width: 1, backgroundColor: "white", opacity: 0.3 }}
             />
           )}
 
@@ -140,10 +203,10 @@ export function InvoiceAnalytics({ data = MOCK_DATA }: Props) {
             <View 
               key={`e-${i}`} 
               style={{ 
-                position: 'absolute', 
+                position: "absolute", 
                 left: p.x - 3, 
                 top: p.y - 3,
-                backgroundColor: selectedIndex === i ? 'white' : 'rgba(255, 255, 255, 0.4)',
+                backgroundColor: selectedIndex === i ? "white" : "rgba(255, 255, 255, 0.4)",
                 transform: [{ scale: selectedIndex === i ? 1.5 : 1 }]
               }} 
               className="h-1.5 w-1.5 rounded-full"
@@ -153,17 +216,17 @@ export function InvoiceAnalytics({ data = MOCK_DATA }: Props) {
             <View 
               key={`w-${i}`} 
               style={{ 
-                position: 'absolute', 
+                position: "absolute", 
                 left: p.x - 3, 
                 top: p.y - 3,
-                backgroundColor: selectedIndex === i ? 'white' : 'rgba(255, 255, 255, 0.4)',
+                backgroundColor: selectedIndex === i ? "white" : "rgba(255, 255, 255, 0.4)",
                 transform: [{ scale: selectedIndex === i ? 1.5 : 1 }]
               }} 
               className="h-1.5 w-1.5 rounded-full"
             />
           ))}
 
-          {selectedIndex !== null && (
+          {selectedIndex !== null && data[selectedIndex] && ePoints[selectedIndex] && (
             <View 
               className="absolute bg-white rounded-2xl p-3 shadow-2xl border border-slate-100"
               style={{ 
@@ -195,7 +258,7 @@ export function InvoiceAnalytics({ data = MOCK_DATA }: Props) {
 
       <View className="flex-row justify-between" style={{ marginLeft: PADDING_LEFT }}>
         {data.map((d, i) => (
-          <Text key={i} className={`text-[10px] font-black uppercase ${selectedIndex === i ? 'text-white' : 'text-slate-500'}`}>
+          <Text key={i} className={`text-[10px] font-black uppercase ${selectedIndex === i ? "text-white" : "text-slate-500"}`}>
             {d.month}
           </Text>
         ))}

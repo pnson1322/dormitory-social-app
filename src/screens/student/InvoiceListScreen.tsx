@@ -10,15 +10,6 @@ import { useFocusEffect } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { FlatList, RefreshControl, Text, View, ActivityIndicator } from "react-native";
 import { AppButton } from "@/components/AppButton";
-
-const MOCK_ANALYTICS = [
-  { month: "Th 1", electricity: 320000, water: 120000 },
-  { month: "Th 2", electricity: 380000, water: 150000 },
-  { month: "Th 3", electricity: 310000, water: 110000 },
-  { month: "Th 4", electricity: 420000, water: 180000 },
-  { month: "Th 5", electricity: 390000, water: 140000 },
-];
-
 export function InvoiceListScreen() {
   const { 
     activeTab, 
@@ -110,7 +101,13 @@ export function InvoiceListScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors.primary]} />
           }
           ListHeaderComponent={
-            !loading && activeTab === "PAID" && utilityHistory.length > 0 ? <InvoiceAnalytics data={utilityHistory} /> : null
+            activeTab === "PAID" ? (
+              <InvoiceAnalytics 
+                data={utilityHistory} 
+                loading={loadingHistory} 
+                error={error ? "Không thể tải lịch sử điện nước." : null} 
+              />
+            ) : null
           }
           ListFooterComponent={renderFooter}
           onEndReached={onLoadMore}

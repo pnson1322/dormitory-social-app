@@ -1,3 +1,4 @@
+import { globalToast } from "@/components/toast/globalToast";
 import { ENV } from "@/config/env";
 import {
   clearAuthTokens,
@@ -5,13 +6,13 @@ import {
   getAuthTokens,
   setAuthTokens,
 } from "@/storage/authStorage";
-import { getApiErrorMessage } from "./apiError";
-import { globalToast } from "@/components/toast/globalToast";
 import axios, {
   AxiosError,
   AxiosHeaders,
   InternalAxiosRequestConfig,
 } from "axios";
+import { router } from "expo-router";
+import { getApiErrorMessage } from "./apiError";
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
@@ -172,6 +173,16 @@ http.interceptors.response.use(
 
     originalRequest._retry = true;
 
+    const currentToken = await getAccessToken();
+    const sentToken = originalRequest.headers.Authorization?.toString().replace("Bearer ", "");
+    if (currentToken && currentToken !== sentToken) {
+      originalRequest.headers = setAuthorizationHeader(
+        originalRequest.headers,
+        currentToken,
+      );
+      return http(originalRequest);
+    }
+
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         failedQueue.push({
@@ -208,6 +219,7 @@ http.interceptors.response.use(
         title: "Phiên đăng nhập hết hạn",
         message: "Vui lòng đăng nhập lại.",
       });
+      router.replace("/(auth)/login");
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

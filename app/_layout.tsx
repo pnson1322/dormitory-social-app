@@ -1,3 +1,4 @@
+import { NetworkBanner } from "@/components/common/NetworkBanner";
 import { ToastProvider } from "@/components/toast/ToastProvider";
 import { ENV } from "@/config/env";
 import {
@@ -176,6 +177,7 @@ export default function RootLayout() {
   return (
     <ToastProvider>
       <Stack screenOptions={{ headerShown: false }} />
+      <NetworkBanner />
     </ToastProvider>
   );
 }
