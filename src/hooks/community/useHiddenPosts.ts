@@ -36,7 +36,7 @@ export function useHiddenPosts(initialParams?: { pageSize?: number; enabled?: bo
         setNextCursor(data.nextCursor);
         setHasMore(data.hasMore);
       } catch (error) {
-        console.error("Failed to fetch hidden posts:", error);
+
         setIsError(true);
       } finally {
         setIsLoading(false);

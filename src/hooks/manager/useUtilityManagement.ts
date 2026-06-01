@@ -21,7 +21,7 @@ export function useUtilityManagement() {
       setLastReadings(data);
       setCurrentReadings(data); 
     } catch (err) {
-      console.error(err);
+
     } finally {
       setFetchingReadings(false);
     }
@@ -161,4 +161,3 @@ export function useUtilityManagement() {
     fetchInvoiceDetailsForEdit,
   };
 }
-

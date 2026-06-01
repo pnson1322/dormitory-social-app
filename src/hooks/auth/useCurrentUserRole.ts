@@ -23,7 +23,6 @@ export function useCurrentUserRole() {
           }
         }
       } catch (error) {
-        console.error("Error loading user role from token:", error);
       } finally {
         setLoading(false);
       }

@@ -1,8 +1,10 @@
 import { ToastViewport } from "@/components/toast/ToastViewport";
 import type { ToastPayload, ToastType } from "@/components/toast/toast.types";
+import { globalToast } from "./globalToast";
 import React, {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -76,6 +78,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
     return id;
   }
+
+  useEffect(() => {
+    return globalToast.subscribe((args) => {
+      showToast(args);
+    });
+  }, []);
 
   const value = useMemo(
     () => ({ showToast, dismissToast, dismissAll }),

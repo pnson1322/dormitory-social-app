@@ -48,7 +48,7 @@ export function useManagerIncidents() {
     try {
       setLoadingMap(prev => ({ ...prev, [status]: true }));
       setErrorMap(prev => ({ ...prev, [status]: false }));
-      
+
       const data = await getIncidents({
         status,
         page: pageNum,
@@ -72,9 +72,9 @@ export function useManagerIncidents() {
         [status]: pageNum,
       }));
     } catch (error) {
-      console.error(`API failed for ${status}:`, error);
+
       setErrorMap(prev => ({ ...prev, [status]: true }));
-      
+
       if (!isAppend) {
         setIncidentsMap(prev => ({ ...prev, [status]: [] }));
       }
@@ -122,7 +122,7 @@ export function useManagerIncidents() {
         const sourceList = prev[currentStatus].filter(item => item.id !== incidentId);
         const updatedItem = { ...itemToMove, status: targetStatus };
         const destList = [updatedItem, ...prev[targetStatus]];
-        
+
         return {
           ...prev,
           [currentStatus]: sourceList,
@@ -142,7 +142,7 @@ export function useManagerIncidents() {
         message: `Đã chuyển sự cố sang trạng thái "${label}".`,
       });
     } catch (error) {
-      console.error(`Failed to update status for incident ${incidentId}:`, error);
+
       showToast({
         type: "error",
         title: "Thất bại",
@@ -178,7 +178,7 @@ export function useManagerIncidents() {
         message: "Đã từ chối báo cáo sự cố.",
       });
     } catch (error) {
-      console.error(`Failed to reject incident ${incidentId}:`, error);
+
       showToast({
         type: "error",
         title: "Thất bại",

@@ -32,7 +32,6 @@ export function useIncidents(roomId: string, initialParams?: { status?: string; 
         setIncidents(newIncidents);
       }
     } catch (error) {
-      console.error("Failed to fetch incidents:", error);
       setIsError(true);
     } finally {
       setIsLoading(false);

@@ -46,7 +46,6 @@ export function useStudentContract() {
         setContract(null);
       }
     } catch (error) {
-      console.error("Lỗi khi tải hợp đồng của tôi:", error);
       setContract(null);
     } finally {
       setLoading(false);

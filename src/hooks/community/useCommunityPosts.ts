@@ -38,7 +38,7 @@ export function useCommunityPosts(initialParams?: { postType?: string; pageSize?
       setNextCursor(data.nextCursor);
       setHasMore(data.hasMore);
     } catch (error) {
-      console.error("Failed to fetch community posts:", error);
+
       setIsError(true);
     } finally {
       setIsLoading(false);

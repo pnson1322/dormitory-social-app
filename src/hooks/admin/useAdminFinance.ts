@@ -20,7 +20,7 @@ export function useAdminFinance() {
       setStats(data);
     } catch (err) {
       setError("Không thể tải dữ liệu thống kê.");
-      console.error(err);
+
     } finally {
       setLoading(false);
     }

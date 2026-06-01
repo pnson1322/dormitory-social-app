@@ -29,7 +29,7 @@ export function useConversations(q?: string) {
       const items = await getConversations(q);
       setConversations(items || []);
     } catch (error) {
-      console.error("[useConversations] Fetch conversations failed:", error);
+
       setIsError(true);
     } finally {
       setIsLoading(false);
@@ -47,7 +47,7 @@ export function useConversations(q?: string) {
         }
         return result;
       } catch (error) {
-        console.error("[useConversations] Create direct failed:", error);
+
         throw error;
       }
     },
@@ -64,7 +64,7 @@ export function useConversations(q?: string) {
         }
         return result;
       } catch (error) {
-        console.error("[useConversations] Create group failed:", error);
+
         throw error;
       }
     },
@@ -84,7 +84,7 @@ export function useConversations(q?: string) {
           await chatSignalRService.connect();
         }
       } catch (error) {
-        console.error("[useConversations] SignalR connection failed:", error);
+
       }
     }
 

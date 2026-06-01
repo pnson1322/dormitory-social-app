@@ -41,7 +41,7 @@ export function useAdminReports() {
         setHasMore(result.meta ? pageNum < result.meta.totalPages : false);
         setPage(pageNum);
       } catch (error) {
-        console.error("Failed to fetch reports:", error);
+
         showToast({
           type: "error",
           title: "Lỗi tải báo cáo",
@@ -68,11 +68,11 @@ export function useAdminReports() {
     async (reportId: string, status: "Reviewed" | "Dismissed") => {
       try {
         await reviewReport(reportId, { status });
-        
+
         setReports((prev) => {
           const targetReport = prev.find((r) => r.id === reportId);
           if (!targetReport) return prev;
-          
+
           const targetPostId = targetReport.postId;
           return prev.map((r) => (r.postId === targetPostId ? { ...r, status } : r));
         });
@@ -85,7 +85,7 @@ export function useAdminReports() {
             : "Đã bỏ qua báo cáo.",
         });
       } catch (error: any) {
-        console.error("Failed to review report:", error);
+
         showToast({
           type: "error",
           title: "Thất bại",

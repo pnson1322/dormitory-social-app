@@ -126,7 +126,7 @@ export function useChatRoom(conversationId: string) {
         setSelectedImages((prev) => [...prev, ...uris]);
       }
     } catch (e) {
-      console.error("[ChatRoomScreen] Pick images failed:", e);
+
     }
   };
 
@@ -157,7 +157,7 @@ export function useChatRoom(conversationId: string) {
       await send(textToSend, imagesToSend);
       flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     } catch (err) {
-      console.error("[ChatRoomScreen] Send message failed:", err);
+
       showToast({
         type: "error",
         title: "Gửi thất bại",
@@ -183,7 +183,7 @@ export function useChatRoom(conversationId: string) {
         message: "Tin nhắn đã được thu hồi.",
       });
     } catch (err) {
-      console.error("[ChatRoomScreen] Revoke failed:", err);
+
       showToast({
         type: "error",
         title: "Thu hồi thất bại",
@@ -199,7 +199,7 @@ export function useChatRoom(conversationId: string) {
       const data = await getUsers({ PageSize: 100 });
       setUsers(data.items || []);
     } catch (err) {
-      console.error(err);
+
       showToast({
         type: "error",
         title: "Lỗi tải dữ liệu",
@@ -221,7 +221,7 @@ export function useChatRoom(conversationId: string) {
       });
       setIsAddMemberModalOpen(false);
     } catch (err) {
-      console.error(err);
+
       showToast({
         type: "error",
         title: "Thêm thành viên thất bại",

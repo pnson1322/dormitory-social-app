@@ -60,7 +60,7 @@ class ChatSignalRService {
         try {
           cb(message);
         } catch (e) {
-          console.error(e);
+
         }
       });
     });
@@ -71,7 +71,7 @@ class ChatSignalRService {
         try {
           cb(payload);
         } catch (e) {
-          console.error(e);
+
         }
       });
     });
@@ -82,7 +82,7 @@ class ChatSignalRService {
         try {
           cb(payload);
         } catch (e) {
-          console.error(e);
+
         }
       });
     });
@@ -93,7 +93,7 @@ class ChatSignalRService {
         try {
           cb(payload);
         } catch (e) {
-          console.error(e);
+
         }
       });
     });
@@ -109,7 +109,7 @@ class ChatSignalRService {
     });
 
     this.connection.onclose((error) => {
-      console.error("[SignalR] Connection closed:", error);
+
       this.notifyStatus(false);
     });
 
@@ -118,7 +118,7 @@ class ChatSignalRService {
       console.log("[SignalR] Connected successfully. State:", this.connection.state);
       this.notifyStatus(true);
     } catch (error) {
-      console.error("[SignalR] Failed to start connection:", error);
+
       this.notifyStatus(false);
       throw error;
     }
@@ -131,7 +131,7 @@ class ChatSignalRService {
       console.log("[SignalR] Disconnecting...");
       await this.connection.stop();
     } catch (error) {
-      console.error("[SignalR] Error while disconnecting:", error);
+
     } finally {
       this.connection = null;
       this.notifyStatus(false);
@@ -151,7 +151,7 @@ class ChatSignalRService {
       await this.connection.invoke("JoinConversation", conversationId);
       console.log(`[SignalR] Joined conversation group: ${conversationId}`);
     } catch (error) {
-      console.error(`[SignalR] JoinConversation failed for ${conversationId}:`, error);
+
     }
   }
 
@@ -160,7 +160,7 @@ class ChatSignalRService {
     try {
       await this.connection.invoke("Typing", conversationId);
     } catch (error) {
-      console.error("[SignalR] Typing invocation failed:", error);
+
     }
   }
 
@@ -169,7 +169,7 @@ class ChatSignalRService {
     try {
       await this.connection.invoke("StopTyping", conversationId);
     } catch (error) {
-      console.error("[SignalR] StopTyping invocation failed:", error);
+
     }
   }
 
@@ -204,7 +204,7 @@ class ChatSignalRService {
       try {
         cb(isConnected);
       } catch (e) {
-        console.error(e);
+
       }
     });
   }

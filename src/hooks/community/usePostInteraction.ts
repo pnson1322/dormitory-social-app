@@ -56,7 +56,7 @@ export function usePostInteraction(
         if (detail.isLikedByMe !== undefined) setIsLiked(detail.isLikedByMe);
       }
     } catch (error) {
-      console.error("Failed to fetch post detail:", error);
+
     } finally {
       setIsLoadingDetail(false);
     }
@@ -70,7 +70,7 @@ export function usePostInteraction(
       setCommentsCursor(response.nextCursor);
       setHasMoreComments(response.hasMore);
     } catch (error) {
-      console.error("Failed to fetch comments:", error);
+
       showToast({
         type: "error",
         title: "Lỗi tải bình luận",
@@ -92,7 +92,7 @@ export function usePostInteraction(
       setCommentsCursor(response.nextCursor);
       setHasMoreComments(response.hasMore);
     } catch (error) {
-      console.error("Failed to fetch more comments:", error);
+
     }
   }, [post.id, commentsCursor, hasMoreComments, isLoadingComments]);
 
@@ -108,7 +108,7 @@ export function usePostInteraction(
       setIsLiked(response.isLiked);
       setLikesCount(response.likeCount);
     } catch (error) {
-      console.error("Failed to toggle like on post:", error);
+
       setIsLiked(originalLiked);
       setLikesCount(originalCount);
       showToast({
@@ -256,7 +256,7 @@ export function usePostInteraction(
           ),
         );
       } catch (error) {
-        console.error("Failed to toggle like on comment:", error);
+
         setCommentsList((prev) =>
           prev.map((c) =>
             c.id === commentId
@@ -301,7 +301,7 @@ export function usePostInteraction(
         onSuccess();
       }
     } catch (error: any) {
-      console.error("Failed to toggle pin on post:", error);
+
       showToast({
         type: "error",
         title: "Lỗi tương tác",

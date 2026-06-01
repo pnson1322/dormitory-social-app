@@ -5,6 +5,8 @@ import {
   getAuthTokens,
   setAuthTokens,
 } from "@/storage/authStorage";
+import { getApiErrorMessage } from "./apiError";
+import { globalToast } from "@/components/toast/globalToast";
 import axios, {
   AxiosError,
   AxiosHeaders,
@@ -136,14 +138,35 @@ http.interceptors.response.use(
     const status = error.response?.status;
 
     if (!originalRequest || status !== 401) {
+      if (!(originalRequest as any)?._silent) {
+        globalToast.show({
+          type: "error",
+          title: "Có lỗi xảy ra",
+          message: getApiErrorMessage(error),
+        });
+      }
       return Promise.reject(error);
     }
 
     if (isAuthRoute(originalRequest.url)) {
+      if (!(originalRequest as any)?._silent) {
+        globalToast.show({
+          type: "error",
+          title: "Yêu cầu thất bại",
+          message: getApiErrorMessage(error),
+        });
+      }
       return Promise.reject(error);
     }
 
     if (originalRequest._retry) {
+      if (!(originalRequest as any)?._silent) {
+        globalToast.show({
+          type: "error",
+          title: "Lỗi kết nối",
+          message: getApiErrorMessage(error),
+        });
+      }
       return Promise.reject(error);
     }
 
@@ -180,6 +203,11 @@ http.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError);
       await clearAuthTokens();
+      globalToast.show({
+        type: "error",
+        title: "Phiên đăng nhập hết hạn",
+        message: "Vui lòng đăng nhập lại.",
+      });
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

@@ -48,7 +48,7 @@ export function useMessages(conversationId: string | null) {
       setHasMore(data.hasMore);
       updateNamesMap(items);
     } catch (error) {
-      console.error("[useMessages] Fetch initial messages failed:", error);
+
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +65,7 @@ export function useMessages(conversationId: string | null) {
       setHasMore(data.hasMore);
       updateNamesMap(items);
     } catch (error) {
-      console.error("[useMessages] Refresh failed:", error);
+
     } finally {
       setIsRefreshing(false);
     }
@@ -88,7 +88,7 @@ export function useMessages(conversationId: string | null) {
       setHasMore(data.hasMore);
       updateNamesMap(items);
     } catch (error) {
-      console.error("[useMessages] Load more failed:", error);
+
     } finally {
       setIsLoadingMore(false);
     }
@@ -98,7 +98,7 @@ export function useMessages(conversationId: string | null) {
     async (content: string, files?: string[]) => {
       if (!conversationId) return;
       const tempId = `temp-${Date.now()}`;
-      
+
       const tempMessage: MessageResponse = {
         id: tempId,
         conversationId,
@@ -119,7 +119,7 @@ export function useMessages(conversationId: string | null) {
         updateNamesMap([result]);
         return result;
       } catch (error) {
-        console.error("[useMessages] Send message failed:", error);
+
         setMessages((prev) =>
           prev.map((m) => (m.id === tempId ? { ...m, status: "failed" } : m))
         );
@@ -145,7 +145,7 @@ export function useMessages(conversationId: string | null) {
         updateNamesMap([result]);
         return result;
       } catch (error) {
-        console.error("[useMessages] Retry send message failed:", error);
+
         setMessages((prev) =>
           prev.map((m) => (m.id === tempId ? { ...m, status: "failed" } : m))
         );
@@ -172,7 +172,7 @@ export function useMessages(conversationId: string | null) {
           )
         );
       } catch (error) {
-        console.error("[useMessages] Delete message failed:", error);
+
         throw error;
       }
     },
@@ -181,7 +181,7 @@ export function useMessages(conversationId: string | null) {
 
   const triggerTyping = useCallback(() => {
     if (!conversationId) return;
-    
+
     if (!isTypingRef.current) {
       isTypingRef.current = true;
       chatSignalRService.typing(conversationId);
@@ -208,7 +208,7 @@ export function useMessages(conversationId: string | null) {
         try {
           await chatSignalRService.connect();
         } catch (e) {
-          console.error("[useMessages] SignalR reconnect failed:", e);
+
         }
       }
       if (chatSignalRService.isConnected && conversationId) {
@@ -280,7 +280,7 @@ export function useMessages(conversationId: string | null) {
       unsubDelete();
       unsubTyping();
       unsubStopTyping();
-      
+
       if (stopTypingTimeoutRef.current) {
         clearTimeout(stopTypingTimeoutRef.current);
       }

@@ -69,7 +69,7 @@ export function useCreatePostForm({
         onClose();
       }
     } catch (error) {
-      console.error(error);
+
     } finally {
       setIsSubmitting(false);
     }

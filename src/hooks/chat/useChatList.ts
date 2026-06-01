@@ -52,7 +52,7 @@ export function useChatList() {
       const data = await getUsers({ PageSize: 100 });
       setUsers(data.items || []);
     } catch (error) {
-      console.error("[ChatListScreen] Fetch users failed:", error);
+
     } finally {
       setIsLoadingUsers(false);
     }
@@ -75,7 +75,7 @@ export function useChatList() {
       setIsModalOpen(false);
       router.push(`/chat/${res.id}`);
     } catch (err) {
-      console.error("[ChatListScreen] Start direct chat failed:", err);
+
     } finally {
       setIsCreatingChat(false);
     }
@@ -88,7 +88,7 @@ export function useChatList() {
       setIsModalOpen(false);
       router.push(`/chat/${res.id}`);
     } catch (err) {
-      console.error("[ChatListScreen] Create group chat failed:", err);
+
     } finally {
       setIsCreatingChat(false);
     }

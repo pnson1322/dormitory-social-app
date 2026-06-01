@@ -26,7 +26,7 @@ export function useIncidentForm(roomId: string) {
           setSelectedCategory(cats[0].id);
         }
       } catch (error) {
-        console.error("Failed to load incident categories:", error);
+
       } finally {
         setIsCategoriesLoading(false);
       }

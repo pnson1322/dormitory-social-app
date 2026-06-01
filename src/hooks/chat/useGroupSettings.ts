@@ -49,7 +49,7 @@ export function useGroupSettings({
       const res = await getConversationMembers(conversationId);
       setMembers(res.members || []);
     } catch (err) {
-      console.error(err);
+
       showToast({ type: "error", title: "Lỗi", message: "Không thể lấy danh sách thành viên." });
     } finally {
       setIsLoading(false);
@@ -69,7 +69,7 @@ export function useGroupSettings({
       setIsEditingName(false);
       onGroupUpdated(groupName.trim());
     } catch (err) {
-      console.error(err);
+
       showToast({ type: "error", title: "Lỗi", message: "Không thể đổi tên nhóm. Vui lòng thử lại." });
     } finally {
       setIsSubmitting(false);
@@ -84,7 +84,7 @@ export function useGroupSettings({
       setMembers((prev) => prev.filter((m) => m.userId !== member.userId));
       onGroupUpdated();
     } catch (err) {
-      console.error(err);
+
       showToast({ type: "error", title: "Lỗi", message: "Không thể xóa thành viên này." });
     } finally {
       setIsSubmitting(false);
@@ -100,7 +100,7 @@ export function useGroupSettings({
       await fetchMembers();
       onGroupUpdated();
     } catch (err) {
-      console.error(err);
+
       showToast({ type: "error", title: "Lỗi", message: "Không thể chuyển quyền trưởng nhóm." });
     } finally {
       setIsSubmitting(false);
@@ -117,7 +117,7 @@ export function useGroupSettings({
       onClose();
       onGroupUpdated();
     } catch (err) {
-      console.error(err);
+
       showToast({
         type: "error",
         title: "Lỗi",

@@ -94,7 +94,6 @@ export function useStudentRooms() {
       setBuildings(bData);
       setRoomTypes(rtData);
     } catch (err) {
-      console.error("Failed to fetch room metadata", err);
     }
   }, []);
 

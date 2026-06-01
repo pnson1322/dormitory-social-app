@@ -23,7 +23,7 @@ export function useCommunityActions() {
       });
       return result;
     } catch (error: any) {
-      console.error("Failed to create post:", error);
+
       showToast({
         type: "error",
         title: "Thất bại",
@@ -51,7 +51,7 @@ export function useCommunityActions() {
       });
       return result;
     } catch (error: any) {
-      console.error("Failed to create announcement:", error);
+
       showToast({
         type: "error",
         title: "Thất bại",
@@ -74,7 +74,7 @@ export function useCommunityActions() {
       });
       return result;
     } catch (error: any) {
-      console.error("Failed to hide post:", error);
+
       showToast({
         type: "error",
         title: "Thất bại",

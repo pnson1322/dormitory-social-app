@@ -12,7 +12,7 @@ export function useAdminContentManagement() {
   const [activeTab, setActiveTab] = useState<AdminTab>("posts");
   const [postFilter, setPostFilter] = useState<"all" | "hidden">("all");
   const { showToast } = useToast();
-  
+
   const { createAnnouncement, hidePost, isSubmitting: isActionSubmitting } = useCommunityActions();
   const postsHook = useCommunityPosts({ pageSize: 15 });
   const hiddenPostsHook = useHiddenPosts({ pageSize: 15, enabled: postFilter === "hidden" });
@@ -71,13 +71,13 @@ export function useAdminContentManagement() {
         setAnnouncementContent("");
         setIsPinned(false);
         setImages([]);
-        
+
         postsHook.refresh();
         hiddenPostsHook.refresh();
         setActiveTab("posts");
       }
     } catch (error) {
-      console.error("Failed to publish announcement:", error);
+
     } finally {
       setIsCreatingAnnouncement(false);
     }
@@ -106,7 +106,7 @@ export function useAdminContentManagement() {
         hiddenPostsHook.refresh();
       }
     } catch (error) {
-      console.error("Failed to hide post:", error);
+
     } finally {
       setIsHidingPost(false);
     }
@@ -133,7 +133,7 @@ export function useAdminContentManagement() {
     setActiveTab,
     postFilter,
     setPostFilter,
-    
+
     posts: postFilter === "hidden" ? hiddenPostsHook.hiddenPosts : postsHook.posts,
     pinnedPosts: postsHook.pinnedPosts,
     isLoading: postFilter === "hidden" ? hiddenPostsHook.isLoading : postsHook.isLoading,
