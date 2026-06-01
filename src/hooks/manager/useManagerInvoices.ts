@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
-import { getManagerInvoices, getFinancialSummary } from "@/services/billing/billing.api";
+import { getManagerInvoices } from "@/services/billing/billing.api";
 import { InvoiceSummary } from "@/services/billing/billing.types";
+import { getBuildings } from "@/services/room/room.api";
+import { BuildingItem } from "@/services/room/room.types";
+import { useCallback, useEffect, useState } from "react";
 
 const PAGE_SIZE = 10;
 
@@ -12,44 +14,51 @@ export function useManagerInvoices() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState({ pending: 0, revenue: 0 });
 
-  const loadStats = useCallback(async () => {
-    try {
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth() + 1;
-      const summaryRes = await getFinancialSummary({
-        periodType: "month",
-        year: currentYear,
-        month: currentMonth
-      });
-      if (summaryRes.data) {
-        setStats({
-          pending: summaryRes.data.unpaidInvoiceCount,
-          revenue: summaryRes.data.totalRevenue,
-        });
+  const [status, setStatus] = useState<string>("");
+  const [buildingCode, setBuildingCode] = useState<string>("");
+  const [floor, setFloor] = useState<number | null>(null);
+  const [year, setYear] = useState<number | null>(null);
+  const [month, setMonth] = useState<number | null>(null);
+
+  const [buildings, setBuildings] = useState<BuildingItem[]>([]);
+
+  useEffect(() => {
+    const fetchBuildings = async () => {
+      try {
+        const data = await getBuildings();
+        setBuildings(data || []);
+      } catch (err) {
+        console.log("Error loading buildings list:", err);
       }
-    } catch (err) {
-      console.log("Error fetching manager financial stats:", err);
-    }
+    };
+    fetchBuildings();
   }, []);
 
-  const loadData = useCallback(async (p: number, isRefresh = false) => {
+  const loadData = useCallback(async (
+    p: number, 
+    isRefresh = false, 
+    activeStatus = status, 
+    activeBuilding = buildingCode,
+    activeFloor = floor,
+    activeYear = year,
+    activeMonth = month
+  ) => {
     if (isRefresh) setRefreshing(true);
     else if (p === 1) setLoading(true);
     else setLoadingMore(true);
 
     setError(null);
 
-    if (p === 1) {
-      loadStats();
-    }
-
     try {
       const response = await getManagerInvoices({
         page: p,
         pageSize: PAGE_SIZE,
+        status: activeStatus || undefined,
+        buildingCode: activeBuilding || undefined,
+        floor: activeFloor !== null ? activeFloor : undefined,
+        year: activeYear !== null ? activeYear : undefined,
+        month: activeMonth !== null ? activeMonth : undefined,
       });
 
       const mappedData: InvoiceSummary[] = (response.data || []).map((item) => ({
@@ -80,23 +89,25 @@ export function useManagerInvoices() {
       setRefreshing(false);
       setLoadingMore(false);
     }
-  }, [loadStats]);
+  }, [status, buildingCode, floor, year, month]);
 
   useEffect(() => {
-    loadData(1);
-  }, [loadData]);
+    setPage(1);
+    setHasMore(true);
+    loadData(1, false, status, buildingCode, floor, year, month);
+  }, [status, buildingCode, floor, year, month, loadData]);
 
   const onRefresh = () => {
     setPage(1);
     setHasMore(true);
-    loadData(1, true);
+    loadData(1, true, status, buildingCode, floor, year, month);
   };
 
   const onLoadMore = () => {
     if (!loadingMore && hasMore && !loading) {
       const nextPage = page + 1;
       setPage(nextPage);
-      loadData(nextPage);
+      loadData(nextPage, false, status, buildingCode, floor, year, month);
     }
   };
 
@@ -107,7 +118,17 @@ export function useManagerInvoices() {
     loadingMore,
     hasMore,
     error,
-    stats,
+    status,
+    setStatus,
+    buildingCode,
+    setBuildingCode,
+    floor,
+    setFloor,
+    year,
+    setYear,
+    month,
+    setMonth,
+    buildings,
     onRefresh,
     onLoadMore,
   };

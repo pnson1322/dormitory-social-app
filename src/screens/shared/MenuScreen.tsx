@@ -24,6 +24,7 @@ type MenuItem = {
   description: string;
   iconName: keyof typeof Ionicons.glyphMap;
   color: string;
+  iconBg: string;
   route: string;
 };
 
@@ -61,7 +62,8 @@ export function MenuScreen() {
           label: "Quản lý nội dung",
           description: "Duyệt bài đăng, thông báo, ghim bài",
           iconName: "newspaper-outline",
-          color: "#8B5CF6",
+          color: "#7C3AED",
+          iconBg: "rgba(124, 58, 237, 0.08)",
           route: "/(admin)/content-management",
         },
         {
@@ -69,7 +71,8 @@ export function MenuScreen() {
           label: "Cài đặt",
           description: "Đổi mật khẩu, cấu hình hệ thống",
           iconName: "settings-outline",
-          color: "#64748B",
+          color: "#475569",
+          iconBg: "rgba(71, 85, 105, 0.08)",
           route: "/(admin)/settings",
         },
       ];
@@ -81,7 +84,8 @@ export function MenuScreen() {
           label: "Quản lý hóa đơn",
           description: "Xem hóa đơn, nhập chỉ số điện nước",
           iconName: "receipt-outline",
-          color: "#3B82F6",
+          color: "#1D4ED8",
+          iconBg: "rgba(29, 78, 216, 0.08)",
           route: "/(manager)/invoices",
         },
         {
@@ -89,7 +93,8 @@ export function MenuScreen() {
           label: "Quản lý nội dung",
           description: "Duyệt bài đăng, ghim, ẩn bài",
           iconName: "newspaper-outline",
-          color: "#8B5CF6",
+          color: "#7C3AED",
+          iconBg: "rgba(124, 58, 237, 0.08)",
           route: "/(manager)/content-management",
         },
         {
@@ -97,7 +102,8 @@ export function MenuScreen() {
           label: "Cài đặt",
           description: "Đổi mật khẩu, bảo mật tài khoản",
           iconName: "settings-outline",
-          color: "#64748B",
+          color: "#475569",
+          iconBg: "rgba(71, 85, 105, 0.08)",
           route: "/(manager)/settings",
         },
       ];
@@ -108,7 +114,8 @@ export function MenuScreen() {
         label: "Tìm phòng",
         description: "Xem danh sách phòng & đăng ký ở",
         iconName: "search-outline",
-        color: "#3B82F6",
+        color: "#1D4ED8",
+        iconBg: "rgba(29, 78, 216, 0.08)",
         route: "/(student)/rooms",
       },
       {
@@ -116,7 +123,8 @@ export function MenuScreen() {
         label: "Hồ sơ cá nhân",
         description: "Thông tin cá nhân & liên lạc",
         iconName: "person-outline",
-        color: "#10B981",
+        color: "#059669",
+        iconBg: "rgba(5, 150, 105, 0.08)",
         route: "/(student)/profile",
       },
       {
@@ -124,7 +132,8 @@ export function MenuScreen() {
         label: "Hóa đơn",
         description: "Thanh toán tiền phòng & dịch vụ",
         iconName: "receipt-outline",
-        color: "#F59E0B",
+        color: "#D97706",
+        iconBg: "rgba(217, 119, 6, 0.08)",
         route: "/(student)/invoices",
       },
       {
@@ -132,7 +141,8 @@ export function MenuScreen() {
         label: "Hợp đồng",
         description: "Xem chi tiết hợp đồng thuê phòng",
         iconName: "document-text-outline",
-        color: "#8B5CF6",
+        color: "#7C3AED",
+        iconBg: "rgba(124, 58, 237, 0.08)",
         route: "/(student)/contract",
       },
       {
@@ -140,7 +150,8 @@ export function MenuScreen() {
         label: "Sự cố phòng",
         description: "Báo cáo hư hỏng cơ sở vật chất",
         iconName: "warning-outline",
-        color: "#EF4444",
+        color: "#DC2626",
+        iconBg: "rgba(220, 38, 38, 0.08)",
         route: "/(student)/incidents",
       },
       {
@@ -148,7 +159,8 @@ export function MenuScreen() {
         label: "Cài đặt",
         description: "Đổi mật khẩu & bảo mật tài khoản",
         iconName: "settings-outline",
-        color: "#64748B",
+        color: "#475569",
+        iconBg: "rgba(71, 85, 105, 0.08)",
         route: "/(student)/settings",
       },
     ];
@@ -159,7 +171,7 @@ export function MenuScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-slate-50">
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#F8FAFC" }}>
         <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
@@ -167,58 +179,55 @@ export function MenuScreen() {
 
   const displayName = profile?.fullName || tokenFullName || "Người dùng";
   const displayEmail = profile?.email || tokenEmail || "";
+  const cardWidth = (width - 44) / 2;
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <View style={{ flex: 1, backgroundColor: "#F8FAFC" }}>
       <LinearGradient
         colors={[Colors.primary, "#1D4ED8"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={{
           paddingTop: Math.max(insets.top, 24) + 16,
-          paddingBottom: 28,
+          paddingBottom: 32,
           paddingHorizontal: 20,
+          borderBottomLeftRadius: 32,
+          borderBottomRightRadius: 32,
         }}
-        className="rounded-b-[32px] shadow-lg shadow-blue-900/20"
       >
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center flex-1">
-            {profile?.avatarUrl ? (
-              <Image
-                source={{ uri: profile.avatarUrl }}
-                className="w-16 h-16 rounded-full border-2 border-white/60 mr-4"
-              />
-            ) : (
-              <View className="w-16 h-16 rounded-full bg-white border border-slate-100 items-center justify-center mr-4 shadow-sm shadow-slate-300">
-                <Text className="text-blue-900 text-[20px] font-extrabold">
-                  {getInitials(displayName)}
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {profile?.avatarUrl ? (
+            <Image
+              source={{ uri: profile.avatarUrl }}
+              style={{ width: 64, height: 64, borderRadius: 32, borderWidth: 2, borderColor: "rgba(255,255,255,0.6)", marginRight: 16 }}
+            />
+          ) : (
+            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: "white", alignItems: "center", justifyContent: "center", marginRight: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.4)" }}>
+              <Text style={{ color: "#1D4ED8", fontSize: 22, fontWeight: "900" }}>
+                {getInitials(displayName)}
+              </Text>
+            </View>
+          )}
+
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: "white", fontSize: 20, fontWeight: "800", marginBottom: 6 }} numberOfLines={1}>
+              {displayName}
+            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <View style={{ paddingHorizontal: 10, paddingVertical: 3, borderRadius: 12, backgroundColor: roleInfo.bg }}>
+                <Text style={{ fontSize: 10, fontWeight: "900", letterSpacing: 0.5, color: roleInfo.text }}>
+                  {roleInfo.label}
                 </Text>
               </View>
-            )}
-
-            <View className="flex-1">
-              <Text className="text-white text-[22px] font-extrabold mb-1" numberOfLines={1}>
-                {displayName}
-              </Text>
-              <View className="flex-row items-center flex-wrap gap-2">
-                <View
-                  className="px-2.5 py-0.5 rounded-full"
-                  style={{ backgroundColor: roleInfo.bg }}
-                >
-                  <Text className="text-[10px] font-black uppercase tracking-wider" style={{ color: roleInfo.text }}>
-                    {roleInfo.label}
-                  </Text>
-                </View>
-                {role?.toLowerCase() === "student" && profile?.room ? (
-                  <Text className="text-blue-100 text-[13px] font-semibold">
-                    Phòng {profile.room.name} • {profile.room.building}
-                  </Text>
-                ) : (
-                  <Text className="text-blue-100/90 text-[12px] font-medium" numberOfLines={1}>
-                    {displayEmail}
-                  </Text>
-                )}
-              </View>
+              {role?.toLowerCase() === "student" && profile?.room ? (
+                <Text style={{ color: "rgba(219,234,254,0.9)", fontSize: 13, fontWeight: "600" }}>
+                  Phòng {profile.room.name} • {profile.room.building}
+                </Text>
+              ) : (
+                <Text style={{ color: "rgba(219,234,254,0.9)", fontSize: 12, fontWeight: "500" }} numberOfLines={1}>
+                  {displayEmail}
+                </Text>
+              )}
             </View>
           </View>
         </View>
@@ -226,61 +235,99 @@ export function MenuScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 40 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 24, paddingBottom: 40 }}
       >
-        <Text className="text-slate-800 text-[16px] font-extrabold mb-4 px-1">
+        <Text style={{ fontSize: 11, fontWeight: "800", color: "#94A3B8", letterSpacing: 1.5, marginBottom: 16, paddingHorizontal: 4 }}>
           DANH MỤC TÍNH NĂNG
         </Text>
 
-        <View className="flex-row flex-wrap justify-between">
-          {menuItems.map((item) => {
-            const cardWidth = (width - 50) / 2;
-            return (
-              <TouchableOpacity
-                key={item.name}
-                onPress={() => router.push(item.route as any)}
-                activeOpacity={0.7}
-                style={{ width: cardWidth }}
-                className="bg-white rounded-2xl p-4 mb-4 border border-slate-100/60 shadow-sm shadow-slate-100 justify-between min-h-[140px]"
-              >
-                <View
-                  className="w-10 h-10 rounded-xl justify-center items-center mb-3"
-                  style={{ backgroundColor: `${item.color}15` }}
-                >
-                  <Ionicons name={item.iconName} size={20} color={item.color} />
-                </View>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+          {menuItems.map((item) => (
+            <TouchableOpacity
+              key={item.name}
+              onPress={() => router.push(item.route as any)}
+              activeOpacity={0.8}
+              style={{
+                width: cardWidth,
+                borderRadius: 20,
+                backgroundColor: "white",
+                borderWidth: 1.5,
+                borderColor: item.color,
+                padding: 16,
+                minHeight: 150,
+                justifyContent: "space-between",
+                shadowColor: "#000000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.04,
+                shadowRadius: 8,
+                elevation: 2,
+              }}
+            >
+              <View style={{
+                width: 46,
+                height: 46,
+                borderRadius: 14,
+                backgroundColor: item.iconBg,
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+                <Ionicons name={item.iconName} size={24} color={item.color} />
+              </View>
 
-                <View>
-                  <Text className="text-slate-800 text-[14px] font-bold mb-1.5">
-                    {item.label}
-                  </Text>
-                  <Text className="text-slate-400 text-[11px] leading-[15px]" numberOfLines={2}>
-                    {item.description}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
+              <View style={{ marginTop: 12 }}>
+                <Text style={{ color: "#1E293B", fontSize: 14, fontWeight: "800", marginBottom: 4 }}>
+                  {item.label}
+                </Text>
+                <Text style={{ color: "#64748B", fontSize: 11, lineHeight: 15, fontWeight: "600" }} numberOfLines={2}>
+                  {item.description}
+                </Text>
+              </View>
+
+              <View style={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                width: 24,
+                height: 24,
+                borderRadius: 12,
+                backgroundColor: item.iconBg,
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+                <Ionicons name="chevron-forward" size={12} color={item.color} />
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
 
-        <View className="h-[1px] bg-slate-200/60 my-6" />
+        <View style={{ height: 1, backgroundColor: "#E2E8F0", marginVertical: 24 }} />
 
         <TouchableOpacity
           onPress={() => setShowLogoutConfirm(true)}
-          activeOpacity={0.7}
-          className="flex-row items-center justify-between bg-white border border-red-100 rounded-2xl p-4 shadow-sm shadow-red-50/50"
+          activeOpacity={0.8}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            backgroundColor: "white",
+            borderRadius: 16,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: "#FEE2E2",
+            shadowColor: "#EF4444",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.04,
+            shadowRadius: 6,
+            elevation: 1,
+          }}
         >
-          <View className="flex-row items-center">
-            <View className="w-10 h-10 rounded-xl bg-rose-50 justify-center items-center mr-3.5">
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ width: 42, height: 42, borderRadius: 12, backgroundColor: "#FEF2F2", alignItems: "center", justifyContent: "center", marginRight: 14 }}>
               <Ionicons name="log-out-outline" size={20} color="#EF4444" />
             </View>
             <View>
-              <Text className="text-slate-800 text-[14px] font-bold">
-                Đăng xuất
-              </Text>
-              <Text className="text-slate-400 text-[11px] mt-0.5">
-                Đóng phiên đăng nhập tài khoản hiện tại
-              </Text>
+              <Text style={{ color: "#1E293B", fontSize: 14, fontWeight: "800" }}>Đăng xuất</Text>
+              <Text style={{ color: "#94A3B8", fontSize: 11, marginTop: 2 }}>Đóng phiên đăng nhập tài khoản hiện tại</Text>
             </View>
           </View>
           <Ionicons name="chevron-forward-outline" size={16} color="#EF4444" />

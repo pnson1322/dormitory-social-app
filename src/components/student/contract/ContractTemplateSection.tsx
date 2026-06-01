@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { View, Text, Pressable, ActivityIndicator, LayoutAnimation, UIManager, Platform } from "react-native";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/colors";
-import { useContractTemplate } from "@/hooks/student/useContractTemplate";
 import Markdown from "react-native-markdown-display";
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -10,7 +9,6 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 type Props = {
-  templateId?: string;
   template?: {
     code: string;
     name: string;
@@ -19,9 +17,9 @@ type Props = {
   } | null;
 };
 
-export function ContractTemplateSection({ templateId, template: propTemplate }: Props) {
-  const { template: fetchedTemplate, loading } = useContractTemplate(propTemplate ? undefined : templateId);
-  const template = propTemplate || fetchedTemplate;
+export function ContractTemplateSection({ template: propTemplate }: Props) {
+  const template = propTemplate;
+  const loading = false;
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {

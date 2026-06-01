@@ -27,7 +27,7 @@ export function InvoiceHeader({ activeTab, setActiveTab, searchQuery, setSearchQ
     >
       <View className="flex-row items-center mb-6">
         <Pressable
-          onPress={() => router.navigate("/(student)/my-room")}
+          onPress={() => router.navigate("/(student)/menu" as any)}
           className="h-10 w-10 items-center justify-center rounded-full bg-slate-100 mr-3"
         >
           <Ionicons name="arrow-back" size={20} color={Colors.textPrimary} />

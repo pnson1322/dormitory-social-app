@@ -3,7 +3,8 @@ import { RegistrationCard } from "@/components/student/my-room/RegistrationCard"
 import { Colors } from "@/constants/colors";
 import { RegistrationItem, useRegistrationHistory } from "@/hooks/student/useRegistrationHistory";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
 import { ActivityIndicator, LayoutAnimation, Platform, Pressable, Text, UIManager, View } from "react-native";
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -11,10 +12,16 @@ if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 export function RecentRegistrations() {
-  const { items, loading } = useRegistrationHistory();
+  const { items, loading, onRefresh } = useRegistrationHistory();
   const [expanded, setExpanded] = useState(false);
   const [selectedItem, setSelectedItem] = useState<RegistrationItem | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      onRefresh();
+    }, [])
+  );
 
   const displayItems = expanded ? items : items.slice(0, 3);
   const hasMore = items.length > 3;

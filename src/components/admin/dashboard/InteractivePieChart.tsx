@@ -47,6 +47,8 @@ export function InteractivePieChart({ slices }: Props) {
   };
 
   const total = slices.reduce((s, d) => s + d.value, 0);
+  if (total === 0) return <EmptyPie />;
+
   let startAngle = -Math.PI / 2;
   const paths = slices.map((slice) => {
     const angle = (slice.value / total) * 2 * Math.PI;

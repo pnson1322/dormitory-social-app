@@ -1,6 +1,7 @@
 import { useToast } from "@/components/toast/ToastProvider";
 import { useFeeTemplates } from "@/hooks/student/useFeeTemplates";
 import { useStudentRoomDetails } from "@/hooks/student/useStudentRoomDetails";
+import { getApiErrorMessage } from "@/services/apiError";
 import { createBooking } from "@/services/booking/booking.api";
 import { getAuthTokens } from "@/storage/authStorage";
 import { getUserInfoFromToken } from "@/utils/jwt";
@@ -82,10 +83,11 @@ export function useRoomBooking(roomId: string) {
 
       router.replace("/(student)/my-room");
     } catch (err: any) {
+      const msg = getApiErrorMessage(err);
       showToast({
         type: "error",
         title: "Đăng ký thất bại",
-        message: err.message || "Đã có lỗi xảy ra, vui lòng thử lại.",
+        message: msg,
       });
     } finally {
       setIsSubmitting(false);

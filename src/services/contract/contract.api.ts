@@ -1,5 +1,8 @@
 import { http } from "../http";
-import { GetContractTemplateResponse, GetStudentContractResponse } from "./contract.types";
+import {
+  GetRoomTypeContractTemplateResponse,
+  GetStudentContractResponse
+} from "./contract.types";
 
 export const contractApi = {
   getMyContract: async (): Promise<GetStudentContractResponse> => {
@@ -8,8 +11,16 @@ export const contractApi = {
     return response.data;
   },
 
-  getContractTemplate: async (templateId: string): Promise<GetContractTemplateResponse> => {
-    const response = await http.get<GetContractTemplateResponse>(`/api/student/contract/template/${templateId}`);
+  getRoomTypeContractTemplate: async (
+    roomTypeId: string,
+    effectiveDate?: string
+  ): Promise<GetRoomTypeContractTemplateResponse> => {
+    const response = await http.get<GetRoomTypeContractTemplateResponse>(
+      `/api/billing/contract-templates/room-types/${roomTypeId}`,
+      {
+        params: effectiveDate ? { effectiveDate } : undefined,
+      }
+    );
     return response.data;
   },
 };

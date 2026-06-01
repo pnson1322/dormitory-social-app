@@ -8,8 +8,12 @@ import { Colors } from "@/constants/colors";
 import { useRoomBooking } from "@/hooks/student/useRoomBooking";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { QrPaymentModal } from "@/components/student/billing/QrPaymentModal";
+import { getBuildings } from "@/services/room/room.api";
+import { BuildingItem } from "@/services/room/room.types";
 
 export function StudentRoomBookingScreen() {
   const { id } = useLocalSearchParams();
@@ -18,7 +22,7 @@ export function StudentRoomBookingScreen() {
 
   const {
     room,
-    loading,
+    loading: bookingLoading,
     error,
     terms,
     selectedTerm,
@@ -34,6 +38,34 @@ export function StudentRoomBookingScreen() {
     goBack,
     submitBooking,
   } = useRoomBooking(roomId);
+
+  const [showPaymentQr, setShowPaymentQr] = useState(false);
+  const [buildings, setBuildings] = useState<BuildingItem[]>([]);
+  const [buildingsLoading, setBuildingsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchBuildingsList = async () => {
+      try {
+        setBuildingsLoading(true);
+        const data = await getBuildings();
+        setBuildings(data || []);
+      } catch (err) {
+        console.log("Error fetching buildings list:", err);
+      } finally {
+        setBuildingsLoading(false);
+      }
+    };
+    fetchBuildingsList();
+  }, []);
+
+  const selectedBuilding = buildings.find(b => b.id === room?.buildingId);
+
+  const handleQrConfirm = async () => {
+    await submitBooking();
+    setShowPaymentQr(false);
+  };
+
+  const loading = bookingLoading || buildingsLoading;
 
   if (loading) {
     return (
@@ -112,15 +144,27 @@ export function StudentRoomBookingScreen() {
 
         <BookingSummary estimatedTotal={estimatedInitialTotal} />
 
-        <BookingTerms agreed={agreed} onAgreedChange={setAgreed} />
+        <BookingTerms agreed={agreed} onAgreedChange={setAgreed} roomTypeId={room?.roomTypeId} />
 
         <AppButton
           title="Xác nhận đăng ký"
-          onPress={submitBooking}
+          onPress={() => setShowPaymentQr(true)}
           loading={isSubmitting}
           disabled={!agreed || isSubmitting}
         />
       </ScrollView>
+
+      <QrPaymentModal
+        visible={showPaymentQr}
+        onClose={() => setShowPaymentQr(false)}
+        amount={estimatedInitialTotal}
+        memo={`DKP${room.name.replace(/\s+/g, "").toUpperCase()}`}
+        bankCode={selectedBuilding?.bankCode}
+        accountNumber={selectedBuilding?.accountNumber}
+        accountName={selectedBuilding?.accountName}
+        onConfirm={handleQrConfirm}
+        isConfirming={isSubmitting}
+      />
     </SafeAreaView>
   );
 }

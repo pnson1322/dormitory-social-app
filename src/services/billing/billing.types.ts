@@ -154,11 +154,6 @@ export type StudentInvoiceResponse = {
   createdAt: string;
 };
 
-export type PaymentProcessResponse = {
-  paymentUrl: string;
-  orderId: string;
-};
-
 export type ConfirmPaymentResponse = {
   invoiceId: string;
   status: string;

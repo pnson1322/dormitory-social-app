@@ -1,5 +1,6 @@
-import { InvoiceCardSkeleton } from "@/components/manager/billing/InvoiceCardSkeleton";
+import { AppSelect } from "@/components/AppSelect";
 import { DraggableFAB } from "@/components/common/DraggableFAB";
+import { InvoiceCardSkeleton } from "@/components/manager/billing/InvoiceCardSkeleton";
 import { ManagerInvoiceDetailModal } from "@/components/manager/billing/ManagerInvoiceDetailModal";
 import { Colors } from "@/constants/colors";
 import { useManagerInvoices } from "@/hooks/manager/useManagerInvoices";
@@ -9,16 +10,40 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, LayoutAnimation, Platform, Pressable, RefreshControl, Text, TouchableOpacity, UIManager, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export function InvoiceManagerListScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { items, loading, refreshing, loadingMore, onRefresh, onLoadMore, stats, error } = useManagerInvoices();
+  const { 
+    items, 
+    loading, 
+    refreshing, 
+    loadingMore, 
+    onRefresh, 
+    onLoadMore, 
+    error,
+    status,
+    setStatus,
+    buildingCode,
+    setBuildingCode,
+    floor,
+    setFloor,
+    year,
+    setYear,
+    month,
+    setMonth,
+    buildings
+  } = useManagerInvoices();
   
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceSummary | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const handleInvoicePress = (invoice: InvoiceSummary) => {
     setSelectedInvoice(invoice);
@@ -39,8 +64,14 @@ export function InvoiceManagerListScreen() {
             borderBottomRightRadius: 40,
           }}
         >
-          <View className="flex-row items-center justify-between mb-6">
-            <View>
+          <View className="flex-row items-center mb-6">
+            <Pressable
+              onPress={() => router.navigate("/(manager)/menu" as any)}
+              className="mr-4 h-11 w-11 items-center justify-center rounded-full bg-white/15"
+            >
+              <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+            </Pressable>
+            <View className="flex-1">
               <Text className="text-[32px] font-black text-white">
                 Hóa đơn
               </Text>
@@ -48,23 +79,143 @@ export function InvoiceManagerListScreen() {
             </View>
           </View>
 
-          <View className="flex-row gap-4">
-            <View className="flex-1 bg-white/10 p-4 rounded-3xl border border-white/20">
-              <View className="flex-row items-center mb-1">
-                <Ionicons name="time-outline" size={14} color="#FBBF24" />
-                <Text className="text-[12px] font-black text-white/60 uppercase ml-1">Chờ thu</Text>
+
+        </LinearGradient>
+      </View>
+
+      <View className="bg-white py-3 border-b border-slate-100 shadow-sm px-5">
+        <View className="flex-row bg-slate-100 p-1 rounded-2xl mb-3">
+          {[
+            { label: "Tất cả", value: "" },
+            { label: "Chờ thu", value: "PENDING" },
+            { label: "Đã thu", value: "PAID" },
+          ].map((tab) => {
+            const isActive = status === tab.value;
+            return (
+              <Pressable
+                key={tab.value}
+                onPress={() => setStatus(tab.value)}
+                className={`flex-1 py-2.5 rounded-xl items-center justify-center ${
+                  isActive ? "bg-white shadow-sm" : ""
+                }`}
+              >
+                <Text className={`text-[13px] font-bold ${isActive ? "text-blue-600" : "text-slate-500"}`}>
+                  {tab.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <Pressable 
+          onPress={() => {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            setShowAdvancedFilters(!showAdvancedFilters);
+          }}
+          className="flex-row items-center justify-between py-2 border-t border-slate-100 mt-1"
+        >
+          <View className="flex-row items-center">
+            <Ionicons name="funnel-outline" size={16} color={Colors.primary} />
+            <Text className="text-[13px] font-black text-slate-700 ml-2">Bộ lọc chi tiết</Text>
+            {(buildingCode || floor !== null || month !== null || year !== null) ? (
+              <View className="bg-blue-100 h-5 px-2 rounded-full items-center justify-center ml-2">
+                <Text className="text-[10px] font-black text-blue-700">Đang lọc</Text>
               </View>
-              <Text className="text-[24px] font-black text-white">{stats.pending}</Text>
+            ) : null}
+          </View>
+          <View className="flex-row items-center">
+            {(buildingCode || floor !== null || month !== null || year !== null) ? (
+              <Pressable 
+                onPress={(e) => {
+                  e.stopPropagation();
+                  setBuildingCode("");
+                  setFloor(null);
+                  setMonth(null);
+                  setYear(null);
+                }}
+                className="mr-3"
+              >
+                <Text className="text-[12px] font-bold text-slate-400">Đặt lại</Text>
+              </Pressable>
+            ) : null}
+            <Ionicons 
+              name={showAdvancedFilters ? "chevron-up" : "chevron-down"} 
+              size={18} 
+              color="#64748B" 
+            />
+          </View>
+        </Pressable>
+
+        {showAdvancedFilters && (
+          <View className="mt-3 gap-y-4 pt-3 border-t border-slate-100">
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <AppSelect
+                  label="Tòa nhà"
+                  value={buildingCode}
+                  placeholder="Tất cả tòa"
+                  options={[
+                    { label: "Tất cả tòa", value: "" },
+                    ...buildings.map(b => ({ label: b.name, value: b.code }))
+                  ]}
+                  onSelect={(val) => {
+                    setBuildingCode(val);
+                    setFloor(null);
+                  }}
+                />
+              </View>
+              <View className="flex-1">
+                <AppSelect
+                  label="Tầng"
+                  value={floor !== null ? String(floor) : ""}
+                  placeholder="Tất cả tầng"
+                  options={[
+                    { label: "Tất cả tầng", value: "" },
+                    ...Array.from({ 
+                      length: buildings.find(b => b.code === buildingCode)?.totalFloors || 10 
+                    }).map((_, idx) => ({ 
+                      label: `Tầng ${idx + 1}`, 
+                      value: String(idx + 1) 
+                    }))
+                  ]}
+                  onSelect={(val) => setFloor(val === "" ? null : Number(val))}
+                />
+              </View>
             </View>
-            <View className="flex-1 bg-white/10 p-4 rounded-3xl border border-white/20">
-              <View className="flex-row items-center mb-1">
-                <Ionicons name="wallet-outline" size={14} color="#34D399" />
-                <Text className="text-[12px] font-black text-white/60 uppercase ml-1">Đã thu</Text>
+
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <AppSelect
+                  label="Tháng"
+                  value={month !== null ? String(month) : ""}
+                  placeholder="Tất cả tháng"
+                  options={[
+                    { label: "Tất cả tháng", value: "" },
+                    ...Array.from({ length: 12 }).map((_, idx) => ({ 
+                      label: `Tháng ${idx + 1}`, 
+                      value: String(idx + 1) 
+                    }))
+                  ]}
+                  onSelect={(val) => setMonth(val === "" ? null : Number(val))}
+                />
               </View>
-              <Text className="text-[18px] font-black text-white" numberOfLines={1}>{formatCurrency(stats.revenue)}</Text>
+              <View className="flex-1">
+                <AppSelect
+                  label="Năm"
+                  value={year !== null ? String(year) : ""}
+                  placeholder="Tất cả năm"
+                  options={[
+                    { label: "Tất cả năm", value: "" },
+                    { label: "Năm 2025", value: "2025" },
+                    { label: "Năm 2026", value: "2026" },
+                    { label: "Năm 2027", value: "2027" }
+                  ]}
+                  onSelect={(val) => setYear(val === "" ? null : Number(val))}
+                />
+              </View>
             </View>
           </View>
-        </LinearGradient>
+        )}
       </View>
 
       {loading && items.length === 0 ? (

@@ -6,7 +6,8 @@ import { InvoiceItemSkeleton } from "@/components/student/billing/InvoiceItemSke
 import { Colors } from "@/constants/colors";
 import { Invoice, useStudentInvoices } from "@/hooks/student/useStudentInvoices";
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import React, { useCallback, useMemo, useState } from "react";
 import { FlatList, RefreshControl, Text, View, ActivityIndicator } from "react-native";
 import { AppButton } from "@/components/AppButton";
 
@@ -33,6 +34,12 @@ export function InvoiceListScreen() {
     utilityHistory,
     loadingHistory
   } = useStudentInvoices();
+
+  useFocusEffect(
+    useCallback(() => {
+      onRefresh();
+    }, [])
+  );
   
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [modalVisible, setModalVisible] = useState(false);

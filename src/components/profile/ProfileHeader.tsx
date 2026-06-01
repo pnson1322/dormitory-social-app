@@ -3,7 +3,8 @@ import { Colors } from "@/constants/colors";
 import { calculateAge, genderToVietnamese } from "@/utils/date";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Image, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Image, Pressable, Text, View } from "react-native";
 
 type Props = {
   fullName: string;
@@ -21,6 +22,7 @@ export function ProfileHeader({
   onEditPress,
 }: Props) {
   const age = calculateAge(dateOfBirth);
+  const router = useRouter();
 
   return (
     <View style={{ backgroundColor: Colors.background }}>
@@ -35,6 +37,24 @@ export function ProfileHeader({
             borderBottomRightRadius: 28,
           }}
         />
+
+        <Pressable
+          onPress={() => router.navigate("/(student)/menu" as any)}
+          style={{
+            position: "absolute",
+            top: 20,
+            left: 20,
+            zIndex: 50,
+            height: 40,
+            width: 40,
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 20,
+            backgroundColor: "rgba(255,255,255,0.2)",
+          }}
+        >
+          <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+        </Pressable>
 
         <View className="-mt-[74px] px-6">
           <LinearGradient

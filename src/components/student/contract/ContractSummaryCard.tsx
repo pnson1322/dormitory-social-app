@@ -37,20 +37,19 @@ export const ContractSummaryCard = memo(function ContractSummaryCard({ contract 
           <Text className="text-[16px] font-bold text-slate-900">{contract.id}</Text>
         </View>
 
-        <View className="flex-row">
+        <View className="flex-row gap-x-6">
           <View className="flex-1">
             <Text className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-1">Bên thuê (Sinh viên)</Text>
             <Text className="text-[16px] font-bold text-slate-900">{contract.studentName}</Text>
-            <Text className="text-[14px] text-slate-500">{contract.studentId}</Text>
           </View>
           <View className="flex-1">
             <Text className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-1">Phòng đăng ký</Text>
-            <Text className="text-[16px] font-bold text-slate-900">Phòng {contract.roomName}</Text>
+            <Text className="text-[16px] font-bold text-slate-900">{contract.roomName}</Text>
             <Text className="text-[14px] text-slate-500">{contract.buildingName}</Text>
           </View>
         </View>
 
-        <View className="flex-row">
+        <View className="flex-row gap-x-6">
           <View className="flex-1">
             <Text className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-1">Ngày bắt đầu</Text>
             <Text className="text-[16px] font-bold text-slate-900">{contract.startDate}</Text>

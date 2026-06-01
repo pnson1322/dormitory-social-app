@@ -23,20 +23,20 @@ export function AdminDashboardScreen() {
   }, [filter]);
 
   const revenuePoints: ChartDataPoint[] = useMemo(() => {
-    if (!stats) return [];
+    if (!stats?.revenueChart?.labels) return [];
     return stats.revenueChart.labels.map((label, i) => ({
       label,
-      value: stats.revenueChart.datasets[0].data[i],
-    }));
+      value: Number(stats.revenueChart.datasets?.[0]?.data?.[i] ?? 0),
+    })).filter(p => !isNaN(p.value));
   }, [stats]);
 
   const pieSlices: PieSlice[] = useMemo(() => {
-    if (!stats) return [];
+    if (!stats?.debtChart?.length) return [];
     return stats.debtChart.map((item, i) => ({
-      name: item.name,
-      value: item.population,
+      name: item.name ?? '',
+      value: Number(item.population ?? 0),
       color: i === 0 ? '#3B82F6' : '#F87171',
-    }));
+    })).filter(s => !isNaN(s.value));
   }, [stats]);
 
   if (loading && !stats) {

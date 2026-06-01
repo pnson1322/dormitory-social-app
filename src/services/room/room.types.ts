@@ -48,6 +48,9 @@ export type BuildingItem = {
   genderRestriction: string;
   totalFloors: number;
   isActive: boolean;
+  bankCode?: string;
+  accountNumber?: string;
+  accountName?: string;
 };
 
 export type RoomTypeItem = {

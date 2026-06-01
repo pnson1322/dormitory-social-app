@@ -17,10 +17,41 @@ export interface Contract {
 }
 
 export interface StudentContract {
-  studentId: string;
+  student: {
+    studentId: string;
+    fullName: string | null;
+  };
+  room: {
+    roomId: string;
+    roomNumber: string;
+    buildingCode: string | null;
+    floor: number | null;
+    roomTypeId: string | null;
+    roomTypeName: string | null;
+    capacity: number | null;
+    status: string | null;
+  } | null;
+  booking: {
+    bookingId: string;
+    termName: string;
+    startDate: string;
+    endDate: string;
+    numberOfMonths: number;
+    monthlyRent: number;
+    baseRentTotal: number;
+    bookingFeeTotal: number;
+    totalBookingAmount: number;
+    status: string;
+    fees?: {
+      id: string;
+      feeName: string;
+      amount: number;
+      isRefundable: boolean;
+    }[];
+  } | null;
   latestInvoiceId: string | null;
-  roomId: string | null;
   contractTemplateId: string;
+  roomTypeId: string | null;
   code: string;
   name: string;
   version: number;
@@ -32,17 +63,17 @@ export interface StudentContract {
 
 export type GetStudentContractResponse = ApiResponse<StudentContract | null>;
 
-export interface ContractTemplate {
-  id: string;
+export interface RoomTypeContractTemplate {
+  contractTemplateId: string;
+  roomTypeId: string | null;
   code: string;
   name: string;
   version: number;
   content: string;
-  isActive: boolean;
   effectiveFrom: string;
   effectiveTo: string | null;
-  createdAt: string;
-  updatedAt: string;
+  source: string;
 }
 
-export type GetContractTemplateResponse = ApiResponse<ContractTemplate | null>;
+export type GetRoomTypeContractTemplateResponse = ApiResponse<RoomTypeContractTemplate | null>;
+

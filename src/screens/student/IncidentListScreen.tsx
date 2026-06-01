@@ -63,7 +63,7 @@ export function IncidentListScreen() {
       >
         <View className="flex-row items-center">
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(student)/menu" as any)}
             className="mr-4 h-11 w-11 items-center justify-center rounded-full bg-white/15"
           >
             <Ionicons name="arrow-back" size={22} color="#FFFFFF" />

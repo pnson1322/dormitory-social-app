@@ -5,17 +5,13 @@ import {
   ConfirmPaymentResponse,
   CreateInvoiceRequest,
   CreateInvoiceResponse,
-  FinancialSummaryResponse,
-  GetFinancialSummaryParams,
   GetManagerInvoicesParams,
   GetStudentInvoicesParams,
   GetUtilityHistoryParams,
   LastReadingsResponse,
   ManagerInvoiceDetail,
   ManagerInvoiceResponse,
-  PaymentProcessResponse,
   StudentInvoiceResponse,
-  StudentInvoiceStatus,
   UtilityHistoryResponse
 } from "./billing.types";
 
@@ -54,13 +50,6 @@ export async function getInvoiceDetails(id: string) {
   return response.data;
 }
 
-export async function getFinancialSummary(params: GetFinancialSummaryParams) {
-  const response = await http.get<ApiResponse<FinancialSummaryResponse>>("/api/billing/reports/financial-summary", {
-    params
-  });
-  return response.data;
-}
-
 // --- Student Billing APIs ---
 export async function getStudentInvoices(params: GetStudentInvoicesParams) {
   const response = await http.get<ApiResponse<StudentInvoiceResponse[]>>("/api/billing/invoices/me", {
@@ -71,16 +60,6 @@ export async function getStudentInvoices(params: GetStudentInvoicesParams) {
 
 export async function getStudentInvoiceDetail(id: string) {
   const response = await http.get<ApiResponse<ManagerInvoiceDetail>>(`/api/billing/invoices/me/${id}`);
-  return response.data;
-}
-
-export async function processInvoicePayment(id: string) {
-  const response = await http.post<ApiResponse<PaymentProcessResponse>>(`/api/student/invoices/${id}/pay`);
-  return response.data;
-}
-
-export async function checkPaymentStatus(orderId: string) {
-  const response = await http.get<ApiResponse<{ status: StudentInvoiceStatus }>>(`/api/student/invoices/payment-status/${orderId}`);
   return response.data;
 }
 

@@ -29,7 +29,7 @@ export function ContractDetailScreen() {
       >
         <View className="flex-row items-center">
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(student)/menu" as any)}
             className="h-10 w-10 items-center justify-center rounded-full bg-white/15 mr-3"
           >
             <Ionicons name="arrow-back" size={20} color="white" />
@@ -80,7 +80,7 @@ export function ContractDetailScreen() {
       >
         <View className="flex-row items-center">
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.navigate("/(student)/menu" as any)}
             className="h-10 w-10 items-center justify-center rounded-full bg-white/15 mr-3"
           >
             <Ionicons name="arrow-back" size={20} color="white" />
@@ -138,7 +138,6 @@ export function ContractDetailScreen() {
 
         {contract.contractTemplateId && (
           <ContractTemplateSection 
-            templateId={contract.contractTemplateId} 
             template={(contract as any).content ? {
               code: (contract as any).code,
               name: (contract as any).name,

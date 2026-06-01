@@ -20,7 +20,11 @@ export function useRegistrationHistory(userId?: string) {
       const data = await getRegistrationHistory(
         userId ? { userId } : undefined
       );
-      setItems(data);
+      const normalized = (data ?? []).map((item) => ({
+        ...item,
+        status: item.status?.toUpperCase() as any,
+      }));
+      setItems(normalized);
     } catch (err: any) {
       setError(err?.message || "Không thể tải lịch sử đăng ký.");
     } finally {

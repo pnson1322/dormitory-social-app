@@ -3,13 +3,17 @@ import { SectionCard } from "@/components/settings/SectionCard";
 import { SETTINGS_SECTIONS } from "@/constants/settings";
 import { Colors } from "@/constants/colors";
 import { useSettings } from "@/hooks/settings/useSettings";
+import { useCurrentUserRole } from "@/hooks/auth/useCurrentUserRole";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export function SettingsScreen() {
+  const router = useRouter();
+  const { role } = useCurrentUserRole();
   const {
     toggles,
     showLogoutModal,
@@ -17,6 +21,17 @@ export function SettingsScreen() {
     handleToggle,
     handleLogout,
   } = useSettings();
+
+  const handleGoBack = () => {
+    const r = role?.toLowerCase();
+    if (r === "admin") {
+      router.navigate("/(admin)/menu" as any);
+    } else if (r === "manager") {
+      router.navigate("/(manager)/menu" as any);
+    } else {
+      router.navigate("/(student)/menu" as any);
+    }
+  };
 
   return (
     <SafeAreaView
@@ -43,6 +58,21 @@ export function SettingsScreen() {
           <View
             style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
           >
+            <TouchableOpacity
+              onPress={handleGoBack}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: "rgba(255,255,255,0.2)",
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: 4,
+              }}
+            >
+              <Ionicons name="arrow-back" size={22} color="#fff" />
+            </TouchableOpacity>
+
             <View
               style={{
                 width: 48,

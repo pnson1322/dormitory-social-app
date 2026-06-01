@@ -6,10 +6,11 @@ import { ActivityIndicator, Pressable, Switch, Text, View } from "react-native";
 type Props = {
   agreed: boolean;
   onAgreedChange: (val: boolean) => void;
+  roomTypeId?: string;
 };
 
-export function BookingTerms({ agreed, onAgreedChange }: Props) {
-  const { terms, loading } = useBookingTerms();
+export function BookingTerms({ agreed, onAgreedChange, roomTypeId }: Props) {
+  const { terms, loading } = useBookingTerms(roomTypeId);
 
   return (
     <View className="mb-8">
@@ -42,7 +43,7 @@ export function BookingTerms({ agreed, onAgreedChange }: Props) {
           <View className="gap-y-3">
             {terms.map((term, index) => (
               <View key={term.id} className="flex-row items-start">
-                <Text className="text-[13px] font-bold text-slate-400 mr-2 mt-0.5 w-4">
+                <Text className="text-[13px] font-bold text-slate-400 mr-2 mt-0.5 w-7">
                   {index + 1}.
                 </Text>
                 <Text className="text-[14px] leading-5 text-slate-600 flex-1">
