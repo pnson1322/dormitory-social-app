@@ -6,6 +6,8 @@ import { useStudentInvoiceDetail } from "@/hooks/student/useStudentInvoiceDetail
 import { Invoice } from "@/hooks/student/useStudentInvoices";
 import { contractApi } from "@/services/contract/contract.api";
 import { getBuildings } from "@/services/room/room.api";
+import { confirmStudentPayment } from "@/services/billing/billing.api";
+import { getApiErrorMessage } from "@/services/apiError";
 import { formatCurrency } from "@/utils/room";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
@@ -17,9 +19,10 @@ type Props = {
   visible: boolean;
   invoice: Invoice | null;
   onClose: () => void;
+  onPaymentSubmitted?: () => void;
 };
 
-export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
+export function InvoiceDetailModal({ visible, invoice, onClose, onPaymentSubmitted }: Props) {
   const slideAnim = useRef(new Animated.Value(height)).current;
   const { detail, loading, setDetail } = useStudentInvoiceDetail(invoice?.id, visible);
   const { showToast } = useToast();
@@ -49,6 +52,15 @@ export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
   }, [visible, setDetail]);
 
   useEffect(() => {
+    if (detail?.buildingBankAccount?.bankCode && detail?.buildingBankAccount?.accountNumber) {
+      setBankInfo({
+        bankCode: detail.buildingBankAccount.bankCode,
+        accountNumber: detail.buildingBankAccount.accountNumber,
+        accountName: detail.buildingBankAccount.accountName,
+      });
+      return;
+    }
+
     const fetchBankDetails = async () => {
       if (visible && invoice) {
         try {
@@ -75,15 +87,18 @@ export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
       }
     };
     fetchBankDetails();
-  }, [visible, invoice]);
+  }, [visible, invoice, detail]);
 
   if (!invoice) return null;
 
-  const isPaid = invoice.status === "PAID";
+  const isPaid = invoice.status.toLowerCase() === "paid";
+  const isPending = invoice.status.toLowerCase() === "waitforconfirm" || invoice.status.toLowerCase() === "wait_for_confirm";
+  const isCanceled = invoice.status.toLowerCase() === "canceled";
 
-  const handleConfirmPayment = () => {
-    setIsPaying(true);
-    setTimeout(() => {
+  const handleConfirmPayment = async () => {
+    try {
+      setIsPaying(true);
+      await confirmStudentPayment(invoice.id);
       showToast({
         type: "success",
         title: "Đã gửi xác nhận",
@@ -91,8 +106,16 @@ export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
       });
       setShowQrModal(false);
       onClose();
+      onPaymentSubmitted?.();
+    } catch (e) {
+      showToast({
+        type: "error",
+        title: "Lỗi thanh toán",
+        message: getApiErrorMessage(e),
+      });
+    } finally {
       setIsPaying(false);
-    }, 850);
+    }
   };
 
   return (
@@ -125,25 +148,51 @@ export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} className="mb-6">
-              <View 
-                className={`p-4 rounded-2xl flex-row items-center mb-6 ${
-                  isPaid ? "bg-emerald-50" : "bg-amber-50"
-                }`}
-              >
-                <Ionicons 
-                  name={isPaid ? "checkmark-circle" : "alert-circle"} 
-                  size={24} 
-                  color={isPaid ? "#10B981" : "#F59E0B"} 
-                />
-                <View className="ml-3">
-                  <Text className={`font-bold text-[15px] ${isPaid ? "text-emerald-700" : "text-amber-700"}`}>
-                    {isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
-                  </Text>
-                  <Text className="text-slate-500 text-[13px]">
-                    {isPaid ? `Vào lúc ${invoice.paidDate}` : `Hạn chót: ${invoice.dueDate}`}
-                  </Text>
-                </View>
-              </View>
+              {(() => {
+                let bgClass = "bg-amber-50";
+                let textClass = "text-amber-700";
+                let iconName: any = "alert-circle";
+                let iconColor = "#F59E0B";
+                let statusLabel = "Chưa thanh toán";
+                let statusDesc = `Hạn chót: ${invoice.dueDate}`;
+
+                if (isPaid) {
+                  bgClass = "bg-emerald-50";
+                  textClass = "text-emerald-700";
+                  iconName = "checkmark-circle";
+                  iconColor = "#10B981";
+                  statusLabel = "Đã thanh toán";
+                  statusDesc = invoice.paidDate ? `Vào lúc ${invoice.paidDate}` : "Hóa đơn đã được thanh toán.";
+                } else if (isPending) {
+                  bgClass = "bg-blue-50";
+                  textClass = "text-blue-700";
+                  iconName = "time";
+                  iconColor = "#3B82F6";
+                  statusLabel = "Đang chờ duyệt";
+                  statusDesc = "Hệ thống đang kiểm tra giao dịch chuyển khoản.";
+                } else if (isCanceled) {
+                  bgClass = "bg-slate-50";
+                  textClass = "text-slate-500";
+                  iconName = "close-circle";
+                  iconColor = "#64748B";
+                  statusLabel = "Đã hủy";
+                  statusDesc = "Hóa đơn này đã được hủy bỏ.";
+                }
+
+                return (
+                  <View className={`p-4 rounded-2xl flex-row items-center mb-6 ${bgClass}`}>
+                    <Ionicons name={iconName} size={24} color={iconColor} />
+                    <View className="ml-3">
+                      <Text className={`font-bold text-[15px] ${textClass}`}>
+                        {statusLabel}
+                      </Text>
+                      <Text className="text-slate-500 text-[13px]">
+                        {statusDesc}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              })()}
 
               <Text className="text-[13px] font-bold text-slate-400 uppercase tracking-widest mb-4">Chi tiết khoản phí</Text>
               
@@ -186,7 +235,7 @@ export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
                 )}
               </View>
 
-              {!isPaid && (
+              {invoice.status.toLowerCase() === "unpaid" && (
                 <View className="flex-row items-center p-4 bg-blue-50 rounded-2xl border border-blue-100">
                   <Ionicons name="information-circle" size={20} color={Colors.primary} />
                   <Text className="ml-2 flex-1 text-[13px] text-blue-700 font-medium">
@@ -196,10 +245,17 @@ export function InvoiceDetailModal({ visible, invoice, onClose }: Props) {
               )}
             </ScrollView>
 
-            {!isPaid && (
+            {invoice.status.toLowerCase() === "unpaid" && (
               <AppButton 
                 title="Thanh toán ngay" 
                 onPress={() => setShowQrModal(true)} 
+              />
+            )}
+            {isPending && (
+              <AppButton 
+                title="Đang chờ xác nhận thanh toán" 
+                disabled
+                onPress={() => {}}
               />
             )}
           </Animated.View>

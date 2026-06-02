@@ -66,7 +66,7 @@ export function useManagerInvoices() {
         roomId: item.roomId,
         roomName: item.buildingCode ? `${item.buildingCode}-${item.floor}` : item.roomId.substring(0, 6).toUpperCase(),
         totalAmount: item.totalAmount,
-        status: item.status.toUpperCase() === "PAID" ? "PAID" : "PENDING",
+        status: item.status as any,
         createdAt: new Date(item.createdAt).toLocaleDateString("vi-VN"),
       }));
 

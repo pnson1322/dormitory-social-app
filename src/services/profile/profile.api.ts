@@ -1,5 +1,5 @@
-import { http } from "@/services/http";
 import { ApiResponse } from "@/services/base.types";
+import { http } from "@/services/http";
 import {
   ProfileData,
   UpdateProfileBody,

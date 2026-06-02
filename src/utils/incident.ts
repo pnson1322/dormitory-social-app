@@ -23,6 +23,11 @@ export function getCategoryStyle(name?: string) {
 export function getFullImageUrl(url?: string | null) {
   if (!url) return "";
   const trimmed = url.trim();
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(trimmed)) {
+    const cleanBase = ENV.API_BASE_URL.endsWith("/") ? ENV.API_BASE_URL.slice(0, -1) : ENV.API_BASE_URL;
+    const path = trimmed.replace(/^https?:\/\/[^/]+/, "");
+    return `${cleanBase}${path}`;
+  }
   if (
     trimmed.startsWith("http://") ||
     trimmed.startsWith("https://") ||

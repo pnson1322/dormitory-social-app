@@ -63,6 +63,11 @@ export async function getStudentInvoiceDetail(id: string) {
   return response.data;
 }
 
+export async function confirmStudentPayment(invoiceId: string) {
+  const response = await http.post<ApiResponse<any>>(`/api/billing/invoices/me/${invoiceId}/payment-confirmation`);
+  return response.data;
+}
+
 export async function getUtilityHistory(params: GetUtilityHistoryParams) {
   const response = await http.get<ApiResponse<UtilityHistoryResponse[]>>("/api/billing/reports/me/utility-history", { params });
   return response.data;

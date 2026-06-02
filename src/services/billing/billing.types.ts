@@ -86,6 +86,11 @@ export type ManagerInvoiceDetail = {
   paidAt: string | null;
   updatedByUserId: string | null;
   contractTemplateId: string | null;
+  buildingBankAccount?: {
+    bankCode: string;
+    accountNumber: string;
+    accountName: string;
+  } | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -95,45 +100,14 @@ export type InvoiceSummary = {
   roomId: string;
   roomName: string;
   totalAmount: number;
-  status: "PENDING" | "PAID";
+  status: InvoiceStatus;
   createdAt: string;
   electricity?: { consumption: number; amount: number };
   water?: { consumption: number; amount: number };
   otherFeesTotal?: number;
 };
 
-// --- Student Billing Types ---
-export type StudentInvoiceStatus = "UNPAID" | "PAID";
 
-export type StudentInvoiceCategory = "MONTHLY" | "REGISTRATION" | "SERVICE" | "OTHER";
-
-export type FeeType = "ROOM" | "ELECTRICITY" | "WATER" | "SERVICE" | "DEPOSIT" | "OTHER";
-
-export type StudentInvoiceBreakdown = {
-  id?: string;
-  label: string;
-  amount: number;
-  type: FeeType;
-  metadata?: {
-    lastReading?: number;
-    currentReading?: number;
-    consumption?: number;
-    unitPrice?: number;
-  };
-};
-
-export type StudentInvoice = {
-  id: string;
-  title: string;
-  amount: number;
-  dueDate: string;
-  status: StudentInvoiceStatus;
-  paidDate?: string;
-  category: StudentInvoiceCategory;
-  typeLabel: string; 
-  description?: string;
-  breakdown?: StudentInvoiceBreakdown[];
-};
 
 export type GetStudentInvoicesParams = {
   year?: number;
@@ -206,7 +180,7 @@ export type UtilityHistoryResponse = {
   waterAmount: number;
 };
 
-export type InvoiceStatus = "UNPAID" | "PAID";
+export type InvoiceStatus = "Unpaid" | "WaitForConfirm" | "Paid" | "Canceled";
 
 export type InvoiceBreakdown = {
   label: string;

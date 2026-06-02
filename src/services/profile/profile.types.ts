@@ -42,6 +42,7 @@ export type UpdateProfileBody = {
   gender?: Gender | null;
   dateOfBirth?: string | null;
   bio?: string | null;
+  studentCode?: string | null;
 
   studentYear?: string | null;
   school?: string | null;

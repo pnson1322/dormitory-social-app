@@ -14,6 +14,7 @@ type TouchedState = {
   gender: boolean;
   dateOfBirth: boolean;
   bio: boolean;
+  studentCode: boolean;
   studentYear: boolean;
   school: boolean;
   faculty: boolean;
@@ -46,7 +47,7 @@ export function useUpdateProfile(initialProfile: ProfileData) {
   const [avatarUrl] = useState(initialProfile.avatarUrl ?? null);
   const [localAvatarUri, setLocalAvatarUri] = useState<string | null>(null);
 
-  const [studentCode] = useState(initialProfile.studentCode ?? "");
+  const [studentCode, setStudentCode] = useState(initialProfile.studentCode ?? "");
   const [studentYear, setStudentYear] = useState(
     initialProfile.studentYear ?? "",
   );
@@ -83,6 +84,7 @@ export function useUpdateProfile(initialProfile: ProfileData) {
     gender: false,
     dateOfBirth: false,
     bio: false,
+    studentCode: false,
     studentYear: false,
     school: false,
     faculty: false,
@@ -161,6 +163,7 @@ export function useUpdateProfile(initialProfile: ProfileData) {
       gender: true,
       dateOfBirth: true,
       bio: true,
+      studentCode: true,
       studentYear: true,
       school: true,
       faculty: true,
@@ -202,6 +205,7 @@ export function useUpdateProfile(initialProfile: ProfileData) {
         gender,
         dateOfBirth: dateOfBirth || null,
         bio: bioTrim || null,
+        studentCode: studentCode.trim() || null,
 
         studentYear: studentYear.trim() || null,
         school: school.trim() || null,
@@ -276,6 +280,7 @@ export function useUpdateProfile(initialProfile: ProfileData) {
     setLocalAvatarUri,
     setTouched,
 
+    setStudentCode,
     setStudentYear,
     setSchool,
     setFaculty,

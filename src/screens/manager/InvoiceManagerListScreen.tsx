@@ -87,8 +87,9 @@ export function InvoiceManagerListScreen() {
         <View className="flex-row bg-slate-100 p-1 rounded-2xl mb-3">
           {[
             { label: "Tất cả", value: "" },
-            { label: "Chờ thu", value: "PENDING" },
-            { label: "Đã thu", value: "PAID" },
+            { label: "Chưa thu", value: "Unpaid" },
+            { label: "Chờ duyệt", value: "WaitForConfirm" },
+            { label: "Đã thu", value: "Paid" },
           ].map((tab) => {
             const isActive = status === tab.value;
             return (
@@ -260,9 +261,21 @@ export function InvoiceManagerListScreen() {
               </View>
               <View className="items-end ml-2">
                 <Text className="text-[18px] font-black text-slate-900">{formatCurrency(item.totalAmount)}</Text>
-                <View className={`mt-2 px-3 py-1 rounded-full ${item.status === "PAID" ? "bg-emerald-50" : "bg-amber-50"}`}>
-                  <Text className={`text-[10px] font-black uppercase tracking-wider ${item.status === "PAID" ? "text-emerald-600" : "text-amber-600"}`}>
-                    {item.status === "PAID" ? "Đã trả" : "Chưa thu"}
+                <View className={`mt-2 px-3 py-1 rounded-full ${
+                  item.status.toLowerCase() === "paid" ? "bg-emerald-50" :
+                  item.status.toLowerCase() === "waitforconfirm" || item.status.toLowerCase() === "wait_for_confirm" ? "bg-blue-50" :
+                  item.status.toLowerCase() === "canceled" ? "bg-slate-100" : "bg-amber-50"
+                }`}>
+                  <Text className={`text-[10px] font-black uppercase tracking-wider ${
+                    item.status.toLowerCase() === "paid" ? "text-emerald-600" :
+                    item.status.toLowerCase() === "waitforconfirm" || item.status.toLowerCase() === "wait_for_confirm" ? "text-blue-600" :
+                    item.status.toLowerCase() === "canceled" ? "text-slate-600" : "text-amber-600"
+                  }`}>
+                    {
+                      item.status.toLowerCase() === "paid" ? "Đã trả" :
+                      item.status.toLowerCase() === "waitforconfirm" || item.status.toLowerCase() === "wait_for_confirm" ? "Chờ duyệt" :
+                      item.status.toLowerCase() === "canceled" ? "Đã hủy" : "Chưa thu"
+                    }
                   </Text>
                 </View>
               </View>

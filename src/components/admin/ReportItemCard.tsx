@@ -41,7 +41,7 @@ interface ReportItemCardProps {
 export function ReportItemCard({ item, isLoadingPost, onViewPost, onReview }: ReportItemCardProps) {
   const { displayReason, displayNote } = parseReport(item);
   const badgeColors = getReasonBadgeColors(displayReason);
-  const initials = getInitials(item.reporterId, "Báo cáo viên");
+  const initials = "AD";
 
   return (
     <View className="bg-white rounded-2xl p-4 mb-4 border border-slate-100 shadow-sm">
@@ -57,7 +57,7 @@ export function ReportItemCard({ item, isLoadingPost, onViewPost, onReview }: Re
           </View>
           <View className="flex-1">
             <Text className="font-bold text-[14px] text-slate-800" numberOfLines={1}>
-              ID Người báo: {item.reporterId.slice(0, 8)}...
+              Người dùng ẩn danh
             </Text>
             <Text className="text-[11px] text-slate-400 mt-0.5">
               {formatDate(item.createdAt)}

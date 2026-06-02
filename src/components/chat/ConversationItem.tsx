@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { Image } from "expo-image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 interface ConversationItemProps {
@@ -28,6 +28,10 @@ export function ConversationItem({ item, onPress }: ConversationItemProps) {
   const cached = chatMetadataCache.get(item.id);
   const displayName = item.name || cached?.name || (isGroup ? "Hội nhóm" : "Người dùng");
   const avatarSource = item.avatarUrl || cached?.avatarUrl;
+
+  useEffect(() => {
+    setAvatarError(false);
+  }, [avatarSource]);
 
   const formatMessageTime = (timeStr?: string | null) => {
     if (!timeStr) return "";
@@ -55,8 +59,13 @@ export function ConversationItem({ item, onPress }: ConversationItemProps) {
       <View className="relative">
         {avatarSource && !avatarError ? (
           <Image
-            source={{ uri: getFullImageUrl(avatarSource) }}
-            className="w-14 h-14 rounded-full"
+            source={{
+              uri: getFullImageUrl(avatarSource),
+              headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              },
+            }}
+            style={{ width: 56, height: 56, borderRadius: 28 }}
             contentFit="cover"
             onError={() => setAvatarError(true)}
           />

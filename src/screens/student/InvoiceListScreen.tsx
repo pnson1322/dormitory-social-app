@@ -90,7 +90,7 @@ export function InvoiceListScreen() {
             return (
               <InvoiceItem 
                 item={invoice} 
-                overdue={invoice.status === "UNPAID" && isOverdue(invoice.dueDate)} 
+                overdue={invoice.status.toLowerCase() === "unpaid" && isOverdue(invoice.dueDate)} 
                 onPress={() => handleInvoicePress(invoice)}
               />
             );
@@ -132,6 +132,7 @@ export function InvoiceListScreen() {
         visible={modalVisible} 
         invoice={selectedInvoice} 
         onClose={() => setModalVisible(false)} 
+        onPaymentSubmitted={onRefresh}
       />
     </View>
   );

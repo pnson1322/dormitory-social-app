@@ -10,7 +10,7 @@ import { useChatRoom } from "@/hooks/chat/useChatRoom";
 import { getFullImageUrl } from "@/utils/incident";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -82,6 +82,10 @@ export function ChatRoomScreen({ conversationId }: Props) {
     handleGroupUpdated,
   } = useChatRoom(conversationId);
 
+  useEffect(() => {
+    setAvatarError(false);
+  }, [avatarUrl]);
+
   return (
     <View className="flex-1" style={{ backgroundColor: Colors.background }}>
       <View
@@ -109,7 +113,12 @@ export function ChatRoomScreen({ conversationId }: Props) {
             <View style={{ width: 44, height: 44 }}>
               {avatarUrl && !avatarError ? (
                 <Image
-                  source={{ uri: getFullImageUrl(avatarUrl) }}
+                  source={{
+                    uri: getFullImageUrl(avatarUrl),
+                    headers: {
+                      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    },
+                  }}
                   style={{
                     width: 44,
                     height: 44,

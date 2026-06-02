@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { getStudentInvoices, getUtilityHistory } from "@/services/billing/billing.api";
-import { Invoice, InvoiceStatus, UtilityHistoryData } from "@/services/billing/billing.types";
-export type { Invoice, InvoiceStatus, UtilityHistoryData };
+import { Invoice, UtilityHistoryData } from "@/services/billing/billing.types";
+
+export type InvoiceStatus = "UNPAID" | "PAID";
+export type { Invoice, UtilityHistoryData };
 
 const PAGE_SIZE = 10;
 
@@ -60,17 +62,25 @@ export function useStudentInvoices() {
 
     try {
       const response = await getStudentInvoices({
-        status: activeTab === "PAID" ? "Paid" : "Unpaid",
+        status: activeTab === "PAID" ? "Paid" : undefined,
         page: p,
         pageSize: PAGE_SIZE,
       });
 
-      const mappedData: Invoice[] = (response.data || []).map((item) => ({
+      const rawList = response.data || [];
+      const filteredList = activeTab === "PAID"
+        ? rawList.filter((item) => item.status.toLowerCase() === "paid")
+        : rawList.filter((item) => {
+            const lower = item.status.toLowerCase();
+            return lower === "unpaid" || lower === "waitforconfirm" || lower === "wait_for_confirm";
+          });
+
+      const mappedData: Invoice[] = filteredList.map((item) => ({
         id: item.invoiceId,
         title: `Hóa đơn tháng ${item.month}/${item.year}`,
         amount: item.totalAmount,
         dueDate: `${item.year}-${String(item.month).padStart(2, "0")}-15`,
-        status: item.status.toUpperCase() === "PAID" ? "PAID" : "UNPAID",
+        status: item.status as any,
         paidDate: item.paidAt || undefined,
         type: "Phòng & Dịch vụ",
       }));

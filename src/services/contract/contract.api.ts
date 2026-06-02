@@ -7,7 +7,6 @@ import {
 export const contractApi = {
   getMyContract: async (): Promise<GetStudentContractResponse> => {
     const response = await http.get<GetStudentContractResponse>("/api/billing/contracts/me");
-    console.log(response.data);
     return response.data;
   },
 

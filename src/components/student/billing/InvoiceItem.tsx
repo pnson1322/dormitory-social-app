@@ -11,7 +11,62 @@ type Props = {
   onPress?: () => void;
 };
 
+const getStatusStyles = (status: string, overdue: boolean) => {
+  switch (status.toLowerCase()) {
+    case "paid":
+      return {
+        bg: "bg-emerald-50",
+        badgeBg: "bg-emerald-100",
+        badgeText: "text-emerald-700",
+        iconColor: "#10B981",
+        label: "ĐÃ THANH TOÁN",
+        dateLabel: "Ngày thanh toán",
+      };
+    case "waitforconfirm":
+    case "wait_for_confirm":
+      return {
+        bg: "bg-blue-50",
+        badgeBg: "bg-blue-100",
+        badgeText: "text-blue-700",
+        iconColor: "#3B82F6",
+        label: "ĐANG CHỜ DUYỆT",
+        dateLabel: "Hạn thanh toán",
+      };
+    case "canceled":
+      return {
+        bg: "bg-slate-50",
+        badgeBg: "bg-slate-100",
+        badgeText: "text-slate-500",
+        iconColor: "#64748B",
+        label: "ĐÃ HỦY",
+        dateLabel: "Hạn thanh toán",
+      };
+    case "unpaid":
+    default:
+      if (overdue) {
+        return {
+          bg: "bg-red-50",
+          badgeBg: "bg-red-100",
+          badgeText: "text-red-700",
+          iconColor: "#EF4444",
+          label: "QUÁ HẠN",
+          dateLabel: "Hạn thanh toán",
+        };
+      }
+      return {
+        bg: "bg-amber-50",
+        badgeBg: "bg-amber-100",
+        badgeText: "text-amber-700",
+        iconColor: "#F59E0B",
+        label: "CHỜ THANH TOÁN",
+        dateLabel: "Hạn thanh toán",
+      };
+  }
+};
+
 export const InvoiceItem = memo(function InvoiceItem({ item, overdue, onPress }: Props) {
+  const statusStyles = getStatusStyles(item.status, overdue);
+
   return (
     <Pressable
       onPress={onPress}
@@ -29,14 +84,12 @@ export const InvoiceItem = memo(function InvoiceItem({ item, overdue, onPress }:
       <View className="flex-row justify-between items-start mb-3">
         <View className="flex-row items-center flex-1 mr-2">
           <View 
-            className={`h-10 w-10 rounded-full items-center justify-center mr-3 ${
-              item.status === "PAID" ? "bg-emerald-50" : overdue ? "bg-red-50" : "bg-amber-50"
-            }`}
+            className={`h-10 w-10 rounded-full items-center justify-center mr-3 ${statusStyles.bg}`}
           >
             <Ionicons 
               name="receipt" 
               size={20} 
-              color={item.status === "PAID" ? "#10B981" : overdue ? "#EF4444" : "#F59E0B"} 
+              color={statusStyles.iconColor} 
             />
           </View>
           <View className="flex-1">
@@ -45,9 +98,9 @@ export const InvoiceItem = memo(function InvoiceItem({ item, overdue, onPress }:
           </View>
         </View>
         
-        <View className={`px-2.5 py-1 rounded-full ${item.status === "PAID" ? "bg-emerald-100" : "bg-amber-100"}`}>
-          <Text className={`text-[11px] font-bold ${item.status === "PAID" ? "text-emerald-700" : "text-amber-700"}`}>
-            {item.status === "PAID" ? "ĐÃ THANH TOÁN" : "CHỜ THANH TOÁN"}
+        <View className={`px-2.5 py-1 rounded-full ${statusStyles.badgeBg}`}>
+          <Text className={`text-[11px] font-bold ${statusStyles.badgeText}`}>
+            {statusStyles.label}
           </Text>
         </View>
       </View>
@@ -57,16 +110,16 @@ export const InvoiceItem = memo(function InvoiceItem({ item, overdue, onPress }:
       <View className="flex-row justify-between items-end">
         <View>
           <Text className="text-[12px] text-slate-400 font-medium mb-1">
-            {item.status === "PAID" ? "Ngày thanh toán" : "Hạn thanh toán"}
+            {statusStyles.dateLabel}
           </Text>
           <Text className={`text-[14px] font-bold ${overdue ? "text-red-500" : "text-slate-700"}`}>
-            {item.status === "PAID" ? item.paidDate : item.dueDate}
+            {item.status.toLowerCase() === "paid" ? item.paidDate : item.dueDate}
             {overdue && " (Quá hạn)"}
           </Text>
         </View>
         <View className="items-end">
           <Text className="text-[12px] text-slate-400 font-medium mb-1">Tổng tiền</Text>
-          <Text className={`text-[18px] font-black ${item.status === "UNPAID" ? "text-primary" : "text-slate-900"}`}>
+          <Text className={`text-[18px] font-black ${item.status.toLowerCase() === "unpaid" ? "text-primary" : "text-slate-900"}`}>
             {formatCurrency(item.amount)}
           </Text>
         </View>

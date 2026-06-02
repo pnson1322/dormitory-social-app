@@ -10,7 +10,16 @@ import { getUserRoleFromToken, isTokenExpired } from "@/utils/jwt";
 import axios from "axios";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
+import { LogBox } from "react-native";
 import "../global.css";
+
+LogBox.ignoreLogs([
+  "[SignalR]",
+  "Connection disconnected with error",
+  "No Connection with that ID",
+  "Status code '401'",
+  "Status code '404'",
+]);
 
 type RefreshResponse = {
   meta: unknown;

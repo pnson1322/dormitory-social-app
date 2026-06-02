@@ -188,30 +188,12 @@ export function EditProfileForm({ profile, onBack, onSaved, onError }: Props) {
                 placeholder="Nhập tên khoa"
               />
 
-              <View className="gap-2">
-                <Text
-                  className="text-[13px] font-semibold"
-                  style={{ color: Colors.textSecondary }}
-                >
-                  MSSV
-                </Text>
-
-                <View
-                  className="h-[52px] flex-row items-center rounded-2xl px-4"
-                  style={{
-                    backgroundColor: "#F1F5F9",
-                    borderWidth: 1,
-                    borderColor: Colors.border,
-                  }}
-                >
-                  <Text
-                    className="flex-1 text-[15px]"
-                    style={{ color: Colors.textSecondary }}
-                  >
-                    {form.studentCode || "Chưa cập nhật"}
-                  </Text>
-                </View>
-              </View>
+              <AppInput
+                label="MSSV"
+                value={form.studentCode}
+                onChangeText={form.setStudentCode}
+                placeholder="Nhập mã số sinh viên"
+              />
 
               <AppInput
                 label="CCCD"

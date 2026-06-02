@@ -41,7 +41,9 @@ export function ManagerInvoiceDetailModal({ visible, invoice, onClose, onRefresh
 
   if (!invoice) return null;
 
-  const isPaid = invoice.status === "PAID";
+  const isPaid = invoice.status.toLowerCase() === "paid";
+  const isPendingConfirm = invoice.status.toLowerCase() === "waitforconfirm" || invoice.status.toLowerCase() === "wait_for_confirm";
+  const isCanceled = invoice.status.toLowerCase() === "canceled";
 
   const handlePaid = async () => {
     const success = await confirmPayment(invoice.id);
@@ -112,9 +114,21 @@ export function ManagerInvoiceDetailModal({ visible, invoice, onClose, onRefresh
               
               <View className="flex-row items-center justify-between mb-8">
                 <Text className="text-slate-500 font-bold">Trạng thái</Text>
-                <View className={`px-4 py-2 rounded-full ${isPaid ? "bg-emerald-50" : "bg-amber-50"}`}>
-                  <Text className={`text-[12px] font-black uppercase tracking-wider ${isPaid ? "text-emerald-600" : "text-amber-600"}`}>
-                    {isPaid ? "Đã thanh toán" : "Đang chờ thu"}
+                <View className={`px-4 py-2 rounded-full ${
+                  isPaid ? "bg-emerald-50" :
+                  isPendingConfirm ? "bg-blue-50" :
+                  isCanceled ? "bg-slate-100" : "bg-amber-50"
+                }`}>
+                  <Text className={`text-[12px] font-black uppercase tracking-wider ${
+                    isPaid ? "text-emerald-600" :
+                    isPendingConfirm ? "text-blue-600" :
+                    isCanceled ? "text-slate-600" : "text-amber-600"
+                  }`}>
+                    {
+                      isPaid ? "Đã thanh toán" :
+                      isPendingConfirm ? "Chờ xác nhận" :
+                      isCanceled ? "Đã hủy" : "Đang chờ thu"
+                    }
                   </Text>
                 </View>
               </View>
@@ -160,7 +174,7 @@ export function ManagerInvoiceDetailModal({ visible, invoice, onClose, onRefresh
               </View>
             </View>
 
-            {!isPaid && (
+            {!isPaid && !isCanceled && (
               <View className="gap-y-3 mb-4">
                 <AppButton 
                   title="Xác nhận đã thu tiền" 

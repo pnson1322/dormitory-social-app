@@ -1,4 +1,5 @@
 import { ConversationMemberItem } from "@/services/chat/chat.types";
+import { getFullImageUrl } from "@/utils/incident";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
@@ -25,7 +26,15 @@ export function GroupMemberRow({
   return (
     <View className="flex-row items-center py-3 border-b border-slate-100">
       {item.avatarUrl ? (
-        <Image source={{ uri: item.avatarUrl }} className="w-10 h-10 rounded-full" />
+        <Image
+          source={{
+            uri: getFullImageUrl(item.avatarUrl),
+            headers: {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            },
+          }}
+          style={{ width: 40, height: 40, borderRadius: 20 }}
+        />
       ) : (
         <View className="w-10 h-10 rounded-full bg-slate-100 items-center justify-center">
           <Ionicons name="person" size={16} color="#64748B" />

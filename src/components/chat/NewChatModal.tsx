@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { UserItem } from "@/services/user/user.types";
+import { getFullImageUrl } from "@/utils/incident";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, { useEffect, useState } from "react";
@@ -207,7 +208,15 @@ export function NewChatModal({
                       className="flex-row items-center py-3 border-b border-slate-100"
                     >
                       {item.avatarUrl ? (
-                        <Image source={{ uri: item.avatarUrl }} className="w-11 h-11 rounded-full" />
+                        <Image
+                          source={{
+                            uri: getFullImageUrl(item.avatarUrl),
+                            headers: {
+                              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                            },
+                          }}
+                          style={{ width: 44, height: 44, borderRadius: 22 }}
+                        />
                       ) : (
                         <View className="w-11 h-11 rounded-full bg-slate-100 items-center justify-center">
                           <Ionicons name="person" size={18} color="#64748B" />
