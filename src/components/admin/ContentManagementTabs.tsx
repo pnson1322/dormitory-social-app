@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/colors";
+import { useCurrentUserRole } from "@/hooks/auth/useCurrentUserRole";
 import { AdminTab } from "@/hooks/admin/useAdminContentManagement";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
@@ -10,6 +11,9 @@ interface ContentManagementTabsProps {
 }
 
 export function ContentManagementTabs({ activeTab, setActiveTab }: ContentManagementTabsProps) {
+  const { role } = useCurrentUserRole();
+  const isManager = role?.toLowerCase() === "manager";
+
   return (
     <View className="flex-row mx-5 mt-4 mb-2 p-1.5 bg-slate-100 rounded-2xl border border-slate-200/50 shadow-sm">
       <Pressable
@@ -68,33 +72,35 @@ export function ContentManagementTabs({ activeTab, setActiveTab }: ContentManage
         </Text>
       </Pressable>
 
-      <Pressable
-        onPress={() => setActiveTab("reports")}
-        className="flex-1 py-3 rounded-xl flex-row items-center justify-center"
-        style={{
-          backgroundColor: activeTab === "reports" ? "#FFFFFF" : "transparent",
-          shadowColor: activeTab === "reports" ? "#000" : "transparent",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 3,
-          elevation: activeTab === "reports" ? 2 : 0,
-        }}
-      >
-        <Ionicons
-          name="flag-outline"
-          size={16}
-          color={activeTab === "reports" ? Colors.primary : Colors.textSecondary}
-          style={{ marginRight: 6 }}
-        />
-        <Text
-          className="text-[13px] font-bold"
+      {!isManager && (
+        <Pressable
+          onPress={() => setActiveTab("reports")}
+          className="flex-1 py-3 rounded-xl flex-row items-center justify-center"
           style={{
-            color: activeTab === "reports" ? Colors.primary : Colors.textSecondary,
+            backgroundColor: activeTab === "reports" ? "#FFFFFF" : "transparent",
+            shadowColor: activeTab === "reports" ? "#000" : "transparent",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.05,
+            shadowRadius: 3,
+            elevation: activeTab === "reports" ? 2 : 0,
           }}
         >
-          Báo cáo
-        </Text>
-      </Pressable>
+          <Ionicons
+            name="flag-outline"
+            size={16}
+            color={activeTab === "reports" ? Colors.primary : Colors.textSecondary}
+            style={{ marginRight: 6 }}
+          />
+          <Text
+            className="text-[13px] font-bold"
+            style={{
+              color: activeTab === "reports" ? Colors.primary : Colors.textSecondary,
+            }}
+          >
+            Báo cáo
+          </Text>
+        </Pressable>
+      )}
     </View>
   );
 }

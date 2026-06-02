@@ -31,13 +31,15 @@ export async function uploadMyAvatar(uri: string) {
   if (ext === "jpg" || ext === "jpeg") mimeType = "image/jpeg";
   if (ext === "webp") mimeType = "image/webp";
 
-  formData.append("file", {
+  const fileObj = {
     uri,
     name: filename,
     type: mimeType,
-  } as any);
+  } as any;
 
-  const { data } = await http.post<ApiResponse<UploadAvatarResponse>>(
+  formData.append("file", fileObj);
+
+  const { data } = await http.put<ApiResponse<UploadAvatarResponse>>(
     "/api/profile/me/avatar",
     formData,
     {

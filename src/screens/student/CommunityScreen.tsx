@@ -46,11 +46,6 @@ export function CommunityScreen() {
   const [hiddenPostsModalVisible, setHiddenPostsModalVisible] = useState(false);
   const { profile } = useProfile();
   const { userId } = useCurrentUserRole();
-  const [avatarError, setAvatarError] = useState(false);
-
-  useEffect(() => {
-    setAvatarError(false);
-  }, [profile?.avatarUrl]);
 
   const { pinnedPosts, posts, isLoading, isRefreshing, isError, postType, setPostType, loadMore, refresh } =
     useCommunityPosts({ pageSize: 10 });
@@ -76,19 +71,31 @@ export function CommunityScreen() {
     return (
       <View className="mb-2">
         <View className="bg-white rounded-2xl p-4 mb-4 border border-slate-100 flex-row items-center shadow-sm">
-          {isValidAvatarUrl(profile?.avatarUrl || undefined) && !avatarError ? (
-            <Image
-              source={{ uri: profile?.avatarUrl || undefined }}
-              onError={() => setAvatarError(true)}
-              className="w-10 h-10 rounded-full mr-3"
-              contentFit="cover"
-              transition={150}
-            />
-          ) : (
-            <View className="w-10 h-10 rounded-full justify-center items-center mr-3" style={{ backgroundColor: Colors.primary + "15" }}>
+          <View 
+            style={{ width: 40, height: 40, borderRadius: 20, marginRight: 12, position: "relative", overflow: "hidden" }}
+          >
+            <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: "center", alignItems: "center", backgroundColor: Colors.primary + "15" }}>
               <Text className="font-bold text-[15px]" style={{ color: Colors.primary }}>{initials}</Text>
             </View>
-          )}
+
+            {isValidAvatarUrl(profile?.avatarUrl || undefined) && (
+              <Image
+                source={{ uri: profile?.avatarUrl || undefined }}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 20,
+                }}
+                contentFit="cover"
+                transition={150}
+              />
+            )}
+          </View>
           <Pressable
             onPress={() => setCreateModalVisible(true)}
             className="flex-1 bg-slate-50 rounded-full px-4 py-2.5 border border-slate-200 active:bg-slate-100"

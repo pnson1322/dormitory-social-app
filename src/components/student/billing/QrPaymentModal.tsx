@@ -52,6 +52,8 @@ export function QrPaymentModal({
       )}&accountName=${encodeURIComponent(cleanAccountName)}`
     : "";
 
+  if (!visible) return null;
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View className="flex-1 justify-end bg-black/60">
@@ -106,40 +108,40 @@ export function QrPaymentModal({
 
           <View className="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100">
             <View className="flex-row justify-between py-2 border-b border-slate-100/50">
-              <Text className="text-slate-500 text-[13px]">Ngân hàng</Text>
-              <Text className="text-slate-850 font-bold text-[13px]">{cleanBankCode || "Chưa thiết lập"}</Text>
+              <Text className="text-slate-500 text-[13px] mr-4">Ngân hàng</Text>
+              <Text className="text-slate-850 font-bold text-[13px] flex-1 text-right">{cleanBankCode || "Chưa thiết lập"}</Text>
             </View>
 
             <View className="flex-row justify-between items-center py-2 border-b border-slate-100/50">
-              <Text className="text-slate-500 text-[13px]">Số tài khoản</Text>
+              <Text className="text-slate-500 text-[13px] mr-4">Số tài khoản</Text>
               {cleanAccountNumber ? (
                 <Pressable 
                   onPress={() => handleCopy(cleanAccountNumber, "số tài khoản")}
-                  className="flex-row items-center"
+                  className="flex-row items-center flex-1 justify-end"
                 >
                   <Text className="text-slate-900 font-bold text-[13px] mr-1">{cleanAccountNumber}</Text>
                   <Ionicons name="copy-outline" size={14} color={Colors.primary} />
                 </Pressable>
               ) : (
-                <Text className="text-slate-400 text-[13px]">Chưa thiết lập</Text>
+                <Text className="text-slate-400 text-[13px] flex-1 text-right">Chưa thiết lập</Text>
               )}
             </View>
 
             <View className="flex-row justify-between py-2 border-b border-slate-100/50">
-              <Text className="text-slate-500 text-[13px]">Chủ tài khoản</Text>
-              <Text className="text-slate-900 font-bold text-[13px]">{cleanAccountName || "Chưa thiết lập"}</Text>
+              <Text className="text-slate-500 text-[13px] mr-4">Chủ tài khoản</Text>
+              <Text className="text-slate-900 font-bold text-[13px] flex-1 text-right">{cleanAccountName || "Chưa thiết lập"}</Text>
             </View>
 
             <View className="flex-row justify-between py-2 border-b border-slate-100/50">
-              <Text className="text-slate-500 text-[13px]">Số tiền</Text>
-              <Text className="text-blue-600 font-black text-[14px]">{formatCurrency(amount)}</Text>
+              <Text className="text-slate-500 text-[13px] mr-4">Số tiền</Text>
+              <Text className="text-blue-600 font-black text-[14px] flex-1 text-right">{formatCurrency(amount)}</Text>
             </View>
 
             <View className="flex-row justify-between items-center py-2">
-              <Text className="text-slate-500 text-[13px]">Nội dung chuyển khoản</Text>
+              <Text className="text-slate-500 text-[13px] mr-4">Nội dung chuyển khoản</Text>
               <Pressable 
                 onPress={() => handleCopy(memo, "nội dung chuyển khoản")}
-                className="flex-row items-center"
+                className="flex-row items-center flex-1 justify-end"
               >
                 <Text className="text-slate-900 font-bold text-[13px] mr-1" numberOfLines={1}>{memo}</Text>
                 <Ionicons name="copy-outline" size={14} color={Colors.primary} />

@@ -8,7 +8,7 @@ import { ActivityIndicator, Text, View } from "react-native";
 export function EditProfileScreen() {
   const router = useRouter();
   const { showToast } = useToast();
-  const { profile, loading } = useProfile();
+  const { profile, loading, setProfile } = useProfile();
 
   if (loading) {
     return (
@@ -32,7 +32,8 @@ export function EditProfileScreen() {
     <EditProfileForm
       profile={profile}
       onBack={() => router.back()}
-      onSaved={() => {
+      onSaved={(updated) => {
+        setProfile(updated);
         showToast({
           type: "success",
           title: "Cập nhật thành công",

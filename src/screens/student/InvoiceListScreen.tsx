@@ -83,7 +83,7 @@ export function InvoiceListScreen() {
       ) : (
         <FlatList
           data={(loading ? [1, 2, 3, 4, 5] : filteredInvoices) as any[]}
-          keyExtractor={(item, index) => loading ? `skeleton-${index}` : (item as Invoice).id}
+          keyExtractor={(item, index) => loading ? `skeleton-${index}` : `${(item as Invoice).id}-${index}`}
           renderItem={({ item }) => {
             if (loading) return <InvoiceItemSkeleton />;
             const invoice = item as Invoice;

@@ -2,7 +2,7 @@ import { getManagerInvoices } from "@/services/billing/billing.api";
 import { InvoiceSummary } from "@/services/billing/billing.types";
 import { getBuildings } from "@/services/room/room.api";
 import { BuildingItem } from "@/services/room/room.types";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const PAGE_SIZE = 10;
 
@@ -22,6 +22,8 @@ export function useManagerInvoices() {
   const [month, setMonth] = useState<number | null>(null);
 
   const [buildings, setBuildings] = useState<BuildingItem[]>([]);
+  const isFetchingRef = useRef(false);
+  const requestVersionRef = useRef(0);
 
   useEffect(() => {
     const fetchBuildings = async () => {
@@ -44,8 +46,15 @@ export function useManagerInvoices() {
     activeYear = year,
     activeMonth = month
   ) => {
+    if (p > 1 && isFetchingRef.current) return;
+    
+    const version = ++requestVersionRef.current;
+    isFetchingRef.current = true;
+
     if (isRefresh) setRefreshing(true);
-    else if (p === 1) setLoading(true);
+    else if (p === 1) {
+      setLoading(true);
+    }
     else setLoadingMore(true);
 
     setError(null);
@@ -61,6 +70,8 @@ export function useManagerInvoices() {
         month: activeMonth !== null ? activeMonth : undefined,
       });
 
+      if (version !== requestVersionRef.current) return;
+
       const mappedData: InvoiceSummary[] = (response.data || []).map((item) => ({
         id: item.invoiceId,
         roomId: item.roomId,
@@ -70,14 +81,22 @@ export function useManagerInvoices() {
         createdAt: new Date(item.createdAt).toLocaleDateString("vi-VN"),
       }));
 
+      let hasMoreData = false;
       if (isRefresh || p === 1) {
         setItems(mappedData);
+        hasMoreData = mappedData.length === PAGE_SIZE;
       } else {
-        setItems(prev => [...prev, ...mappedData]);
+        setItems(prev => {
+          const existingIds = new Set(prev.map(item => item.id));
+          const newItems = mappedData.filter(item => !existingIds.has(item.id));
+          hasMoreData = newItems.length > 0 && mappedData.length === PAGE_SIZE;
+          return [...prev, ...newItems];
+        });
       }
 
-      setHasMore(mappedData.length === PAGE_SIZE);
+      setHasMore(hasMoreData);
     } catch (err) {
+      if (version !== requestVersionRef.current) return;
       console.log("Error fetching manager invoices:", err);
       setError("Không thể tải danh sách hóa đơn.");
       if (p === 1 || isRefresh) {
@@ -85,31 +104,38 @@ export function useManagerInvoices() {
       }
       setHasMore(false);
     } finally {
-      setLoading(false);
-      setRefreshing(false);
-      setLoadingMore(false);
+      if (version === requestVersionRef.current) {
+        setLoading(false);
+        setRefreshing(false);
+        setLoadingMore(false);
+        isFetchingRef.current = false;
+      }
     }
   }, [status, buildingCode, floor, year, month]);
 
   useEffect(() => {
     setPage(1);
     setHasMore(true);
+    isFetchingRef.current = true;
     loadData(1, false, status, buildingCode, floor, year, month);
   }, [status, buildingCode, floor, year, month, loadData]);
 
   const onRefresh = () => {
     setPage(1);
     setHasMore(true);
+    isFetchingRef.current = true;
     loadData(1, true, status, buildingCode, floor, year, month);
   };
 
   const onLoadMore = () => {
-    if (!loadingMore && hasMore && !loading) {
+    if (!loadingMore && hasMore && !loading && !refreshing && !isFetchingRef.current) {
+      isFetchingRef.current = true;
       const nextPage = page + 1;
       setPage(nextPage);
       loadData(nextPage, false, status, buildingCode, floor, year, month);
     }
   };
+
 
   return {
     items,

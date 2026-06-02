@@ -95,3 +95,15 @@ export type StudentRoomResponse = {
   totalStudents: number;
   students: StudentRoommate[];
 };
+
+export type RoomStudentsResponse = StudentRoomResponse;
+
+export type CheckoutStudentResponse = {
+  bookingId: string;
+  userId: string;
+  roomId: string;
+  status: RegistrationStatus;
+  updatedAt: string;
+};
+
+

@@ -89,7 +89,7 @@ export function InvoiceDetailModal({ visible, invoice, onClose, onPaymentSubmitt
     fetchBankDetails();
   }, [visible, invoice, detail]);
 
-  if (!invoice) return null;
+  if (!visible || !invoice) return null;
 
   const isPaid = invoice.status.toLowerCase() === "paid";
   const isPending = invoice.status.toLowerCase() === "waitforconfirm" || invoice.status.toLowerCase() === "wait_for_confirm";

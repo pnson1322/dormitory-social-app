@@ -115,7 +115,7 @@ export function ProfileScreen() {
               },
               {
                 label: "Sinh viên năm",
-                value: profile.studentYear,
+                value: profile.studentYear !== null ? String(profile.studentYear) : null,
               },
               {
                 label: "Trường",

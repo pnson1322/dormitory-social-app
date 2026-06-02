@@ -39,7 +39,7 @@ export function ManagerInvoiceDetailModal({ visible, invoice, onClose, onRefresh
     }
   }, [visible, slideAnim]);
 
-  if (!invoice) return null;
+  if (!visible || !invoice) return null;
 
   const isPaid = invoice.status.toLowerCase() === "paid";
   const isPendingConfirm = invoice.status.toLowerCase() === "waitforconfirm" || invoice.status.toLowerCase() === "wait_for_confirm";

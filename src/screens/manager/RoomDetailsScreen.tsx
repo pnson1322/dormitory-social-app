@@ -1,12 +1,13 @@
 import { AppButton } from "@/components/AppButton";
 import { RoomDetailOverviewCard } from "@/components/room/RoomDetailOverviewCard";
 import { RoomEditFormCard } from "@/components/room/RoomEditFormCard";
-import { RoomResidentsPlaceholderCard } from "@/components/room/RoomResidentsPlaceholderCard";
+import { RoomResidentsCard } from "@/components/room/RoomResidentsCard";
 import { RoomStatusInlineCard } from "@/components/room/RoomStatusInlineCard";
 import { useToast } from "@/components/toast/ToastProvider";
 import { Colors } from "@/constants/colors";
 import { useRoomDetails } from "@/hooks/room/useRoomDetails";
 import { useRoomDetailsEditor } from "@/hooks/room/useRoomDetailsEditor";
+import { useRoomStudents } from "@/hooks/room/useRoomStudents";
 import { useRoomDetailsLeaveGuard } from "@/hooks/room/useRoomDetailsLeaveGuard";
 import { useRoomFormOptions } from "@/hooks/room/useRoomFormOptions";
 import { Ionicons } from "@expo/vector-icons";
@@ -46,6 +47,15 @@ export function RoomDetailsScreen() {
   );
 
   const {
+    students,
+    loading: studentsLoading,
+    refreshing: studentsRefreshing,
+    error: studentsError,
+    refetch: refetchStudents,
+    checkout,
+  } = useRoomStudents(typeof id === "string" ? id : undefined);
+
+  const {
     buildings,
     roomTypes,
     loading: optionsLoading,
@@ -82,10 +92,11 @@ export function RoomDetailsScreen() {
   useFocusEffect(
     useCallback(() => {
       void refetch();
-    }, [refetch]),
+      void refetchStudents();
+    }, [refetch, refetchStudents]),
   );
 
-  if (loading || optionsLoading) {
+  if (loading || optionsLoading || studentsLoading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
         <View className="flex-1 items-center justify-center">
@@ -121,16 +132,17 @@ export function RoomDetailsScreen() {
 
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-center text-[16px] font-semibold text-textPrimary mb-6">
-            {error || optionsError || "Không tải được chi tiết phòng."}
+            {error || optionsError || studentsError || "Không tải được chi tiết phòng."}
           </Text>
 
           <AppButton 
             title="Thử lại" 
             onPress={() => {
               void refetch();
+              void refetchStudents();
               void refetchOptions();
             }} 
-            loading={loading || optionsLoading} 
+            loading={loading || optionsLoading || studentsLoading} 
           />
         </View>
       </SafeAreaView>
@@ -165,8 +177,11 @@ export function RoomDetailsScreen() {
         contentContainerStyle={{ paddingBottom: 120 }}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => void refetch()}
+            refreshing={refreshing || studentsRefreshing}
+            onRefresh={() => {
+              void refetch();
+              void refetchStudents();
+            }}
           />
         }
         showsVerticalScrollIndicator={false}
@@ -210,7 +225,27 @@ export function RoomDetailsScreen() {
             )}
           </View>
 
-          <RoomResidentsPlaceholderCard />
+          <RoomResidentsCard
+            students={students}
+            loading={studentsLoading}
+            onCheckout={async (userId) => {
+              try {
+                await checkout(userId);
+                showToast({
+                  type: "success",
+                  title: "Check out thành công",
+                  message: "Sinh viên đã được check-out khỏi phòng.",
+                });
+                void refetch();
+              } catch (err: any) {
+                showToast({
+                  type: "error",
+                  title: "Check out thất bại",
+                  message: err.message || "Đã xảy ra lỗi khi check-out.",
+                });
+              }
+            }}
+          />
 
           <RoomStatusInlineCard
             value={editor.selectedStatus}

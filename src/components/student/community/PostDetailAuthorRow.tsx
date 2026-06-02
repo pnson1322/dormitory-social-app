@@ -12,34 +12,55 @@ interface PostDetailHeaderProps {
   strategy: PostRenderingStrategy;
   formatDate: (d: string) => string;
   getInitials: (s: string) => string;
+  avatarUrl?: string;
+  authorName?: string;
 }
 
-export function PostDetailAuthorRow({ post, strategy, formatDate, getInitials }: PostDetailHeaderProps) {
-  const [avatarError, setAvatarError] = useState(false);
+export function PostDetailAuthorRow({
+  post,
+  strategy,
+  formatDate,
+  getInitials,
+  avatarUrl,
+  authorName,
+}: PostDetailHeaderProps) {
+  const finalAvatarUrl = avatarUrl !== undefined ? avatarUrl : post.avatarUrl;
+  const finalAuthorName = authorName !== undefined ? authorName : post.authorName;
 
   return (
     <View className="flex-row items-center mt-4 mb-3">
-      {isValidAvatarUrl(post.avatarUrl) && !avatarError ? (
-        <Image
-          source={{ uri: post.avatarUrl }}
-          onError={() => setAvatarError(true)}
-          className="w-11 h-11 rounded-full mr-3"
-          contentFit="cover"
-          transition={150}
-        />
-      ) : (
+      <View 
+        style={{ width: 44, height: 44, borderRadius: 22, marginRight: 12, position: "relative", overflow: "hidden" }}
+      >
         <View
-          className="w-11 h-11 rounded-full justify-center items-center mr-3"
-          style={{ backgroundColor: Colors.primary + "15" }}
+          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: "center", alignItems: "center", backgroundColor: Colors.primary + "15" }}
         >
           <Text className="font-bold text-[16px]" style={{ color: Colors.primary }}>
-            {getInitials(post.authorName || post.authorId)}
+            {getInitials(finalAuthorName || post.authorId)}
           </Text>
         </View>
-      )}
+
+        {isValidAvatarUrl(finalAvatarUrl) && (
+          <Image
+            source={{ uri: finalAvatarUrl }}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: "100%",
+              height: "100%",
+              borderRadius: 22,
+            }}
+            contentFit="cover"
+            transition={150}
+          />
+        )}
+      </View>
       <View className="flex-1">
         <Text className="font-bold text-[16px]" style={{ color: Colors.textPrimary }}>
-          {post.authorName || "Sinh viên KTX"}
+          {finalAuthorName || "Sinh viên KTX"}
         </Text>
         <Text className="text-[13px] mt-0.5" style={{ color: Colors.textSecondary }}>
           {formatDate(post.createdAt)}

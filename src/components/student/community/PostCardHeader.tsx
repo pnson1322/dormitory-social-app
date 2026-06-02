@@ -45,29 +45,38 @@ export function PostCardHeader({
   onPin,
   isHidden = false,
 }: PostCardHeaderProps) {
-  const [imageError, setImageError] = useState(false);
-
   return (
     <View className="flex-row items-center justify-between mb-3">
       <Pressable onPress={onPress} className="flex-row items-center flex-1">
-        {isValidAvatarUrl(avatarUrl) && !imageError ? (
-          <Image
-            source={{ uri: avatarUrl }}
-            onError={() => setImageError(true)}
-            className="w-10 h-10 rounded-full mr-3"
-            contentFit="cover"
-            transition={150}
-          />
-        ) : (
+        <View 
+          style={{ width: 40, height: 40, borderRadius: 20, marginRight: 12, position: "relative", overflow: "hidden" }}
+        >
           <View
-            className="w-10 h-10 rounded-full justify-center items-center mr-3"
-            style={{ backgroundColor: Colors.primary + "15" }}
+            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: "center", alignItems: "center", backgroundColor: Colors.primary + "15" }}
           >
             <Text className="font-bold text-[15px]" style={{ color: Colors.primary }}>
               {getInitials(authorName || authorId)}
             </Text>
           </View>
-        )}
+
+          {isValidAvatarUrl(avatarUrl) && (
+            <Image
+              source={{ uri: avatarUrl }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: "100%",
+                height: "100%",
+                borderRadius: 20,
+              }}
+              contentFit="cover"
+              transition={150}
+            />
+          )}
+        </View>
         <View className="flex-1">
           <Text className="font-semibold text-[16px]" style={{ color: Colors.textPrimary }}>
             {authorName || "Sinh viên KTX"}

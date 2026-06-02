@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { getStudentInvoices, getUtilityHistory } from "@/services/billing/billing.api";
 import { Invoice, UtilityHistoryData } from "@/services/billing/billing.types";
 
@@ -19,6 +19,7 @@ export function useStudentInvoices() {
   
   const [utilityHistory, setUtilityHistory] = useState<UtilityHistoryData[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const isFetchingRef = useRef(false);
 
   const loadUtilityHistory = useCallback(async () => {
     try {
@@ -46,6 +47,9 @@ export function useStudentInvoices() {
   }, []);
 
   const loadInvoices = useCallback(async (p: number, isRefresh = false) => {
+    if (p > 1 && isFetchingRef.current) return;
+    isFetchingRef.current = true;
+
     if (isRefresh) {
       setRefreshing(true);
     } else if (p === 1) {
@@ -85,13 +89,20 @@ export function useStudentInvoices() {
         type: "Phòng & Dịch vụ",
       }));
 
+      let hasMoreData = false;
       if (isRefresh || p === 1) {
         setInvoices(mappedData);
+        hasMoreData = mappedData.length === PAGE_SIZE;
       } else {
-        setInvoices((prev) => [...prev, ...mappedData]);
+        setInvoices((prev) => {
+          const existingIds = new Set(prev.map(item => item.id));
+          const newItems = mappedData.filter(item => !existingIds.has(item.id));
+          hasMoreData = newItems.length > 0 && mappedData.length === PAGE_SIZE;
+          return [...prev, ...newItems];
+        });
       }
 
-      setHasMore(mappedData.length === PAGE_SIZE);
+      setHasMore(hasMoreData);
     } catch (err) {
       console.log("Error loading real invoices:", err);
       setError("Không thể tải danh sách hóa đơn. Vui lòng thử lại.");
@@ -103,23 +114,27 @@ export function useStudentInvoices() {
       setLoading(false);
       setRefreshing(false);
       setLoadingMore(false);
+      isFetchingRef.current = false;
     }
   }, [activeTab, loadUtilityHistory]);
 
   useEffect(() => {
     setPage(1);
     setHasMore(true);
+    isFetchingRef.current = true;
     loadInvoices(1);
   }, [activeTab, loadInvoices]);
 
   const onRefresh = () => {
     setPage(1);
     setHasMore(true);
+    isFetchingRef.current = true;
     loadInvoices(1, true);
   };
 
   const onLoadMore = () => {
-    if (!loadingMore && hasMore && !loading) {
+    if (!loadingMore && hasMore && !loading && !refreshing && !isFetchingRef.current) {
+      isFetchingRef.current = true;
       const nextPage = page + 1;
       setPage(nextPage);
       loadInvoices(nextPage);

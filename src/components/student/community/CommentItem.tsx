@@ -9,6 +9,8 @@ import { Pressable, Text, View } from "react-native";
 interface CommentItemProps {
   comment: CommentResponse;
   profileId?: string;
+  myAvatarUrl?: string | null;
+  myFullName?: string;
   onLike: (id: string) => void;
   onEdit: (id: string, content: string) => void;
   onDelete: (id: string) => void;
@@ -17,38 +19,47 @@ interface CommentItemProps {
 export function CommentItem({
   comment,
   profileId,
+  myAvatarUrl,
+  myFullName,
   onLike,
   onEdit,
   onDelete,
 }: CommentItemProps) {
-  const [imageError, setImageError] = useState(false);
-
-  useEffect(() => {
-    setImageError(false);
-  }, [comment.id, comment.avatarUrl]);
-
-  const avatarValid = isValidAvatarUrl(comment.avatarUrl) && !imageError;
+  const isMyComment = comment.authorId === profileId;
+  const avatarUrl = isMyComment ? (myAvatarUrl || comment.avatarUrl) : comment.avatarUrl;
+  const authorName = isMyComment ? (myFullName || comment.authorName) : comment.authorName;
 
   return (
     <View className="flex-row mb-4 items-start">
-      {avatarValid ? (
-        <Image
-          source={{ uri: comment.avatarUrl }}
-          onError={() => setImageError(true)}
-          className="w-8 h-8 rounded-full mr-2.5 mt-1"
-          contentFit="cover"
-          transition={150}
-        />
-      ) : (
+      <View 
+        style={{ width: 32, height: 32, borderRadius: 16, marginRight: 10, marginTop: 4, position: "relative", overflow: "hidden" }}
+      >
         <View
-          className="w-8 h-8 rounded-full justify-center items-center mr-2.5 mt-1"
-          style={{ backgroundColor: Colors.primary + "15" }}
+          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: "center", alignItems: "center", backgroundColor: Colors.primary + "15" }}
         >
           <Text className="font-bold text-[12px]" style={{ color: Colors.primary }}>
-            {getInitials(comment.authorName || comment.authorId)}
+            {getInitials(authorName || comment.authorId)}
           </Text>
         </View>
-      )}
+
+        {isValidAvatarUrl(avatarUrl) && (
+          <Image
+            source={{ uri: avatarUrl }}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: "100%",
+              height: "100%",
+              borderRadius: 16,
+            }}
+            contentFit="cover"
+            transition={150}
+          />
+        )}
+      </View>
 
       <View className="flex-1">
         <View className="flex-1 bg-slate-50 p-3 rounded-2xl">
@@ -57,7 +68,7 @@ export function CommentItem({
               className="text-[14px] font-bold"
               style={{ color: Colors.textPrimary }}
             >
-              {comment.authorName || "Sinh viên KTX"}
+              {authorName || "Sinh viên KTX"}
             </Text>
             <Text
               className="text-[12px]"

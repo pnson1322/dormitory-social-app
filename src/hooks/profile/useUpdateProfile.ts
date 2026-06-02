@@ -1,5 +1,5 @@
 import { getApiErrorMessage } from "@/services/apiError";
-import { updateMyProfile, uploadMyAvatar } from "@/services/profile/profile.api";
+import { getMyProfile, updateMyProfile, uploadMyAvatar } from "@/services/profile/profile.api";
 import { Gender, ProfileData } from "@/services/profile/profile.types";
 import { useMemo, useState } from "react";
 
@@ -49,7 +49,9 @@ export function useUpdateProfile(initialProfile: ProfileData) {
 
   const [studentCode, setStudentCode] = useState(initialProfile.studentCode ?? "");
   const [studentYear, setStudentYear] = useState(
-    initialProfile.studentYear ?? "",
+    initialProfile.studentYear !== null && initialProfile.studentYear !== undefined
+      ? String(initialProfile.studentYear)
+      : "",
   );
   const [school, setSchool] = useState(initialProfile.school ?? "");
   const [faculty, setFaculty] = useState(initialProfile.faculty ?? "");
@@ -196,10 +198,12 @@ export function useUpdateProfile(initialProfile: ProfileData) {
       setLoading(true);
 
       if (localAvatarUri) {
-        await uploadMyAvatar(localAvatarUri);
+        console.log("[useUpdateProfile] Step 1: Uploading avatar...", localAvatarUri);
+        const uploadRes = await uploadMyAvatar(localAvatarUri);
+        console.log("[useUpdateProfile] Step 1 Success:", uploadRes);
       }
 
-      const updated = await updateMyProfile({
+      const body = {
         fullName: fullNameTrim,
         phoneNumber: phoneTrim || null,
         gender,
@@ -207,7 +211,7 @@ export function useUpdateProfile(initialProfile: ProfileData) {
         bio: bioTrim || null,
         studentCode: studentCode.trim() || null,
 
-        studentYear: studentYear.trim() || null,
+        studentYear: studentYear.replace(/\D/g, "") ? parseInt(studentYear.replace(/\D/g, ""), 10) : null,
         school: school.trim() || null,
         faculty: faculty.trim() || null,
 
@@ -224,10 +228,55 @@ export function useUpdateProfile(initialProfile: ProfileData) {
         emergencyContactName: emergencyContactName.trim() || null,
         emergencyContactPhoneNumber: emergencyPhoneTrim || null,
         emergencyContactAddress: emergencyContactAddress.trim() || null,
-      });
+      };
+
+      // Check if any text fields changed
+      const parseInitialYear = () => {
+        if (initialProfile.studentYear === null || initialProfile.studentYear === undefined) return null;
+        const cleaned = String(initialProfile.studentYear).replace(/\D/g, "");
+        return cleaned ? parseInt(cleaned, 10) : null;
+      };
+
+      const hasTextChanged =
+        body.fullName !== initialProfile.fullName ||
+        body.phoneNumber !== (initialProfile.phoneNumber || null) ||
+        body.gender !== (initialProfile.gender || null) ||
+        body.dateOfBirth !== (initialProfile.dateOfBirth || null) ||
+        body.bio !== (initialProfile.bio || null) ||
+        body.studentCode !== (initialProfile.studentCode || null) ||
+        body.studentYear !== parseInitialYear() ||
+        body.school !== (initialProfile.school || null) ||
+        body.faculty !== (initialProfile.faculty || null) ||
+        body.citizenId !== (initialProfile.citizenId || null) ||
+        body.citizenIdIssuedPlace !== (initialProfile.citizenIdIssuedPlace || null) ||
+        body.ethnicity !== (initialProfile.ethnicity || null) ||
+        body.religion !== (initialProfile.religion || null) ||
+        body.province !== (initialProfile.province || null) ||
+        body.district !== (initialProfile.district || null) ||
+        body.ward !== (initialProfile.ward || null) ||
+        body.addressLine !== (initialProfile.addressLine || null) ||
+        body.emergencyContactName !== (initialProfile.emergencyContactName || null) ||
+        body.emergencyContactPhoneNumber !== (initialProfile.emergencyContactPhoneNumber || null) ||
+        body.emergencyContactAddress !== (initialProfile.emergencyContactAddress || null);
+
+      let updated: ProfileData;
+      if (hasTextChanged) {
+        console.log("[useUpdateProfile] Step 2: Updating profile text...");
+        console.log("[useUpdateProfile] Step 2 Request Body:", JSON.stringify(body, null, 2));
+        updated = await updateMyProfile(body);
+        console.log("[useUpdateProfile] Step 2 Success");
+      } else {
+        console.log("[useUpdateProfile] Profile text unchanged. Skipping updateMyProfile.");
+        updated = await getMyProfile();
+      }
 
       opts?.onSuccess?.(updated);
-    } catch (err) {
+    } catch (err: any) {
+      console.error("[useUpdateProfile] Submit failed. Error details:", {
+        message: err?.message,
+        status: err?.response?.status,
+        data: JSON.stringify(err?.response?.data || {}, null, 2),
+      });
       const message = getApiErrorMessage(err);
       opts?.onError?.(message);
     } finally {

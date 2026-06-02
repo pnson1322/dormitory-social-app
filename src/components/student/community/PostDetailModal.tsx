@@ -1,6 +1,7 @@
 import { FullscreenImageViewer } from "@/components/common/FullscreenImageViewer";
 import { Colors } from "@/constants/colors";
 import { LocalComment } from "@/hooks/community/usePostInteraction";
+import { useCurrentUserRole } from "@/hooks/auth/useCurrentUserRole";
 import useProfile from "@/hooks/profile/useProfile";
 import { PostResponse } from "@/services/community/community.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -76,9 +77,17 @@ export function PostDetailModal({
 }: PostDetailModalProps) {
   const inputRef = useRef<TextInput>(null);
   const { profile } = useProfile();
+  const { userId } = useCurrentUserRole();
 
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
+
+  const isMyPost = !!(
+    post.authorId && (
+      (profile?.id && post.authorId.toLowerCase() === profile.id.toLowerCase()) ||
+      (userId && post.authorId.toLowerCase() === userId.toLowerCase())
+    )
+  );
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -94,7 +103,14 @@ export function PostDetailModal({
 
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1" keyboardVerticalOffset={0}>
           <ScrollView className="flex-1 px-4" contentContainerStyle={{ paddingBottom: 20 }}>
-            <PostDetailAuthorRow post={post} strategy={strategy} formatDate={formatDate} getInitials={getInitials} />
+            <PostDetailAuthorRow
+              post={post}
+              strategy={strategy}
+              formatDate={formatDate}
+              getInitials={getInitials}
+              avatarUrl={isMyPost ? (profile?.avatarUrl || post.avatarUrl || undefined) : (post.avatarUrl || undefined)}
+              authorName={isMyPost ? (profile?.fullName || post.authorName) : post.authorName}
+            />
 
             <Text className="text-[16px] leading-6 mb-4" style={{ color: Colors.textPrimary }}>
               {post.content}
@@ -147,6 +163,8 @@ export function PostDetailModal({
                   key={comment.id}
                   comment={comment}
                   profileId={profile?.id}
+                  myAvatarUrl={profile?.avatarUrl}
+                  myFullName={profile?.fullName}
                   onLike={handleLikeComment}
                   onEdit={startEditComment}
                   onDelete={handleDeleteComment}

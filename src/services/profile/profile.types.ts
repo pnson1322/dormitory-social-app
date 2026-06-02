@@ -11,7 +11,7 @@ export type ProfileData = {
   avatarUrl: string | null;
 
   studentCode: string | null;
-  studentYear: string | null;
+  studentYear: string | number | null;
   school: string | null;
   faculty: string | null;
 
@@ -44,7 +44,7 @@ export type UpdateProfileBody = {
   bio?: string | null;
   studentCode?: string | null;
 
-  studentYear?: string | null;
+  studentYear?: string | number | null;
   school?: string | null;
   faculty?: string | null;
 

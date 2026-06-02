@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/colors";
 import { useCurrentUserRole } from "@/hooks/auth/useCurrentUserRole";
 import { usePostInteraction } from "@/hooks/community/usePostInteraction";
+import useProfile from "@/hooks/profile/useProfile";
 import { PostResponse } from "@/services/community/community.types";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
@@ -62,9 +63,17 @@ export function PostCard({
   } = usePostInteraction(post, onHide);
 
   const { isAdminOrManager, userId } = useCurrentUserRole();
+  const { profile } = useProfile();
   const [isExpanded, setIsExpanded] = useState(false);
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
+
+  const isMyPost = !!(
+    post.authorId && (
+      (profile?.id && post.authorId.toLowerCase() === profile.id.toLowerCase()) ||
+      (userId && post.authorId.toLowerCase() === userId.toLowerCase())
+    )
+  );
 
   const handleImagePress = (index: number) => {
     setViewerIndex(index);
@@ -109,15 +118,15 @@ export function PostCard({
           authorId={post.authorId}
           createdAt={post.createdAt}
           strategy={strategy}
-          canHide={canHide && !!userId && (post.authorId?.toLowerCase() === userId?.toLowerCase() || isAdminOrManager)}
+          canHide={canHide && (isMyPost || isAdminOrManager)}
           onHide={onHide}
           isHiding={isHiding}
           handleHide={handleHide}
           formatDate={formatDate}
           getInitials={getInitials}
           onPress={handleOpenDetail}
-          avatarUrl={post.avatarUrl}
-          authorName={post.authorName}
+          avatarUrl={isMyPost ? (profile?.avatarUrl || post.avatarUrl || undefined) : (post.avatarUrl || undefined)}
+          authorName={isMyPost ? (profile?.fullName || post.authorName) : post.authorName}
           canPin={isAdminOrManager}
           isPinned={isPinned}
           isPinning={isPinning}

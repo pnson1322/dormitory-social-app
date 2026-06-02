@@ -18,7 +18,7 @@ import { Platform, Pressable, Text, View } from "react-native";
 type Props = {
   profile: ProfileData;
   onBack: () => void;
-  onSaved: () => void;
+  onSaved: (updated: ProfileData) => void;
   onError: (message: string) => void;
 };
 
@@ -60,8 +60,8 @@ export function EditProfileForm({ profile, onBack, onSaved, onError }: Props) {
 
   async function handleSubmit() {
     await form.submit({
-      onSuccess: () => {
-        onSaved();
+      onSuccess: (updated) => {
+        onSaved(updated);
       },
       onError: (message) => {
         onError(message);
@@ -171,7 +171,8 @@ export function EditProfileForm({ profile, onBack, onSaved, onError }: Props) {
                 label="Sinh viên năm"
                 value={form.studentYear}
                 onChangeText={form.setStudentYear}
-                placeholder="Ví dụ: Năm 2"
+                placeholder="Ví dụ: 2"
+                keyboardType="number-pad"
               />
 
               <AppInput

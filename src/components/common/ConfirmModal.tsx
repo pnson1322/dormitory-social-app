@@ -30,6 +30,8 @@ export function ConfirmModal({
   const color = type === "danger" ? "#EF4444" : type === "success" ? "#10B981" : "#3B82F6";
   const bg = type === "danger" ? "#FEF2F2" : type === "success" ? "#F0FDF4" : "#EFF6FF";
 
+  if (!visible) return null;
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View className="flex-1 justify-center items-center bg-black/50 px-6">

@@ -9,11 +9,11 @@ import { useMyRoom } from "@/hooks/student/useMyRoom";
 import { useCurrentUserRole } from "@/hooks/auth/useCurrentUserRole";
 import { createDirectConversation } from "@/services/chat/chat.api";
 import { chatMetadataCache } from "@/utils/chatMetadataCache";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useToast } from "@/components/toast/ToastProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { StudentRoommate } from "@/services/booking/booking.types";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 
 export function MyRoomScreen() {
   const { roomInfo, loading, error, refresh } = useMyRoom();
@@ -22,6 +22,12 @@ export function MyRoomScreen() {
   const { showToast } = useToast();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCreatingChat, setIsCreatingChat] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      void refresh();
+    }, [refresh])
+  );
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
