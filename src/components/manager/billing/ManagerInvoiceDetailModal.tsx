@@ -174,13 +174,15 @@ export function ManagerInvoiceDetailModal({ visible, invoice, onClose, onRefresh
               </View>
             </View>
 
-            {!isPaid && !isCanceled && (
+            {(!isPaid && !isCanceled) && (
               <View className="gap-y-3 mb-4">
-                <AppButton 
-                  title="Xác nhận đã thu tiền" 
-                  onPress={() => setShowConfirmPaid(true)} 
-                  style={{ backgroundColor: "#10B981" }}
-                />
+                {isPendingConfirm && (
+                  <AppButton 
+                    title="Xác nhận đã thu tiền" 
+                    onPress={() => setShowConfirmPaid(true)} 
+                    style={{ backgroundColor: "#10B981" }}
+                  />
+                )}
                 <AppButton 
                   title="Hủy hóa đơn này" 
                   onPress={() => setShowConfirmCancel(true)} 

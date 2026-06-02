@@ -83,8 +83,6 @@ export function InvoiceManagerListScreen() {
           <View className="flex-1">
             <Text className="text-[18px] font-black text-slate-900">Phòng {invoice.roomName}</Text>
             <View className="flex-row items-center mt-1">
-              <Text className="text-[13px] text-slate-400 font-bold">{invoice.id}</Text>
-              <View className="h-1 w-1 rounded-full bg-slate-200 mx-2" />
               <Text className="text-[13px] text-slate-400 font-medium">{invoice.createdAt}</Text>
             </View>
           </View>
@@ -146,7 +144,7 @@ export function InvoiceManagerListScreen() {
       </View>
 
       <View className="bg-white py-3 border-b border-slate-100 shadow-sm px-5" style={{ zIndex: 5 }}>
-        <View className="flex-row bg-slate-100 p-1 rounded-2xl mb-3">
+        <View style={{ flexDirection: 'row', backgroundColor: '#f1f5f9', padding: 4, borderRadius: 16, marginBottom: 12 }}>
           {[
             { label: "Tất cả", value: "" },
             { label: "Chưa thu", value: "Unpaid" },
@@ -155,17 +153,23 @@ export function InvoiceManagerListScreen() {
           ].map((tab) => {
             const isActive = status === tab.value;
             return (
-              <Pressable
+              <TouchableOpacity
                 key={tab.value || "all"}
+                activeOpacity={0.7}
                 onPress={() => setStatus(tab.value)}
-                className={`flex-1 py-2.5 rounded-xl items-center justify-center ${
-                  isActive ? "bg-white shadow-sm" : ""
-                }`}
+                style={{
+                  flex: 1,
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  ...(isActive ? { backgroundColor: '#fff', elevation: 1, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 3, shadowOffset: { width: 0, height: 1 } } : {})
+                }}
               >
-                <Text className={`text-[13px] font-bold ${isActive ? "text-blue-600" : "text-slate-500"}`}>
+                <Text style={{ fontSize: 13, fontWeight: '700', color: isActive ? '#2563eb' : '#64748b' }}>
                   {tab.label}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             );
           })}
         </View>

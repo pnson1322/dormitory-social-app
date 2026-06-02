@@ -107,8 +107,6 @@ export type InvoiceSummary = {
   otherFeesTotal?: number;
 };
 
-
-
 export type GetStudentInvoicesParams = {
   year?: number;
   month?: number;
