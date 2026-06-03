@@ -92,7 +92,7 @@ export function useRegister() {
 
   async function submit(opts?: {
     onSuccess?: () => void;
-    onError?: () => void;
+    onError?: (message: string) => void;
   }) {
     markAllTouched();
 
@@ -105,7 +105,7 @@ export function useRegister() {
 
     if (invalid) {
       shake(shakeX);
-      opts?.onError?.();
+      opts?.onError?.("Thông tin đăng ký không hợp lệ.");
       return;
     }
 
@@ -118,8 +118,8 @@ export function useRegister() {
 
       opts?.onSuccess?.();
     } catch (err) {
-      void getApiErrorMessage(err);
-      opts?.onError?.();
+      const msg = getApiErrorMessage(err, "Đăng ký thất bại.");
+      opts?.onError?.(msg);
     } finally {
       setLoading(false);
     }

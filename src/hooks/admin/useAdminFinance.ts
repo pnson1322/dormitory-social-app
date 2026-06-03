@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getApiErrorMessage } from '@/services/apiError';
 import { FinancialStats, FilterPeriod, GetFinancialStatsParams } from '@/services/admin/finance.types';
 import { getFinancialStats } from '@/services/admin/finance.api';
 
@@ -19,7 +20,7 @@ export function useAdminFinance() {
       const data = await getFinancialStats(selectedFilter);
       setStats(data);
     } catch (err) {
-      setError("Không thể tải dữ liệu thống kê.");
+      setError(getApiErrorMessage(err, "Không thể tải dữ liệu thống kê."));
 
     } finally {
       setLoading(false);

@@ -2,6 +2,7 @@ import { useToast } from "@/components/toast/ToastProvider";
 import { createAnnouncement, createPost, hidePost } from "@/services/community/community.api";
 import { CreateAnnouncementRequest, CreatePostRequest } from "@/services/community/community.types";
 import { useState } from "react";
+import { getApiErrorMessage } from "@/services/apiError";
 
 export function useCommunityActions() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,7 +28,7 @@ export function useCommunityActions() {
       showToast({
         type: "error",
         title: "Thất bại",
-        message: error?.response?.data?.title || "Không thể đăng bài viết.",
+        message: getApiErrorMessage(error, "Không thể đăng bài viết."),
       });
       return null;
     } finally {
@@ -55,7 +56,7 @@ export function useCommunityActions() {
       showToast({
         type: "error",
         title: "Thất bại",
-        message: error?.response?.data?.title || "Không thể đăng thông báo.",
+        message: getApiErrorMessage(error, "Không thể đăng thông báo."),
       });
       return null;
     } finally {
@@ -78,7 +79,7 @@ export function useCommunityActions() {
       showToast({
         type: "error",
         title: "Thất bại",
-        message: error?.response?.data?.title || "Không thể ẩn bài viết.",
+        message: getApiErrorMessage(error, "Không thể ẩn bài viết."),
       });
       return null;
     } finally {

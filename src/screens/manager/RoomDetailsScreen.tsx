@@ -4,6 +4,7 @@ import { RoomEditFormCard } from "@/components/room/RoomEditFormCard";
 import { RoomResidentsCard } from "@/components/room/RoomResidentsCard";
 import { RoomStatusInlineCard } from "@/components/room/RoomStatusInlineCard";
 import { useToast } from "@/components/toast/ToastProvider";
+import { getApiErrorMessage } from "@/services/apiError";
 import { Colors } from "@/constants/colors";
 import { useRoomDetails } from "@/hooks/room/useRoomDetails";
 import { useRoomDetailsEditor } from "@/hooks/room/useRoomDetailsEditor";
@@ -241,7 +242,7 @@ export function RoomDetailsScreen() {
                 showToast({
                   type: "error",
                   title: "Check out thất bại",
-                  message: err.message || "Đã xảy ra lỗi khi check-out.",
+                  message: getApiErrorMessage(err, "Đã xảy ra lỗi khi check-out."),
                 });
               }
             }}

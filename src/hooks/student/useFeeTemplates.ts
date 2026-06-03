@@ -1,6 +1,7 @@
 import { getFeeTemplates } from "@/services/booking/booking.api";
 import { FeeTemplate } from "@/services/booking/booking.types";
 import { useEffect, useState } from "react";
+import { getApiErrorMessage } from "@/services/apiError";
 
 export function useFeeTemplates() {
   const [fees, setFees] = useState<FeeTemplate[]>([]);
@@ -18,7 +19,7 @@ export function useFeeTemplates() {
         }
       } catch (err: any) {
         if (mounted) {
-          setError(err?.message || "Không thể tải danh sách phí");
+          setError(getApiErrorMessage(err, "Không thể tải danh sách phí"));
         }
       } finally {
         if (mounted) {

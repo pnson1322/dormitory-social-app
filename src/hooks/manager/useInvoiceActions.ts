@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getApiErrorMessage } from "@/services/apiError";
 import { cancelInvoice, updateInvoiceStatus } from "@/services/billing/billing.api";
 
 export function useInvoiceActions() {
@@ -12,7 +13,7 @@ export function useInvoiceActions() {
       await updateInvoiceStatus(invoiceId);
       return true;
     } catch (err) {
-      setError("Không thể cập nhật trạng thái thanh toán.");
+      setError(getApiErrorMessage(err, "Không thể cập nhật trạng thái thanh toán."));
       return false;
     } finally {
       setLoading(false);
@@ -26,7 +27,7 @@ export function useInvoiceActions() {
       await cancelInvoice(invoiceId);
       return true;
     } catch (err) {
-      setError("Không thể hủy hóa đơn này.");
+      setError(getApiErrorMessage(err, "Không thể hủy hóa đơn này."));
       return false;
     } finally {
       setLoading(false);

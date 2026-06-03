@@ -1,4 +1,5 @@
 import { PagingMeta } from "@/services/base.types";
+import { getApiErrorMessage } from "@/services/apiError";
 import { 
   getBuildings, 
   getRooms, 
@@ -75,7 +76,7 @@ export function useStudentRooms() {
       setItems(prev => page === 1 ? result.items : [...prev, ...result.items]);
       setMeta(result.meta);
     } catch (err: any) {
-      setError(err?.message || "Không thể tải danh sách phòng.");
+      setError(getApiErrorMessage(err, "Không thể tải danh sách phòng."));
     } finally {
       if (requestId === requestIdRef.current) {
         setLoading(false);

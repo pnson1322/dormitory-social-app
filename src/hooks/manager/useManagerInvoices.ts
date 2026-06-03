@@ -3,6 +3,7 @@ import { InvoiceSummary } from "@/services/billing/billing.types";
 import { getBuildings } from "@/services/room/room.api";
 import { BuildingItem } from "@/services/room/room.types";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getApiErrorMessage } from "@/services/apiError";
 
 const PAGE_SIZE = 10;
 
@@ -98,7 +99,7 @@ export function useManagerInvoices() {
     } catch (err) {
       if (version !== requestVersionRef.current) return;
       console.log("Error fetching manager invoices:", err);
-      setError("Không thể tải danh sách hóa đơn.");
+      setError(getApiErrorMessage(err, "Không thể tải danh sách hóa đơn."));
       if (p === 1 || isRefresh) {
         setItems([]);
       }

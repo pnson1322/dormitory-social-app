@@ -3,6 +3,7 @@ import { submitIncidentReport } from "@/services/incident/incident.api";
 import { CreateIncidentRequest } from "@/services/incident/incident.types";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { getApiErrorMessage } from "@/services/apiError";
 
 export function useIncidentReport() {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +40,7 @@ export function useIncidentReport() {
       showToast({
         type: "error",
         title: "Thất bại",
-        message: error?.response?.data?.title || "Không thể gửi báo cáo sự cố.",
+        message: getApiErrorMessage(error, "Không thể gửi báo cáo sự cố."),
       });
       console.log(error);
       return false;

@@ -2,6 +2,7 @@ import { useToast } from "@/components/toast/ToastProvider";
 import { getIncidents, updateIncidentStatus } from "@/services/incident/incident.api";
 import { IncidentResponse } from "@/services/incident/incident.types";
 import { useCallback, useEffect, useState } from "react";
+import { getApiErrorMessage } from "@/services/apiError";
 
 export type ManagerTabStatus = "Pending" | "InProgress" | "Resolved" | "Rejected";
 
@@ -82,15 +83,18 @@ export function useManagerIncidents() {
       showToast({
         type: "error",
         title: "Lỗi kết nối",
-        message: `Không thể tải danh sách sự cố thuộc cột ${
-          status === "Pending"
-            ? "Mới"
-            : status === "InProgress"
-            ? "Đang xử lý"
-            : status === "Resolved"
-            ? "Đã xong"
-            : "Từ chối"
-        }.`,
+        message: getApiErrorMessage(
+          error,
+          `Không thể tải danh sách sự cố thuộc cột ${
+            status === "Pending"
+              ? "Mới"
+              : status === "InProgress"
+              ? "Đang xử lý"
+              : status === "Resolved"
+              ? "Đã xong"
+              : "Từ chối"
+          }.`
+        ),
       });
     } finally {
       setLoadingMap(prev => ({ ...prev, [status]: false }));
@@ -146,7 +150,7 @@ export function useManagerIncidents() {
       showToast({
         type: "error",
         title: "Thất bại",
-        message: "Không thể cập nhật trạng thái sự cố. Vui lòng kiểm tra lại kết nối.",
+        message: getApiErrorMessage(error, "Không thể cập nhật trạng thái sự cố. Vui lòng kiểm tra lại kết nối."),
       });
     }
   }, [incidentsMap, showToast]);
@@ -182,7 +186,7 @@ export function useManagerIncidents() {
       showToast({
         type: "error",
         title: "Thất bại",
-        message: "Không thể từ chối báo cáo sự cố. Vui lòng kiểm tra lại kết nối.",
+        message: getApiErrorMessage(error, "Không thể từ chối báo cáo sự cố. Vui lòng kiểm tra lại kết nối."),
       });
     }
   }, [incidentsMap, showToast]);

@@ -119,11 +119,11 @@ export default function RegisterScreen() {
                     });
                     setTimeout(() => router.replace("/"), 800);
                   },
-                  onError: () =>
+                  onError: (message) =>
                     showToast({
                       type: "error",
                       title: "Thất bại",
-                      message: "Đăng ký thất bại.",
+                      message: message,
                       durationMs: 2800,
                     }),
                 })

@@ -1,5 +1,6 @@
 import { useToast } from "@/components/toast/ToastProvider";
 import useProfile from "@/hooks/profile/useProfile";
+import { getApiErrorMessage } from "@/services/apiError";
 import {
   createComment,
   deleteComment,
@@ -70,11 +71,10 @@ export function usePostInteraction(
       setCommentsCursor(response.nextCursor);
       setHasMoreComments(response.hasMore);
     } catch (error) {
-
       showToast({
         type: "error",
         title: "Lỗi tải bình luận",
-        message: "Không thể tải danh sách bình luận. Vui lòng thử lại.",
+        message: getApiErrorMessage(error, "Không thể tải danh sách bình luận. Vui lòng thử lại."),
       });
     } finally {
       setIsLoadingComments(false);
@@ -108,13 +108,12 @@ export function usePostInteraction(
       setIsLiked(response.isLiked);
       setLikesCount(response.likeCount);
     } catch (error) {
-
       setIsLiked(originalLiked);
       setLikesCount(originalCount);
       showToast({
         type: "error",
         title: "Lỗi tương tác",
-        message: "Không thể thực hiện thích bài viết. Vui lòng thử lại.",
+        message: getApiErrorMessage(error, "Không thể thực hiện thích bài viết. Vui lòng thử lại."),
       });
     }
   };
@@ -165,9 +164,12 @@ export function usePostInteraction(
       showToast({
         type: "error",
         title: "Lỗi bình luận",
-        message: editingCommentId
-          ? "Cập nhật bình luận thất bại."
-          : "Bình luận thất bại. Vui lòng gửi lại.",
+        message: getApiErrorMessage(
+          error,
+          editingCommentId
+            ? "Cập nhật bình luận thất bại."
+            : "Bình luận thất bại. Vui lòng gửi lại."
+        ),
       });
     }
   };
@@ -198,7 +200,7 @@ export function usePostInteraction(
                 showToast({
                   type: "error",
                   title: "Lỗi",
-                  message: "Không thể xóa bình luận. Vui lòng thử lại sau.",
+                  message: getApiErrorMessage(error, "Không thể xóa bình luận. Vui lòng thử lại sau."),
                 });
               }
             },
@@ -256,7 +258,6 @@ export function usePostInteraction(
           ),
         );
       } catch (error) {
-
         setCommentsList((prev) =>
           prev.map((c) =>
             c.id === commentId
@@ -267,7 +268,7 @@ export function usePostInteraction(
         showToast({
           type: "error",
           title: "Lỗi tương tác",
-          message: "Không thể thực hiện thích bình luận. Vui lòng thử lại.",
+          message: getApiErrorMessage(error, "Không thể thực hiện thích bình luận. Vui lòng thử lại."),
         });
       }
     },
@@ -301,11 +302,10 @@ export function usePostInteraction(
         onSuccess();
       }
     } catch (error: any) {
-
       showToast({
         type: "error",
         title: "Lỗi tương tác",
-        message: error?.response?.data?.title || "Không thể thực hiện ghim bài viết. Vui lòng thử lại.",
+        message: getApiErrorMessage(error, "Không thể thực hiện ghim bài viết. Vui lòng thử lại."),
       });
     } finally {
       setIsPinning(false);

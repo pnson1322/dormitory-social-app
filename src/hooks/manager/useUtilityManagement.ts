@@ -1,6 +1,7 @@
 import { createInvoice, getInvoiceDetails, getLastReadings } from "@/services/billing/billing.api";
 import { ServiceFee, UtilityReading } from "@/services/billing/billing.types";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { getApiErrorMessage } from "@/services/apiError";
 
 const ELECTRICITY_PRICE = 3500; 
 const WATER_PRICE = 15000;    
@@ -45,7 +46,7 @@ export function useUtilityManagement() {
         setOtherFees(data.surcharges.map(s => ({ id: s.id, name: s.name, amount: s.amount })));
       }
     } catch (err) {
-      setError("Không thể tải thông tin hóa đơn.");
+      setError(getApiErrorMessage(err, "Không thể tải thông tin hóa đơn."));
     } finally {
       setFetchingReadings(false);
     }
@@ -132,7 +133,7 @@ export function useUtilityManagement() {
       });
       return true;
     } catch (err) {
-      setError(`Không thể ${isUpdate ? "cập nhật" : "tạo"} hóa đơn. Vui lòng thử lại.`);
+      setError(getApiErrorMessage(err, `Không thể ${isUpdate ? "cập nhật" : "tạo"} hóa đơn. Vui lòng thử lại.`));
       return false;
     } finally {
       setLoading(false);

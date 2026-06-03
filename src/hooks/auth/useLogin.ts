@@ -51,14 +51,14 @@ export function useLogin() {
 
   async function submit(opts?: {
     onSuccess?: (role?: string | null) => void;
-    onError?: () => void;
+    onError?: (message: string) => void;
   }) {
     markAllTouched();
 
     const invalid = !isValidEmail(emailTrim) || password.length < 8;
     if (invalid) {
       shake(shakeX);
-      opts?.onError?.();
+      opts?.onError?.("Email hoặc mật khẩu không hợp lệ.");
       return;
     }
 
@@ -85,8 +85,8 @@ export function useLogin() {
         console.log("Lỗi code:", error.message);
       }
 
-      void getApiErrorMessage(error);
-      opts?.onError?.();
+      const msg = getApiErrorMessage(error, "Đăng nhập thất bại.");
+      opts?.onError?.(msg);
     } finally {
       setLoading(false);
     }

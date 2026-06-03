@@ -9,6 +9,7 @@ import { useMyRoom } from "@/hooks/student/useMyRoom";
 import { useCurrentUserRole } from "@/hooks/auth/useCurrentUserRole";
 import { createDirectConversation } from "@/services/chat/chat.api";
 import { chatMetadataCache } from "@/utils/chatMetadataCache";
+import { getApiErrorMessage } from "@/services/apiError";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useToast } from "@/components/toast/ToastProvider";
 import { Ionicons } from "@expo/vector-icons";
@@ -49,7 +50,7 @@ export function MyRoomScreen() {
       showToast({
         type: "error",
         title: "Lỗi",
-        message: "Không thể bắt đầu cuộc trò chuyện với bạn cùng phòng."
+        message: getApiErrorMessage(err, "Không thể bắt đầu cuộc trò chuyện với bạn cùng phòng.")
       });
     } finally {
       setIsCreatingChat(false);

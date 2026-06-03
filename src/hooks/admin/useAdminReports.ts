@@ -2,6 +2,7 @@ import { useToast } from "@/components/toast/ToastProvider";
 import { getReports, reviewReport } from "@/services/community/community.api";
 import { ReportResponse, ReportStatus } from "@/services/community/community.types";
 import { useCallback, useEffect, useState } from "react";
+import { getApiErrorMessage } from "@/services/apiError";
 
 export function useAdminReports() {
   const [reports, setReports] = useState<ReportResponse[]>([]);
@@ -45,7 +46,7 @@ export function useAdminReports() {
         showToast({
           type: "error",
           title: "Lỗi tải báo cáo",
-          message: "Không thể tải danh sách báo cáo vi phạm.",
+          message: getApiErrorMessage(error, "Không thể tải danh sách báo cáo vi phạm."),
         });
       } finally {
         setIsLoading(false);
@@ -89,7 +90,7 @@ export function useAdminReports() {
         showToast({
           type: "error",
           title: "Thất bại",
-          message: error?.response?.data?.title || "Không thể xử lý báo cáo.",
+          message: getApiErrorMessage(error, "Không thể xử lý báo cáo."),
         });
       }
     },

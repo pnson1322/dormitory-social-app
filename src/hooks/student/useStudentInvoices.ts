@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { getStudentInvoices, getUtilityHistory } from "@/services/billing/billing.api";
 import { Invoice, UtilityHistoryData } from "@/services/billing/billing.types";
+import { getApiErrorMessage } from "@/services/apiError";
 
 export type InvoiceStatus = "UNPAID" | "PAID";
 export type { Invoice, UtilityHistoryData };
@@ -105,7 +106,7 @@ export function useStudentInvoices() {
       setHasMore(hasMoreData);
     } catch (err) {
       console.log("Error loading real invoices:", err);
-      setError("Không thể tải danh sách hóa đơn. Vui lòng thử lại.");
+      setError(getApiErrorMessage(err, "Không thể tải danh sách hóa đơn. Vui lòng thử lại."));
       if (p === 1 || isRefresh) {
         setInvoices([]);
       }

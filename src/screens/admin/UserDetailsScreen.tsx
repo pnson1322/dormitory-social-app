@@ -1,5 +1,6 @@
 import { AppButton } from "@/components/AppButton";
 import { useToast } from "@/components/toast/ToastProvider";
+import { getApiErrorMessage } from "@/services/apiError";
 import { UserRoleBadge } from "@/components/user/UserRoleBadge";
 import { UserStatusBadge } from "@/components/user/UserStatusBadge";
 import { Colors } from "@/constants/colors";
@@ -206,7 +207,7 @@ export function UserDetailsScreen() {
       showToast({
         type: "error",
         title: "Cập nhật thất bại",
-        message: err?.message || "Không thể cập nhật người dùng.",
+        message: getApiErrorMessage(err, "Không thể cập nhật người dùng."),
       });
     } finally {
       setSaving(false);

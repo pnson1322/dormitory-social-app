@@ -103,11 +103,11 @@ export default function LoginScreen() {
                       }
                     }, 650);
                   },
-                  onError: () =>
+                  onError: (message) =>
                     showToast({
                       type: "error",
                       title: "Thất bại",
-                      message: "Đăng nhập thất bại.",
+                      message: message,
                       durationMs: 2600,
                     }),
                 })

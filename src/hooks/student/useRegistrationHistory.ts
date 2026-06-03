@@ -1,6 +1,7 @@
 import { getRegistrationHistory } from "@/services/booking/booking.api";
 import { RegistrationItem, RegistrationStatus } from "@/services/booking/booking.types";
 import { useCallback, useEffect, useState } from "react";
+import { getApiErrorMessage } from "@/services/apiError";
 
 export type { RegistrationItem, RegistrationStatus };
 
@@ -26,7 +27,7 @@ export function useRegistrationHistory(userId?: string) {
       }));
       setItems(normalized);
     } catch (err: any) {
-      setError(err?.message || "Không thể tải lịch sử đăng ký.");
+      setError(getApiErrorMessage(err, "Không thể tải lịch sử đăng ký."));
     } finally {
       setLoading(false);
       setRefreshing(false);

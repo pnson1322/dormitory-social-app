@@ -1,4 +1,5 @@
 import { useToast } from "@/components/toast/ToastProvider";
+import { getApiErrorMessage } from "@/services/apiError";
 import { useUsers } from "@/hooks/user/useUsers";
 import { updateUserRole, updateUserStatus } from "@/services/user/user.api";
 import { UserItem, UserRole, UserStatus } from "@/services/user/user.types";
@@ -123,7 +124,7 @@ export function useUserManagement() {
         showToast({
           type: "error",
           title: "Cập nhật thất bại",
-          message: error?.message || "Không thể cập nhật người dùng.",
+          message: getApiErrorMessage(error, "Không thể cập nhật người dùng."),
         });
       } finally {
         setActionLoading(false);
