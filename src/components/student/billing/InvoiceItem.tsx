@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/colors";
 import { Invoice } from "@/hooks/student/useStudentInvoices";
 import { formatCurrency } from "@/utils/room";
+import { formatDateToDisplay, formatDateTime } from "@/utils/date";
 import { Ionicons } from "@expo/vector-icons";
 import React, { memo } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -113,7 +114,9 @@ export const InvoiceItem = memo(function InvoiceItem({ item, overdue, onPress }:
             {statusStyles.dateLabel}
           </Text>
           <Text className={`text-[14px] font-bold ${overdue ? "text-red-500" : "text-slate-700"}`}>
-            {item.status.toLowerCase() === "paid" ? item.paidDate : item.dueDate}
+            {item.status.toLowerCase() === "paid"
+              ? formatDateTime(item.paidDate ?? null)
+              : formatDateToDisplay(item.dueDate)}
             {overdue && " (Quá hạn)"}
           </Text>
         </View>

@@ -3,7 +3,11 @@ import type { AxiosError } from "axios";
 export function getApiErrorMessage(err: unknown, fallback = "Có lỗi xảy ra.") {
   const e = err as AxiosError<any>;
   
-  const backendMsg = e?.response?.data?.message || e?.response?.data?.error;
+  const backendMsg =
+    e?.response?.data?.detail ||
+    e?.response?.data?.message ||
+    e?.response?.data?.error ||
+    e?.response?.data?.title;
   if (typeof backendMsg === "string" && backendMsg.trim()) {
     return backendMsg.trim();
   }

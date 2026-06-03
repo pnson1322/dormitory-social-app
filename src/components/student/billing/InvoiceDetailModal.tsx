@@ -9,6 +9,7 @@ import { getBuildings } from "@/services/room/room.api";
 import { confirmStudentPayment } from "@/services/billing/billing.api";
 import { getApiErrorMessage } from "@/services/apiError";
 import { formatCurrency } from "@/utils/room";
+import { formatDateToDisplay, formatDateTime } from "@/utils/date";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Animated, Dimensions, Modal, Pressable, ScrollView, Text, View } from "react-native";
@@ -154,7 +155,7 @@ export function InvoiceDetailModal({ visible, invoice, onClose, onPaymentSubmitt
                 let iconName: any = "alert-circle";
                 let iconColor = "#F59E0B";
                 let statusLabel = "Chưa thanh toán";
-                let statusDesc = `Hạn chót: ${invoice.dueDate}`;
+                let statusDesc = `Hạn chót: ${formatDateToDisplay(invoice.dueDate)}`;
 
                 if (isPaid) {
                   bgClass = "bg-emerald-50";
@@ -162,7 +163,7 @@ export function InvoiceDetailModal({ visible, invoice, onClose, onPaymentSubmitt
                   iconName = "checkmark-circle";
                   iconColor = "#10B981";
                   statusLabel = "Đã thanh toán";
-                  statusDesc = invoice.paidDate ? `Vào lúc ${invoice.paidDate}` : "Hóa đơn đã được thanh toán.";
+                  statusDesc = invoice.paidDate ? `Vào lúc ${formatDateTime(invoice.paidDate)}` : "Hóa đơn đã được thanh toán.";
                 } else if (isPending) {
                   bgClass = "bg-blue-50";
                   textClass = "text-blue-700";

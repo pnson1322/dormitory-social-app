@@ -3,6 +3,7 @@ import { reportPost } from "@/services/community/community.api";
 import { ReportReason } from "@/services/community/community.types";
 import { useEffect, useRef, useState } from "react";
 import { Animated } from "react-native";
+import { getApiErrorMessage } from "@/services/apiError";
 
 interface UseReportPostProps {
   visible: boolean;
@@ -87,13 +88,7 @@ export function useReportPost({
       });
       onClose();
     } catch (error: any) {
-      let errorMessage = "Đã xảy ra lỗi khi gửi báo cáo. Vui lòng thử lại.";
-
-      if (error?.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error?.message) {
-        errorMessage = error.message;
-      }
+      const errorMessage = getApiErrorMessage(error, "Đã xảy ra lỗi khi gửi báo cáo. Vui lòng thử lại.");
 
       showToast({
         type: "error",
