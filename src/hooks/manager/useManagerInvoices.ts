@@ -76,7 +76,8 @@ export function useManagerInvoices() {
       const mappedData: InvoiceSummary[] = (response.data || []).map((item) => ({
         id: item.invoiceId,
         roomId: item.roomId,
-        roomName: item.buildingCode ? `${item.buildingCode}-${item.floor}` : item.roomId.substring(0, 6).toUpperCase(),
+        roomName: item.roomName,
+        buildingCode: item.buildingCode,
         totalAmount: item.totalAmount,
         status: item.status as any,
         createdAt: new Date(item.createdAt).toLocaleDateString("vi-VN"),

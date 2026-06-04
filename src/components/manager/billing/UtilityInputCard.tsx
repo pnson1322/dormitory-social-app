@@ -1,5 +1,4 @@
 import { Colors } from "@/constants/colors";
-import { formatCurrency } from "@/utils/room";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Text, TextInput, View } from "react-native";
@@ -9,10 +8,9 @@ type Props = {
   lastReading: number;
   currentReading: number;
   onChange: (val: number) => void;
-  unitPrice: number;
 };
 
-export function UtilityInputCard({ type, lastReading, currentReading, onChange, unitPrice }: Props) {
+export function UtilityInputCard({ type, lastReading, currentReading, onChange }: Props) {
   const isElectricity = type === "electricity";
   const label = isElectricity ? "Điện" : "Nước";
   const unit = isElectricity ? "kWh" : "m³";
@@ -21,7 +19,6 @@ export function UtilityInputCard({ type, lastReading, currentReading, onChange, 
   const bg = isElectricity ? "bg-amber-50" : "bg-blue-50";
 
   const consumption = Math.max(0, currentReading - lastReading);
-  const total = consumption * unitPrice;
   const isInvalid = currentReading < lastReading;
 
   return (
@@ -34,7 +31,7 @@ export function UtilityInputCard({ type, lastReading, currentReading, onChange, 
           <Text className="text-[18px] font-bold text-slate-900">Chỉ số {label}</Text>
         </View>
         <View className="px-3 py-1 bg-slate-100 rounded-lg">
-          <Text className="text-[12px] font-bold text-slate-500">{formatCurrency(unitPrice)}/{unit}</Text>
+          <Text className="text-[12px] font-bold text-slate-500">Giá bậc thang</Text>
         </View>
       </View>
 
@@ -69,10 +66,13 @@ export function UtilityInputCard({ type, lastReading, currentReading, onChange, 
       )}
 
       <View className="flex-row justify-between items-center pt-4 border-t border-slate-100">
-        <View>
-          <Text className="text-slate-500 text-[13px]">Tiêu thụ: <Text className="font-bold text-slate-900">{consumption} {unit}</Text></Text>
+        <Text className="text-slate-500 text-[13px]">Tiêu thụ: <Text className="font-bold text-slate-900">{consumption} {unit}</Text></Text>
+        <View className="flex-row items-center">
+          <Ionicons name="information-circle-outline" size={14} color="#94A3B8" />
+          <Text className="text-slate-400 text-[11px] font-medium ml-1">
+            {isElectricity ? "Chưa bao gồm VAT 8%" : "Đã bao gồm thuế/phí"}
+          </Text>
         </View>
-        <Text className="text-primary font-black text-[18px]">{formatCurrency(total)}</Text>
       </View>
     </View>
   );

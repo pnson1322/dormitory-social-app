@@ -207,8 +207,8 @@ export function InvoiceDetailModal({ visible, invoice, onClose, onPaymentSubmitt
                   <>
                     {(detail 
                       ? [
-                          { label: `Tiền điện (${detail.electricityUsage} kWh)`, amount: detail.electricityAmount },
-                          { label: `Tiền nước (${detail.waterUsage} m³)`, amount: detail.waterAmount },
+                          { label: `Tiền điện (${detail.electricityUsage} kWh, đã gồm VAT 8%)`, amount: detail.electricityAmount },
+                          { label: `Tiền nước (${detail.waterUsage} m³, đã gồm thuế/phí)`, amount: detail.waterAmount },
                           ...detail.surcharges.map(s => ({ label: s.name, amount: s.amount }))
                         ]
                       : (invoice.breakdown || [

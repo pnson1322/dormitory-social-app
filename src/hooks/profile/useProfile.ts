@@ -3,7 +3,6 @@ import { getMyProfile } from "@/services/profile/profile.api";
 import { ProfileData } from "@/services/profile/profile.types";
 import { useCallback, useEffect, useState } from "react";
 
-// Global state variables to synchronize profile data across all components
 let globalProfile: ProfileData | null = null;
 let globalLoading = true;
 let globalError: string | null = null;
@@ -37,7 +36,6 @@ export default function useProfile() {
     };
     listeners.add(listener);
 
-    // Sync state on mount
     setProfile(globalProfile);
     setLoading(globalLoading);
     setError(globalError);

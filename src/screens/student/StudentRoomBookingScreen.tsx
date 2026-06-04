@@ -132,6 +132,7 @@ export function StudentRoomBookingScreen() {
         <BookingTermSelector
           terms={terms}
           selectedTerm={selectedTerm}
+          onSelectTerm={setSelectedTerm}
         />
 
         <BookingFeeList

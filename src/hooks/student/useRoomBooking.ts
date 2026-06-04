@@ -3,6 +3,7 @@ import { useFeeTemplates } from "@/hooks/student/useFeeTemplates";
 import { useStudentRoomDetails } from "@/hooks/student/useStudentRoomDetails";
 import { getApiErrorMessage } from "@/services/apiError";
 import { createBooking } from "@/services/booking/booking.api";
+import { confirmStudentPayment, getStudentInvoices } from "@/services/billing/billing.api";
 import { getAuthTokens } from "@/storage/authStorage";
 import { getUserInfoFromToken } from "@/utils/jwt";
 import { getUpcomingTerms } from "@/utils/term";
@@ -74,6 +75,19 @@ export function useRoomBooking(roomId: string) {
       };
 
       await createBooking(payload);
+
+      // Fetch student invoices to find the booking registration invoice
+      const invoicesRes = await getStudentInvoices({ pageSize: 50 });
+      const invoices = invoicesRes.data || [];
+      const targetInvoice = invoices.find(
+        (inv) =>
+          inv.invoiceType === "BookingRegistration" &&
+          (inv.status === "Unpaid" || inv.status.toLowerCase() === "unpaid")
+      );
+
+      if (targetInvoice?.invoiceId) {
+        await confirmStudentPayment(targetInvoice.invoiceId);
+      }
 
       showToast({
         type: "success",

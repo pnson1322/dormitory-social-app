@@ -1,10 +1,13 @@
 import { createInvoice, getInvoiceDetails, getLastReadings } from "@/services/billing/billing.api";
-import { ServiceFee, UtilityReading } from "@/services/billing/billing.types";
+import { ServiceFee } from "@/services/billing/billing.types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getApiErrorMessage } from "@/services/apiError";
 
-const ELECTRICITY_PRICE = 3500; 
-const WATER_PRICE = 15000;    
+export type ConsumptionInfo = {
+  lastReading: number;
+  currentReading: number;
+  consumption: number;
+};
 
 export function useUtilityManagement() {
   const [roomId, setRoomId] = useState<string | null>(null);
@@ -55,35 +58,27 @@ export function useUtilityManagement() {
   useEffect(() => {
   }, [roomId, fetchReadings]);
 
-  const electricity: UtilityReading = useMemo(() => {
+  const electricity: ConsumptionInfo = useMemo(() => {
     const consumption = Math.max(0, currentReadings.electricity - lastReadings.electricity);
     return {
       lastReading: lastReadings.electricity,
       currentReading: currentReadings.electricity,
       consumption,
-      unitPrice: ELECTRICITY_PRICE,
-      total: consumption * ELECTRICITY_PRICE,
     };
   }, [lastReadings.electricity, currentReadings.electricity]);
 
-  const water: UtilityReading = useMemo(() => {
+  const water: ConsumptionInfo = useMemo(() => {
     const consumption = Math.max(0, currentReadings.water - lastReadings.water);
     return {
       lastReading: lastReadings.water,
       currentReading: currentReadings.water,
       consumption,
-      unitPrice: WATER_PRICE,
-      total: consumption * WATER_PRICE,
     };
   }, [lastReadings.water, currentReadings.water]);
 
   const otherFeesTotal = useMemo(() => {
     return otherFees.reduce((acc, fee) => acc + fee.amount, 0);
   }, [otherFees]);
-
-  const totalAmount = useMemo(() => {
-    return electricity.total + water.total + otherFeesTotal;
-  }, [electricity.total, water.total, otherFeesTotal]);
 
   const isValid = useMemo(() => {
     return (
@@ -117,8 +112,8 @@ export function useUtilityManagement() {
     setError(null);
   }, []);
 
-  const submitInvoice = async (isUpdate = false, invoiceId?: string) => {
-    if (!isValid || !roomId) return;
+  const submitInvoice = async (isUpdate = false, invoiceId?: string): Promise<true | string> => {
+    if (!isValid || !roomId) return "Thông tin hóa đơn không hợp lệ.";
 
     try {
       setLoading(true);
@@ -133,8 +128,9 @@ export function useUtilityManagement() {
       });
       return true;
     } catch (err) {
-      setError(getApiErrorMessage(err, `Không thể ${isUpdate ? "cập nhật" : "tạo"} hóa đơn. Vui lòng thử lại.`));
-      return false;
+      const msg = getApiErrorMessage(err, `Không thể ${isUpdate ? "cập nhật" : "tạo"} hóa đơn. Vui lòng thử lại.`);
+      setError(msg);
+      return msg;
     } finally {
       setLoading(false);
     }
@@ -151,7 +147,7 @@ export function useUtilityManagement() {
     otherFees,
     addOtherFee,
     removeOtherFee,
-    totalAmount,
+    otherFeesTotal,
     isValid,
     loading,
     fetchingReadings,

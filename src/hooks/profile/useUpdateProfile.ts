@@ -230,7 +230,6 @@ export function useUpdateProfile(initialProfile: ProfileData) {
         emergencyContactAddress: emergencyContactAddress.trim() || null,
       };
 
-      // Check if any text fields changed
       const parseInitialYear = () => {
         if (initialProfile.studentYear === null || initialProfile.studentYear === undefined) return null;
         const cleaned = String(initialProfile.studentYear).replace(/\D/g, "");

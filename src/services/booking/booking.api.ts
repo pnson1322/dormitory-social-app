@@ -20,7 +20,9 @@ export async function createBooking(payload: CreateBookingPayload) {
 }
 
 export async function getMyRoomDetails() {
-  const { data } = await http.get<ApiResponse<StudentRoomResponse>>("/api/bookings/rooms/students");
+  const { data } = await http.get<ApiResponse<StudentRoomResponse>>("/api/bookings/rooms/students", {
+    _silent: true,
+  } as any);
   return data.data;
 }
 

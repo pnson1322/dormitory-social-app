@@ -81,14 +81,14 @@ export function InvoiceManagerListScreen() {
             </View>
           </View>
           <View className="flex-1">
-            <Text className="text-[18px] font-black text-slate-900">Phòng {invoice.roomName}</Text>
+            <Text className="text-[15px] font-bold text-slate-900">Phòng {invoice.roomName}{invoice.buildingCode ? ` (Tòa ${invoice.buildingCode})` : ""}</Text>
             <View className="flex-row items-center mt-1">
               <Text className="text-[13px] text-slate-400 font-medium">{invoice.createdAt}</Text>
             </View>
           </View>
         </View>
         <View className="items-end ml-2">
-          <Text className="text-[18px] font-black text-slate-900">{formatCurrency(invoice.totalAmount)}</Text>
+          <Text className="text-[15px] font-bold text-slate-900">{formatCurrency(invoice.totalAmount)}</Text>
           <View className={`mt-2 px-3 py-1 rounded-full ${
             isPaid ? "bg-emerald-50" :
             isPending ? "bg-blue-50" :

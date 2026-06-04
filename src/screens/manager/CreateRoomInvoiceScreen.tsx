@@ -28,7 +28,7 @@ export function CreateRoomInvoiceScreen() {
     otherFees,
     addOtherFee,
     removeOtherFee,
-    totalAmount,
+    otherFeesTotal,
     isValid,
     loading,
     fetchingReadings,
@@ -63,8 +63,8 @@ export function CreateRoomInvoiceScreen() {
   }, [isValid, currentReadings, fetchingReadings]);
 
   const handleSubmit = async () => {
-    const success = await submitInvoice(editing, invoiceId as string);
-    if (success) {
+    const result = await submitInvoice(editing, invoiceId as string);
+    if (result === true) {
       showToast({
         type: "success",
         title: "Thành công",
@@ -73,11 +73,11 @@ export function CreateRoomInvoiceScreen() {
           : `Hóa đơn phòng ${roomName} đã được tạo thành công.`
       });
       router.navigate("/(manager)/invoices");
-    } else if (error) {
+    } else {
       showToast({
         type: "error",
         title: "Lỗi",
-        message: error
+        message: result || "Không thể tạo hóa đơn."
       });
     }
   };
@@ -140,7 +140,6 @@ export function CreateRoomInvoiceScreen() {
           type="electricity"
           lastReading={lastReadings.electricity}
           currentReading={currentReadings.electricity}
-          unitPrice={electricity.unitPrice}
           onChange={(val) => setCurrentReadings(prev => ({ ...prev, electricity: val }))}
         />
 
@@ -148,7 +147,6 @@ export function CreateRoomInvoiceScreen() {
           type="water"
           lastReading={lastReadings.water}
           currentReading={currentReadings.water}
-          unitPrice={water.unitPrice}
           onChange={(val) => setCurrentReadings(prev => ({ ...prev, water: val }))}
         />
 
@@ -161,10 +159,9 @@ export function CreateRoomInvoiceScreen() {
 
         <SectionTitle title="Tạm tính" icon="calculator-outline" />
         <InvoiceCalculationCard 
-          electricityTotal={electricity.total}
-          waterTotal={water.total}
-          otherFeesTotal={otherFees.reduce((acc, f) => acc + f.amount, 0)}
-          totalAmount={totalAmount}
+          electricityConsumption={electricity.consumption}
+          waterConsumption={water.consumption}
+          otherFeesTotal={otherFeesTotal}
         />
 
         <AppButton 

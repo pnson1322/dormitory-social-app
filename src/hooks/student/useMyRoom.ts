@@ -15,10 +15,20 @@ export function useMyRoom() {
       const data = await getStudentRoomDetailsApi();
       setRoomInfo(data || null);
     } catch (err: any) {
-      if (err?.response?.status === 404) {
+      const status = err?.response?.status;
+      const msg = getApiErrorMessage(err, "");
+      const msgLower = msg.toLowerCase();
+      const isNoBooking = 
+        status === 404 || 
+        msgLower.includes("no active") ||
+        msgLower.includes("no booking") ||
+        msgLower.includes("not found");
+
+      if (isNoBooking) {
         setRoomInfo(null);
+        setError(null);
       } else {
-        setError(getApiErrorMessage(err, "Không thể tải thông tin phòng của bạn."));
+        setError(msg || "Không thể tải thông tin phòng của bạn.");
       }
     } finally {
       setLoading(false);

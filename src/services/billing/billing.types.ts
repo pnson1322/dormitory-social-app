@@ -66,6 +66,7 @@ export type Surcharge = {
 export type ManagerInvoiceDetail = {
   invoiceId: string;
   roomId: string;
+  roomName: string;
   studentId: string;
   month: number;
   year: number;
@@ -99,6 +100,7 @@ export type InvoiceSummary = {
   id: string;
   roomId: string;
   roomName: string;
+  buildingCode?: string | null;
   totalAmount: number;
   status: InvoiceStatus;
   createdAt: string;
@@ -124,6 +126,7 @@ export type StudentInvoiceResponse = {
   status: string;
   paidAt: string | null;
   createdAt: string;
+  invoiceType?: string;
 };
 
 export type ConfirmPaymentResponse = {
@@ -222,6 +225,7 @@ export type GetManagerInvoicesParams = {
 export type ManagerInvoiceResponse = {
   invoiceId: string;
   roomId: string;
+  roomName: string;
   buildingCode: string | null;
   floor: number | null;
   studentId: string;

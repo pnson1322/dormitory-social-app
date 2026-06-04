@@ -82,10 +82,7 @@ export function ManagerInvoiceDetailModal({ visible, invoice, onClose, onRefresh
           <ScrollView showsVerticalScrollIndicator={false}>
             <View className="flex-row justify-between items-start mb-6">
               <View className="flex-1">
-                <Text className="text-[26px] font-black text-slate-900">Chi tiết hóa đơn</Text>
-                <Text className="text-slate-400 font-bold mt-1 uppercase tracking-widest text-[12px]">
-                  MÃ: {invoice.id}
-                </Text>
+                <Text className="text-[20px] font-bold text-slate-900">Chi tiết hóa đơn</Text>
               </View>
               <Pressable 
                 onPress={() => {
@@ -109,7 +106,7 @@ export function ManagerInvoiceDetailModal({ visible, invoice, onClose, onRefresh
             <View className="bg-slate-50 rounded-[32px] p-6 mb-6 border border-slate-100">
               <View className="flex-row items-center justify-between mb-6">
                 <Text className="text-slate-500 font-bold">Phòng</Text>
-                <Text className="text-slate-900 font-black text-[20px]">Phòng {invoice.roomName}</Text>
+                <Text className="text-slate-900 font-bold text-[16px]">Phòng {invoice.roomName}{invoice.buildingCode ? ` (Tòa ${invoice.buildingCode})` : ""}</Text>
               </View>
               
               <View className="flex-row items-center justify-between mb-8">
@@ -169,20 +166,18 @@ export function ManagerInvoiceDetailModal({ visible, invoice, onClose, onRefresh
               <View className="h-[1px] bg-slate-200/50 w-full mb-6 border-dashed border-[1px] border-slate-300" />
 
               <View className="flex-row items-center justify-between">
-                <Text className="text-slate-900 font-bold text-[18px]">Tổng số tiền</Text>
-                <Text className="text-primary font-black text-[26px]">{formatCurrency(invoice.totalAmount)}</Text>
+                <Text className="text-slate-900 font-bold text-[16px]">Tổng số tiền</Text>
+                <Text className="text-primary font-bold text-[20px]">{formatCurrency(invoice.totalAmount)}</Text>
               </View>
             </View>
 
             {(!isPaid && !isCanceled) && (
               <View className="gap-y-3 mb-4">
-                {isPendingConfirm && (
-                  <AppButton 
-                    title="Xác nhận đã thu tiền" 
-                    onPress={() => setShowConfirmPaid(true)} 
-                    style={{ backgroundColor: "#10B981" }}
-                  />
-                )}
+                <AppButton 
+                  title="Xác nhận đã thu tiền" 
+                  onPress={() => setShowConfirmPaid(true)} 
+                  style={{ backgroundColor: "#10B981" }}
+                />
                 <AppButton 
                   title="Hủy hóa đơn này" 
                   onPress={() => setShowConfirmCancel(true)} 
@@ -200,7 +195,7 @@ export function ManagerInvoiceDetailModal({ visible, invoice, onClose, onRefresh
       <ConfirmModal
         visible={showConfirmPaid}
         title="Xác nhận thu tiền?"
-        message={`Hệ thống sẽ chuyển trạng thái hóa đơn phòng ${invoice.roomName} sang Đã thanh toán. Bạn có chắc chắn?`}
+        message={`Hệ thống sẽ chuyển trạng thái hóa đơn phòng ${invoice.roomName}${invoice.buildingCode ? ` (Tòa ${invoice.buildingCode})` : ""} sang Đã thanh toán. Bạn có chắc chắn?`}
         onConfirm={handlePaid}
         onCancel={() => setShowConfirmPaid(false)}
         type="success"

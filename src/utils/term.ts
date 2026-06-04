@@ -40,17 +40,21 @@ export function getUpcomingTerms(): TermOption[] {
     nextAcademicStartYear++;
   }
 
-  let termLabel = "";
-  if (nextTermType === "HK1") {
-    termLabel = `Học kỳ 1`;
-  } else if (nextTermType === "HK2") {
-    termLabel = `Học kỳ 2`;
-  } else {
-    termLabel = `Học kỳ Hè`;
-  }
+  const getTermLabel = (type: "HK1" | "HK2" | "HKH") => {
+    if (type === "HK1") return "Học kỳ 1";
+    if (type === "HK2") return "Học kỳ 2";
+    return "Học kỳ Hè";
+  };
 
-  return [{
+  const currentTermOption: TermOption = {
+    id: `${currentTermType}_${academicStartYear}_${academicStartYear + 1}`,
+    label: `${getTermLabel(currentTermType)} (${academicStartYear}-${academicStartYear + 1})`,
+  };
+
+  const nextTermOption: TermOption = {
     id: `${nextTermType}_${nextAcademicStartYear}_${nextAcademicStartYear + 1}`,
-    label: `${termLabel} (${nextAcademicStartYear}-${nextAcademicStartYear + 1})`,
-  }];
+    label: `${getTermLabel(nextTermType)} (${nextAcademicStartYear}-${nextAcademicStartYear + 1})`,
+  };
+
+  return [currentTermOption, nextTermOption];
 }

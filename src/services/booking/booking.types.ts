@@ -50,6 +50,7 @@ export type CreateBookingResponse = {
   status: string;
   totalPrice: number;
   message: string;
+  invoiceId?: string;
 };
 
 export type RoomDetailInfo = {

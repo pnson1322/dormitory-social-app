@@ -42,7 +42,6 @@ export function RoomResidentsCard({ students, loading, onCheckout }: Props) {
       setShowConfirm(false);
       setSelectedStudent(null);
     } catch (err) {
-      // Bubble error to parent screen to display toast
       throw err;
     } finally {
       setCheckoutLoading(false);
